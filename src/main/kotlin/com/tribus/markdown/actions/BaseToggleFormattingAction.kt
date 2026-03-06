@@ -1,5 +1,6 @@
 package com.tribus.markdown.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -15,6 +16,8 @@ import com.tribus.markdown.util.MarkdownFormattingUtil.FormattingWrapper
 open class BaseToggleFormattingAction(
     private val wrapper: FormattingWrapper
 ) : AnAction(), MarkdownAction {
+
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
@@ -52,6 +55,6 @@ open class BaseToggleFormattingAction(
     }
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = MarkdownFileUtil.isMarkdownFile(e)
+        e.presentation.isEnabled = MarkdownFileUtil.isMarkdownFile(e)
     }
 }

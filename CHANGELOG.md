@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-03-06
+
+### Fixed
+- Keyboard shortcuts (Cmd+B, Cmd+I, etc.) now properly override IDE builtins in markdown files
+- Added `ActionPromoter.suppress()` to remove conflicting IDE actions (e.g. GotoDeclaration) when editing markdown
+- Added `getActionUpdateThread()` override required by IntelliJ 2025.1+ for proper action update scheduling
+- Changed `isEnabledAndVisible` to `isEnabled` so actions participate in shortcut conflict resolution even when disabled
+
 ## [0.3.0] - 2026-03-06
 
 ### Added
