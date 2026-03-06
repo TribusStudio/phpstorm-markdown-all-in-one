@@ -15,8 +15,8 @@ Core plugin infrastructure and basic formatting actions.
 - [x] Heading level up/down actions (`Ctrl+Shift+]` / `[`)
 - [x] Task list checkbox toggle (`Alt+C`)
 - [x] Unit tests for formatting utilities
-- [ ] Integration tests with editor fixtures (BasePlatformTestCase)
-- [ ] Verify build compiles and passes in devcontainer
+- [x] Integration tests with editor fixtures (BasePlatformTestCase)
+- [x] Verify build compiles and passes in devcontainer (47 tests, 0 failures)
 
 ## Phase 2: Smart List Editing
 Context-aware list editing behavior.

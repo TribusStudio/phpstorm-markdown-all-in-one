@@ -25,3 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Docker devcontainer with JDK 21 build environment
 - `./dev` CLI for container management and build commands
 - Numbered documentation system in `docs/`
+- Integration tests for all formatting actions (BasePlatformTestCase)
+- Integration tests for code block, heading, and task list actions
+- JUnit vintage engine for IntelliJ platform test compatibility
