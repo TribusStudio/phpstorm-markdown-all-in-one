@@ -19,6 +19,12 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 | `Ctrl+Shift+[` | Decrease heading level |
 | `Alt+C` | Toggle task list checkbox |
 
+### Syntax Highlighting
+- Headings, code blocks, inline code, blockquotes, list markers, horizontal rules
+- Inline formatting: **bold**, *italic*, ~~strikethrough~~
+- Links and images with distinct colors for text and URL
+- Theme-aware — adapts to your IDE color scheme
+
 ### Smart List Editing
 - Auto-continue lists on Enter (unordered, ordered, task lists)
 - Tab/Shift+Tab to indent/outdent list items
@@ -52,6 +58,7 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 1. Open PHPStorm > Settings > Plugins
 2. Search for "Markdown All-in-One"
 3. Click Install
+4. **Disable the bundled "Markdown" plugin** (Settings > Plugins > Installed > search "Markdown" > Disable) to avoid file type conflicts
 
 ### From Source
 ```bash

@@ -43,11 +43,11 @@
 - True "All-in-One" — we own the entire experience
 - We can progressively add our own parsing, highlighting, and preview without conflicts
 
-**Coexistence strategy:**
-- We do NOT register our own Markdown file type (would conflict with the bundled plugin)
-- Instead, we detect `.md` files by extension and attach our actions/handlers regardless of which plugin owns the file type
-- This means our plugin works whether the bundled Markdown plugin is enabled or disabled
-- Our `lang/` package contains `MarkdownLanguage`, `MarkdownFileType`, and `MarkdownIcons` classes reserved for future use when we implement our own full language support
+**File type ownership:**
+- We register our own file type (`MarkdownAIO`) for `.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn` extensions
+- We provide our own lexer, parser, syntax highlighter, and annotator
+- Users must disable the bundled "Markdown" plugin to avoid file type conflicts
+- Language ID is `MarkdownAIO` (not `Markdown`) to prevent `ImplementationConflictException` if both plugins are loaded simultaneously
 
 **Keyboard shortcut strategy:**
 - We use familiar shortcuts (Cmd+B for bold, Cmd+I for italic, etc.) that overlap with IDE builtins
@@ -56,7 +56,9 @@
 - In non-markdown files, the standard IDE actions (Go to Declaration, Find Implementations, etc.) work as normal
 - This is the standard IntelliJ Platform mechanism for context-aware shortcut resolution
 
-**Previous decision (superseded):** We originally depended on `org.intellij.plugins.markdown` to reuse its parser and file type. This was changed because it made us beholden to another plugin's implementation decisions and prevented us from controlling the full user experience.
+**Previous decisions (superseded):**
+- Originally depended on `org.intellij.plugins.markdown` — changed because it made us beholden to another plugin's decisions
+- Then went standalone without file type registration (extension-based detection only) — changed because PHPStorm kept showing "Plugins supporting *.md files found" and users had no syntax highlighting without the bundled plugin
 
 ## Testing: JUnit 5
 

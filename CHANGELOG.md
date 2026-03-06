@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-03-06
+
+### Added
+- **Own file type registration** — plugin now claims `.md`, `.markdown`, `.mdown`, `.mkd`, `.mkdn` extensions
+- Markdown lexer with block-level tokenization (headings, code fences, blockquotes, lists, horizontal rules, inline code spans)
+- Syntax highlighter with theme-aware colors for all block constructs
+- Inline formatting annotator for bold, italic, strikethrough, links, and images
+- PSI file type (`MarkdownFile`) and parser definition
+
+### Changed
+- Plugin is now a **full language plugin** — no longer relies on the bundled Markdown plugin for file type association
+- Users should disable the bundled "Markdown" plugin to avoid file type conflicts
+
 ## [0.2.1] - 2026-03-06
 
 ### Changed

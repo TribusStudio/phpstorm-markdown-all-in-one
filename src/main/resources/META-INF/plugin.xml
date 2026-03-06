@@ -23,6 +23,22 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <!-- File type and language support -->
+        <fileType name="MarkdownAIO"
+                  implementationClass="com.tribus.markdown.lang.MarkdownFileType"
+                  fieldName="INSTANCE"
+                  language="MarkdownAIO"
+                  extensions="md;markdown;mdown;mkd;mkdn"/>
+
+        <lang.parserDefinition language="MarkdownAIO"
+                               implementationClass="com.tribus.markdown.lang.parser.MarkdownParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory language="MarkdownAIO"
+                                       implementationClass="com.tribus.markdown.lang.highlighting.MarkdownSyntaxHighlighterFactory"/>
+
+        <annotator language="MarkdownAIO"
+                   implementationClass="com.tribus.markdown.lang.highlighting.MarkdownAnnotator"/>
+
         <!-- Settings page -->
         <applicationConfigurable
                 id="com.tribus.markdown.settings"
