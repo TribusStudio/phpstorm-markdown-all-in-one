@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-03-06
+
+### Fixed
+- Keyboard shortcuts now definitively override IDE builtins in markdown files using component-level registration
+- Replaced unreliable `ActionPromoter` approach with `FileEditorManagerListener` that registers shortcuts directly on the editor component — component-level shortcuts always take priority over global keymap shortcuts
+
 ## [0.3.1] - 2026-03-06
 
 ### Fixed

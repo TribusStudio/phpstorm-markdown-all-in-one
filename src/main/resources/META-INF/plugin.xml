@@ -22,6 +22,14 @@
 
     <depends>com.intellij.modules.platform</depends>
 
+    <!-- Register shortcuts on editor component for markdown files.
+         Component-level shortcuts always override global keymap shortcuts,
+         guaranteeing our actions fire instead of IDE builtins like GotoDeclaration. -->
+    <projectListeners>
+        <listener class="com.tribus.markdown.editor.MarkdownFileEditorListener"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    </projectListeners>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- File type and language support -->
         <fileType name="MarkdownAIO"
@@ -49,10 +57,6 @@
         <applicationService
                 serviceImplementation="com.tribus.markdown.settings.MarkdownSettings"/>
 
-        <!-- Action promoter: gives our actions priority over IDE builtins in .md files -->
-        <actionPromoter
-                implementation="com.tribus.markdown.actions.MarkdownActionPromoter"/>
-
         <!-- Editor action handlers for smart keys -->
         <typedHandler
                 implementation="com.tribus.markdown.editor.MarkdownTypedHandler"/>
@@ -72,8 +76,9 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Formatting actions -->
-            <!-- These shortcuts overlap with IDE builtins (e.g. Cmd+B = Go to Declaration) -->
-            <!-- MarkdownActionPromoter gives our actions priority in .md files -->
+            <!-- Shortcuts are registered in the keymap for discoverability (Settings > Keymap). -->
+            <!-- MarkdownFileEditorListener re-registers them on the editor component so they -->
+            <!-- override IDE builtins (GotoDeclaration, etc.) in markdown files. -->
             <action id="com.tribus.markdown.actions.ToggleBold"
                     class="com.tribus.markdown.actions.ToggleBoldAction"
                     text="Toggle Bold"
