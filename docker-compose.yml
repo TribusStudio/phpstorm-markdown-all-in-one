@@ -1,0 +1,19 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: markdown-plugin-dev
+    volumes:
+      - .:/workspace:cached
+      - gradle-cache:/home/dev/.gradle
+    working_dir: /workspace
+    tty: true
+    stdin_open: true
+    environment:
+      - GRADLE_USER_HOME=/home/dev/.gradle
+      - GRADLE_OPTS=-Dorg.gradle.daemon=true -Dorg.gradle.parallel=true
+
+volumes:
+  gradle-cache:
+    name: markdown-plugin-gradle-cache

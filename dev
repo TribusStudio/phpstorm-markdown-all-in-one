@@ -1,0 +1,208 @@
+#!/usr/bin/env bash
+#
+# dev — Development CLI for Markdown All-in-One PHPStorm Plugin
+#
+# Usage: ./dev <command> [args...]
+#
+# Container management and build commands run from your host machine.
+# All build/test commands execute inside the Docker container.
+#
+set -euo pipefail
+
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="${PROJECT_DIR}/docker-compose.yml"
+SERVICE="dev"
+CONTAINER="markdown-plugin-dev"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info()  { echo -e "${BLUE}[info]${NC}  $*"; }
+ok()    { echo -e "${GREEN}[ok]${NC}    $*"; }
+warn()  { echo -e "${YELLOW}[warn]${NC}  $*"; }
+error() { echo -e "${RED}[error]${NC} $*" >&2; }
+
+# Check if the container is running
+is_running() {
+    docker compose -f "$COMPOSE_FILE" ps --status running --format '{{.Name}}' 2>/dev/null | grep -q "$CONTAINER"
+}
+
+# Ensure the container is running, start if not
+ensure_running() {
+    if ! is_running; then
+        info "Container not running. Starting..."
+        cmd_up
+    fi
+}
+
+# Execute a command inside the container
+exec_in_container() {
+    docker compose -f "$COMPOSE_FILE" exec "$SERVICE" "$@"
+}
+
+# ── Commands ──────────────────────────────────────────────────────────
+
+cmd_up() {
+    info "Building and starting container..."
+    docker compose -f "$COMPOSE_FILE" up -d --build
+    ok "Container is running"
+}
+
+cmd_down() {
+    info "Stopping container..."
+    docker compose -f "$COMPOSE_FILE" down
+    ok "Container stopped"
+}
+
+cmd_restart() {
+    info "Restarting container..."
+    docker compose -f "$COMPOSE_FILE" restart
+    ok "Container restarted"
+}
+
+cmd_status() {
+    echo ""
+    docker compose -f "$COMPOSE_FILE" ps
+    echo ""
+    if is_running; then
+        ok "Container is running"
+        # Show Java version
+        exec_in_container java --version 2>&1 | head -1
+        # Show Gradle version if wrapper exists
+        if exec_in_container test -f /workspace/gradlew 2>/dev/null; then
+            exec_in_container /workspace/gradlew --version 2>/dev/null | grep "^Gradle" || true
+        else
+            warn "Gradle wrapper not yet generated (run ./dev setup)"
+        fi
+    else
+        warn "Container is not running (run ./dev up)"
+    fi
+}
+
+cmd_setup() {
+    ensure_running
+    info "Running setup..."
+    exec_in_container bash /workspace/scripts/setup.sh
+}
+
+cmd_shell() {
+    ensure_running
+    info "Opening shell in container..."
+    exec_in_container bash
+}
+
+cmd_build() {
+    ensure_running
+    exec_in_container bash /workspace/scripts/build.sh "$@"
+}
+
+cmd_test() {
+    ensure_running
+    exec_in_container bash /workspace/scripts/test.sh "$@"
+}
+
+cmd_package() {
+    ensure_running
+    exec_in_container bash /workspace/scripts/package.sh "$@"
+}
+
+cmd_verify() {
+    ensure_running
+    exec_in_container bash /workspace/scripts/verify.sh "$@"
+}
+
+cmd_clean() {
+    ensure_running
+    exec_in_container bash /workspace/scripts/clean.sh "$@"
+}
+
+cmd_gradle() {
+    ensure_running
+    exec_in_container /workspace/gradlew "$@"
+}
+
+cmd_logs() {
+    docker compose -f "$COMPOSE_FILE" logs -f "$SERVICE"
+}
+
+cmd_destroy() {
+    warn "This will remove the container AND the Gradle cache volume."
+    read -rp "Are you sure? (y/N): " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        docker compose -f "$COMPOSE_FILE" down -v
+        ok "Container and volumes destroyed"
+    else
+        info "Cancelled"
+    fi
+}
+
+cmd_help() {
+    cat <<'HELP'
+
+  Markdown All-in-One — Development CLI
+
+  USAGE
+    ./dev <command> [args...]
+
+  CONTAINER MANAGEMENT
+    up          Build and start the dev container
+    down        Stop the container
+    restart     Restart the container
+    status      Show container status, Java/Gradle versions
+    setup       Run initial setup (Gradle wrapper, dependencies)
+    shell       Open a bash shell inside the container
+    logs        Tail container logs
+    destroy     Remove container AND Gradle cache volume
+
+  BUILD & TEST
+    build       Build the plugin (./gradlew build)
+    test        Run all tests (./gradlew test)
+    package     Build distributable .zip (./gradlew buildPlugin)
+    verify      Verify plugin compatibility (./gradlew verifyPlugin)
+    clean       Clean build artifacts (./gradlew clean)
+    gradle ...  Run any Gradle command directly
+
+  EXAMPLES
+    ./dev up                   Start the container
+    ./dev build                Build the plugin
+    ./dev test                 Run tests
+    ./dev test --tests '*.MarkdownFormattingUtilTest'
+                               Run a specific test class
+    ./dev package              Create the .zip for installation
+    ./dev gradle dependencies  List all dependencies
+    ./dev shell                Drop into the container shell
+
+HELP
+}
+
+# ── Main ──────────────────────────────────────────────────────────────
+
+command="${1:-help}"
+shift 2>/dev/null || true
+
+case "$command" in
+    up)       cmd_up ;;
+    down)     cmd_down ;;
+    restart)  cmd_restart ;;
+    status)   cmd_status ;;
+    setup)    cmd_setup ;;
+    shell)    cmd_shell ;;
+    build)    cmd_build "$@" ;;
+    test)     cmd_test "$@" ;;
+    package)  cmd_package "$@" ;;
+    verify)   cmd_verify "$@" ;;
+    clean)    cmd_clean "$@" ;;
+    gradle)   cmd_gradle "$@" ;;
+    logs)     cmd_logs ;;
+    destroy)  cmd_destroy ;;
+    help|-h|--help) cmd_help ;;
+    *)
+        error "Unknown command: $command"
+        cmd_help
+        exit 1
+        ;;
+esac

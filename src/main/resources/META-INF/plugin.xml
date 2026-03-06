@@ -1,0 +1,142 @@
+<idea-plugin>
+    <id>com.tribus.markdown-all-in-one</id>
+    <name>Markdown All-in-One</name>
+    <vendor email="support@tribus.dev" url="https://github.com/tribus">Tribus</vendor>
+
+    <description><![CDATA[
+    <h2>Markdown All-in-One for PHPStorm</h2>
+    <p>A comprehensive Markdown editing experience — keyboard shortcuts, table of contents,
+    auto-completion, list editing, table formatting, and more.</p>
+
+    <h3>Features</h3>
+    <ul>
+        <li><b>Keyboard shortcuts</b> — Bold, italic, strikethrough, code spans, headings</li>
+        <li><b>Smart list editing</b> — Auto-continue lists, indent/outdent, task list toggling</li>
+        <li><b>Table of Contents</b> — Generate and auto-update TOC from headings</li>
+        <li><b>Table formatting</b> — Auto-format GFM tables with alignment</li>
+        <li><b>Auto-completion</b> — File paths, image paths, link references</li>
+        <li><b>Smart paste</b> — Paste URLs as markdown links</li>
+        <li><b>HTML export</b> — Export markdown to styled HTML</li>
+    </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.intellij.plugins.markdown</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Settings page -->
+        <applicationConfigurable
+                id="com.tribus.markdown.settings"
+                parentId="languages"
+                displayName="Markdown All-in-One"
+                instance="com.tribus.markdown.settings.MarkdownSettingsConfigurable"/>
+
+        <applicationService
+                serviceImplementation="com.tribus.markdown.settings.MarkdownSettings"/>
+
+        <!-- Editor action handlers for smart keys -->
+        <typedHandler
+                implementation="com.tribus.markdown.editor.MarkdownTypedHandler"/>
+
+        <enterHandlerDelegate
+                implementation="com.tribus.markdown.editor.MarkdownEnterHandler"/>
+
+        <backspaceHandlerDelegate
+                implementation="com.tribus.markdown.editor.MarkdownBackspaceHandler"/>
+    </extensions>
+
+    <actions>
+        <group id="com.tribus.markdown.MainMenu"
+               text="Markdown"
+               description="Markdown All-in-One actions"
+               popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+
+            <!-- Formatting actions -->
+            <action id="com.tribus.markdown.actions.ToggleBold"
+                    class="com.tribus.markdown.actions.ToggleBoldAction"
+                    text="Toggle Bold"
+                    description="Toggle bold formatting on selection">
+                <keyboard-shortcut keymap="$default" first-keystroke="meta B"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.ToggleItalic"
+                    class="com.tribus.markdown.actions.ToggleItalicAction"
+                    text="Toggle Italic"
+                    description="Toggle italic formatting on selection">
+                <keyboard-shortcut keymap="$default" first-keystroke="meta I"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.ToggleStrikethrough"
+                    class="com.tribus.markdown.actions.ToggleStrikethroughAction"
+                    text="Toggle Strikethrough"
+                    description="Toggle strikethrough formatting on selection">
+                <keyboard-shortcut keymap="$default" first-keystroke="alt S"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.ToggleCodeSpan"
+                    class="com.tribus.markdown.actions.ToggleCodeSpanAction"
+                    text="Toggle Code Span"
+                    description="Toggle inline code formatting on selection"/>
+
+            <action id="com.tribus.markdown.actions.ToggleCodeBlock"
+                    class="com.tribus.markdown.actions.ToggleCodeBlockAction"
+                    text="Toggle Code Block"
+                    description="Toggle fenced code block on selection"/>
+
+            <separator/>
+
+            <!-- Heading actions -->
+            <action id="com.tribus.markdown.actions.HeadingUp"
+                    class="com.tribus.markdown.actions.HeadingUpAction"
+                    text="Increase Heading Level"
+                    description="Increase heading level (# to ##)">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift CLOSE_BRACKET"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.HeadingDown"
+                    class="com.tribus.markdown.actions.HeadingDownAction"
+                    text="Decrease Heading Level"
+                    description="Decrease heading level (## to #)">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift OPEN_BRACKET"/>
+            </action>
+
+            <separator/>
+
+            <!-- TOC actions -->
+            <action id="com.tribus.markdown.actions.CreateToc"
+                    class="com.tribus.markdown.actions.CreateTocAction"
+                    text="Create Table of Contents"
+                    description="Insert table of contents at cursor"/>
+
+            <action id="com.tribus.markdown.actions.UpdateToc"
+                    class="com.tribus.markdown.actions.UpdateTocAction"
+                    text="Update Table of Contents"
+                    description="Update existing table of contents"/>
+
+            <separator/>
+
+            <!-- Table actions -->
+            <action id="com.tribus.markdown.actions.FormatTable"
+                    class="com.tribus.markdown.actions.FormatTableAction"
+                    text="Format Table"
+                    description="Auto-format the GFM table at cursor"/>
+
+            <separator/>
+
+            <!-- Export -->
+            <action id="com.tribus.markdown.actions.ExportHtml"
+                    class="com.tribus.markdown.actions.ExportHtmlAction"
+                    text="Export to HTML"
+                    description="Export current markdown file to HTML"/>
+        </group>
+
+        <!-- Task list toggle (standalone for keybinding) -->
+        <action id="com.tribus.markdown.actions.ToggleTaskList"
+                class="com.tribus.markdown.actions.ToggleTaskListAction"
+                text="Toggle Task Checkbox"
+                description="Toggle task list checkbox state">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+        </action>
+    </actions>
+</idea-plugin>

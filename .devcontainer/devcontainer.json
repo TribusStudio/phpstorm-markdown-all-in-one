@@ -1,0 +1,31 @@
+{
+  "name": "Markdown All-in-One Plugin Dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "jetbrains": {
+      "plugins": [
+        "org.jetbrains.kotlin"
+      ]
+    }
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "source=markdown-plugin-gradle-cache,target=/home/dev/.gradle,type=volume"
+  ],
+  "workspaceFolder": "/workspace",
+  "remoteUser": "dev",
+  "containerUser": "dev",
+  "postCreateCommand": "/workspace/scripts/setup.sh",
+  "forwardPorts": [],
+  "remoteEnv": {
+    "GRADLE_USER_HOME": "/home/dev/.gradle",
+    "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64"
+  }
+}

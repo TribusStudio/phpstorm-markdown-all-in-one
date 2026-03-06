@@ -1,0 +1,24 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Gradle wrapper (generated inside container)
+gradlew
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar
+
+# Environment
+.env
+*.local

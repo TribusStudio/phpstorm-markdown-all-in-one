@@ -80,14 +80,48 @@ phpstorm-markdown-all-in-one/
 - Use `before.md` / `after.md` naming for transformation tests
 - Run tests before marking any feature complete: `./gradlew test`
 
-## Build & Run Commands
+## Development Environment
 
-- **Build:** `./gradlew build`
-- **Test:** `./gradlew test`
-- **Run IDE with plugin:** `./gradlew runIde`
-- **Build plugin zip:** `./gradlew buildPlugin`
-- **Verify compatibility:** `./gradlew verifyPlugin`
-- **Publish:** `./gradlew publishPlugin` (requires marketplace token)
+All builds run inside a Docker devcontainer. Use the `./dev` CLI from the host:
+
+### Container Management
+- **Start:** `./dev up`
+- **Stop:** `./dev down`
+- **Status:** `./dev status`
+- **Shell:** `./dev shell`
+- **Setup:** `./dev setup` (generates Gradle wrapper, downloads deps)
+- **Destroy:** `./dev destroy` (removes container + cache volume)
+
+### Build & Test (run via `./dev`)
+- **Build:** `./dev build`
+- **Test:** `./dev test`
+- **Package:** `./dev package` (creates distributable .zip)
+- **Verify:** `./dev verify` (plugin compatibility check)
+- **Clean:** `./dev clean`
+- **Any Gradle command:** `./dev gradle <task>`
+
+### Direct Gradle (inside container only)
+- `./gradlew build`
+- `./gradlew test`
+- `./gradlew runIde`
+- `./gradlew buildPlugin`
+- `./gradlew verifyPlugin`
+- `./gradlew publishPlugin` (requires marketplace token)
+
+## Documentation Rules
+
+- **All plans and documentation MUST live in the repo** — never in external tools, local-only files, or ephemeral locations. Everything is tracked in version control.
+- **Documentation files are numbered** with a prefix indicating the order they were written: `001-`, `002-`, etc. This applies to all docs in the `docs/` directory (plans, specs, research, decisions, guides).
+- **Core root files** (`README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `ROADMAP.md`, `LICENSE`) are NOT numbered — they follow standard open-source conventions.
+- **When creating a new document**, check the highest existing number in `docs/` and increment by one.
+- **The `docs/` directory structure:**
+  ```
+  docs/
+    001-project-vision.md          # Initial vision and goals
+    002-vscode-reference-analysis.md  # Analysis of the VSCode reference plugin
+    003-feature-spec-*.md          # Feature specifications
+    ...
+  ```
 
 ## Claude Workflow Preferences
 
@@ -95,5 +129,5 @@ phpstorm-markdown-all-in-one/
 - **Autonomy:** Operate autonomously; ask questions when hitting walls or ambiguity
 - **Planning:** Use phased roadmap development — complete phases incrementally
 - **Agents:** Use developer and user-voice agents for review (see .claude/ skills)
-- **Documentation:** Keep README, CHANGELOG, and help text updated with each feature
+- **Documentation:** Keep README, CHANGELOG, help text, and numbered docs updated with each feature
 - **Transparency:** Log decisions and rationale in commit messages and PR descriptions
