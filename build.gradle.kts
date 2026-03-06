@@ -33,6 +33,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("junit:junit:4.13.2")
 }
 
 intellijPlatform {
@@ -63,6 +64,9 @@ intellijPlatform {
 tasks {
     test {
         useJUnitPlatform()
+        // IntelliJ platform test framework needs these for headless test execution
+        systemProperty("idea.force.use.core.classloader", "true")
+        jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
     }
 
     wrapper {
