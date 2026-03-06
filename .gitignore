@@ -23,3 +23,6 @@ gradle/wrapper/gradle-wrapper.jar
 # Environment
 .env
 *.local
+
+# Claude
+.claude/settings.local.json
