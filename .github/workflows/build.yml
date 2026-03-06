@@ -39,14 +39,8 @@ jobs:
         with:
           gradle-version: '9.2.1'
 
-      - name: Build
-        run: gradle build
-
-      - name: Test
-        run: gradle test
-
-      - name: Package Plugin
-        run: gradle buildPlugin
+      - name: Build, Test & Package
+        run: gradle build test buildPlugin
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
