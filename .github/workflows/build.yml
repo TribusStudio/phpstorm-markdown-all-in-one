@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build, Test & Release
 
 on:
   push:
@@ -6,11 +6,27 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      artifact_name: ${{ steps.version.outputs.artifact_name }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Read plugin version
+        id: version
+        run: |
+          VERSION=$(grep '^pluginVersion' gradle.properties | cut -d'=' -f2 | tr -d ' ')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=markdown-all-in-one-${VERSION}.zip" >> "$GITHUB_OUTPUT"
+          echo "Plugin version: $VERSION"
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -30,6 +46,9 @@ jobs:
       - name: Verify Plugin
         run: ./gradlew verifyPlugin
 
+      - name: Package Plugin
+        run: ./gradlew buildPlugin
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -43,20 +62,88 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          name: plugin-zip
+          path: dist/
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Publish Plugin
-        if: env.PUBLISH_TOKEN != ''
+      - name: Create or update GitHub Release
         env:
-          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
-        run: ./gradlew publishPlugin
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.build.outputs.version }}
+          ARTIFACT: ${{ needs.build.outputs.artifact_name }}
+        run: |
+          TAG="v${VERSION}"
+
+          # Check if release already exists
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Release $TAG exists, updating..."
+            gh release upload "$TAG" "dist/${ARTIFACT}" --clobber
+          else
+            echo "Creating release $TAG..."
+            gh release create "$TAG" "dist/${ARTIFACT}" \
+              --title "v${VERSION}" \
+              --notes "$(cat <<EOF
+          ## Markdown All-in-One v${VERSION}
+
+          ### Install
+          1. Download \`${ARTIFACT}\` below
+          2. PHPStorm > Settings > Plugins > gear icon > Install from disk
+          3. Select the downloaded .zip
+          4. Restart PHPStorm
+
+          ### Auto-update
+          Add this custom plugin repository in Settings > Plugins > gear icon > Manage Plugin Repositories:
+          \`\`\`
+          https://${{ github.repository_owner }}.github.io/phpstorm-markdown-all-in-one/updatePlugins.xml
+          \`\`\`
+          EOF
+          )"
+          fi
+
+  update-repo:
+    needs: [build, release]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate updatePlugins.xml
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          ARTIFACT: ${{ needs.build.outputs.artifact_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p _site
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/${ARTIFACT}"
+          cat > _site/updatePlugins.xml << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <plugins>
+            <plugin id="com.tribus.markdown-all-in-one"
+                    url="${DOWNLOAD_URL}"
+                    version="${VERSION}">
+              <idea-version since-build="251"/>
+              <name>Markdown All-in-One</name>
+              <vendor>Tribus</vendor>
+              <description>Comprehensive Markdown editing for PHPStorm</description>
+            </plugin>
+          </plugins>
+          EOF
+          echo "Generated updatePlugins.xml pointing to ${DOWNLOAD_URL}"
+          cat _site/updatePlugins.xml
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

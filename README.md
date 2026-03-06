@@ -54,15 +54,23 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 
 ## Installation
 
-### From JetBrains Marketplace
-1. Open PHPStorm > Settings > Plugins
-2. Search for "Markdown All-in-One"
-3. Click Install
-4. **Disable the bundled "Markdown" plugin** (Settings > Plugins > Installed > search "Markdown" > Disable) to avoid file type conflicts
+### Auto-Update (Recommended)
+1. Open PHPStorm > Settings > Plugins > gear icon > **Manage Plugin Repositories**
+2. Add: `https://TribusStudio.github.io/phpstorm-markdown-all-in-one/updatePlugins.xml`
+3. Click OK, then search for "Markdown All-in-One" in the Marketplace tab and install
+4. **Disable the bundled "Markdown" plugin** (Settings > Plugins > Installed > search "Markdown" > Disable)
+5. Restart PHPStorm
+
+Updates will appear automatically in Settings > Plugins whenever a new version is pushed to main.
+
+### From GitHub Release
+1. Download the latest `.zip` from [Releases](https://github.com/TribusStudio/phpstorm-markdown-all-in-one/releases)
+2. PHPStorm > Settings > Plugins > gear icon > **Install Plugin from Disk**
+3. Select the downloaded `.zip` and restart
 
 ### From Source
 ```bash
-git clone https://github.com/tribus/phpstorm-markdown-all-in-one.git
+git clone https://github.com/TribusStudio/phpstorm-markdown-all-in-one.git
 cd phpstorm-markdown-all-in-one
 ./dev up && ./dev setup
 ./dev package

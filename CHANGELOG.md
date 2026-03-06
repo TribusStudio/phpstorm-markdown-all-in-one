@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `getActionUpdateThread()` override required by IntelliJ 2025.1+ for proper action update scheduling
 - Changed `isEnabledAndVisible` to `isEnabled` so actions participate in shortcut conflict resolution even when disabled
 
+### Added
+- GitHub Actions release pipeline — auto-creates releases on push to main
+- Custom plugin repository via GitHub Pages (`updatePlugins.xml`) for PHPStorm auto-updates
+
 ## [0.3.0] - 2026-03-06
 
 ### Added
