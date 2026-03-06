@@ -36,18 +36,20 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.1'
 
       - name: Build
-        run: ./gradlew build
+        run: gradle build
 
       - name: Test
-        run: ./gradlew test
+        run: gradle test
 
       - name: Verify Plugin
-        run: ./gradlew verifyPlugin
+        run: gradle verifyPlugin
 
       - name: Package Plugin
-        run: ./gradlew buildPlugin
+        run: gradle buildPlugin
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -73,19 +75,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ needs.build.outputs.version }}
           ARTIFACT: ${{ needs.build.outputs.artifact_name }}
+          PAGES_URL: https://${{ github.repository_owner }}.github.io/phpstorm-markdown-all-in-one/updatePlugins.xml
         run: |
           TAG="v${VERSION}"
-
-          # Check if release already exists
           if gh release view "$TAG" &>/dev/null; then
             echo "Release $TAG exists, updating..."
             gh release upload "$TAG" "dist/${ARTIFACT}" --clobber
           else
             echo "Creating release $TAG..."
-            gh release create "$TAG" "dist/${ARTIFACT}" \
-              --title "v${VERSION}" \
-              --notes "$(cat <<EOF
-          ## Markdown All-in-One v${VERSION}
+            NOTES="## Markdown All-in-One v${VERSION}
 
           ### Install
           1. Download \`${ARTIFACT}\` below
@@ -96,10 +94,9 @@ jobs:
           ### Auto-update
           Add this custom plugin repository in Settings > Plugins > gear icon > Manage Plugin Repositories:
           \`\`\`
-          https://${{ github.repository_owner }}.github.io/phpstorm-markdown-all-in-one/updatePlugins.xml
-          \`\`\`
-          EOF
-          )"
+          ${PAGES_URL}
+          \`\`\`"
+            gh release create "$TAG" "dist/${ARTIFACT}" --title "v${VERSION}" --notes "$NOTES"
           fi
 
   update-repo:
@@ -120,20 +117,20 @@ jobs:
         run: |
           mkdir -p _site
           DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${VERSION}/${ARTIFACT}"
-          cat > _site/updatePlugins.xml << EOF
+          cat > _site/updatePlugins.xml <<XMLEOF
           <?xml version="1.0" encoding="UTF-8"?>
           <plugins>
-            <plugin id="com.tribus.markdown-all-in-one"
-                    url="${DOWNLOAD_URL}"
-                    version="${VERSION}">
+            <plugin id="com.tribus.markdown-all-in-one" url="${DOWNLOAD_URL}" version="${VERSION}">
               <idea-version since-build="251"/>
               <name>Markdown All-in-One</name>
               <vendor>Tribus</vendor>
               <description>Comprehensive Markdown editing for PHPStorm</description>
             </plugin>
           </plugins>
-          EOF
-          echo "Generated updatePlugins.xml pointing to ${DOWNLOAD_URL}"
+          XMLEOF
+          # Strip leading whitespace from heredoc
+          sed -i 's/^          //' _site/updatePlugins.xml
+          echo "Generated updatePlugins.xml:"
           cat _site/updatePlugins.xml
 
       - name: Setup Pages
