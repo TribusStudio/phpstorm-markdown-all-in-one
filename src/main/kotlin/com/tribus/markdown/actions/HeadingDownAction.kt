@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.tribus.markdown.util.MarkdownFileUtil
 
-class HeadingDownAction : AnAction() {
+class HeadingDownAction : AnAction(), MarkdownAction {
 
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return

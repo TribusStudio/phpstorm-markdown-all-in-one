@@ -14,7 +14,7 @@ import com.tribus.markdown.util.MarkdownFormattingUtil.FormattingWrapper
  */
 open class BaseToggleFormattingAction(
     private val wrapper: FormattingWrapper
-) : AnAction() {
+) : AnAction(), MarkdownAction {
 
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return

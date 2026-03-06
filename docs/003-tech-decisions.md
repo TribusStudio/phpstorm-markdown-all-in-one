@@ -49,6 +49,13 @@
 - This means our plugin works whether the bundled Markdown plugin is enabled or disabled
 - Our `lang/` package contains `MarkdownLanguage`, `MarkdownFileType`, and `MarkdownIcons` classes reserved for future use when we implement our own full language support
 
+**Keyboard shortcut strategy:**
+- We use familiar shortcuts (Cmd+B for bold, Cmd+I for italic, etc.) that overlap with IDE builtins
+- All our actions implement the `MarkdownAction` marker interface
+- `MarkdownActionPromoter` (registered as an `actionPromoter` extension) reorders conflicting actions so ours take priority **only when editing markdown files**
+- In non-markdown files, the standard IDE actions (Go to Declaration, Find Implementations, etc.) work as normal
+- This is the standard IntelliJ Platform mechanism for context-aware shortcut resolution
+
 **Previous decision (superseded):** We originally depended on `org.intellij.plugins.markdown` to reuse its parser and file type. This was changed because it made us beholden to another plugin's implementation decisions and prevented us from controlling the full user experience.
 
 ## Testing: JUnit 5

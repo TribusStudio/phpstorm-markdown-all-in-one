@@ -4,7 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.tribus.markdown.util.MarkdownFileUtil
 
-class CreateTocAction : AnAction() {
+class CreateTocAction : AnAction(), MarkdownAction {
     override fun actionPerformed(e: AnActionEvent) {
         // TODO: Phase 3 implementation
     }

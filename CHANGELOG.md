@@ -7,14 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-03-06
+
+### Changed
+- Reverted from chord shortcuts to direct shortcuts (Cmd+B, Cmd+I, etc.) using `ActionPromoter` for context-aware conflict resolution
+
 ## [0.2.0] - 2026-03-06
 
 ### Changed
-- All keyboard shortcuts now use **chord prefix** (`Cmd+M` / `Ctrl+M`) to avoid conflicts with PHPStorm built-in keybindings
 - Standalone architecture — removed dependency on IntelliJ's bundled Markdown plugin
-- Task list toggle shortcut changed from `Alt+C` to `Cmd+M, X`
+- Shortcuts now use `ActionPromoter` for context-aware priority — our actions override IDE builtins only in markdown files, no conflicts in other file types
 
 ### Added
+- `MarkdownActionPromoter` — promotes plugin actions over IDE builtins when editing `.md` files
+- `MarkdownAction` marker interface for all plugin actions
+- Code span shortcut (`Cmd+`` ` ```) and code block shortcut (`Cmd+Shift+`` ` ```)
 - Version bump script (`scripts/bump-version.sh`) for SEMVER management
 - Versioning rule in CLAUDE.md
 

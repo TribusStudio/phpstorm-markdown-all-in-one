@@ -7,7 +7,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.util.TextRange
 import com.tribus.markdown.util.MarkdownFileUtil
 
-class ToggleTaskListAction : AnAction() {
+class ToggleTaskListAction : AnAction(), MarkdownAction {
 
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return

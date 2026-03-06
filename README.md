@@ -6,18 +6,18 @@ A comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by t
 
 ### Keyboard Shortcuts
 
-All shortcuts use a **chord** prefix (`Cmd+M` on macOS, `Ctrl+M` on Windows/Linux) to avoid conflicts with PHPStorm built-in keybindings. Press the prefix, release, then press the second key.
+Shortcuts automatically take priority over built-in IDE actions when editing markdown files via `ActionPromoter`. In non-markdown files, the standard IDE shortcuts work as normal.
 
 | Shortcut | Action |
 |----------|--------|
-| `Cmd+M, B` | Toggle **bold** |
-| `Cmd+M, I` | Toggle *italic* |
-| `Cmd+M, S` | Toggle ~~strikethrough~~ |
-| `Cmd+M, `` ` `` | Toggle `code span` |
-| `Cmd+M, C` | Toggle code block |
-| `Cmd+M, ]` | Increase heading level |
-| `Cmd+M, [` | Decrease heading level |
-| `Cmd+M, X` | Toggle task list checkbox |
+| `Cmd/Ctrl+B` | Toggle **bold** |
+| `Cmd/Ctrl+I` | Toggle *italic* |
+| `Alt+S` | Toggle ~~strikethrough~~ |
+| `Cmd/Ctrl+`` ` `` | Toggle `code span` |
+| `Cmd/Ctrl+Shift+`` ` `` | Toggle code block |
+| `Ctrl+Shift+]` | Increase heading level |
+| `Ctrl+Shift+[` | Decrease heading level |
+| `Alt+C` | Toggle task list checkbox |
 
 ### Smart List Editing
 - Auto-continue lists on Enter (unordered, ordered, task lists)
