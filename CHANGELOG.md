@@ -7,16 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-06
+
+### Changed
+- All keyboard shortcuts now use **chord prefix** (`Cmd+M` / `Ctrl+M`) to avoid conflicts with PHPStorm built-in keybindings
+- Standalone architecture — removed dependency on IntelliJ's bundled Markdown plugin
+- Task list toggle shortcut changed from `Alt+C` to `Cmd+M, X`
+
+### Added
+- Version bump script (`scripts/bump-version.sh`) for SEMVER management
+- Versioning rule in CLAUDE.md
+
+## [0.1.0] - 2026-03-06
+
 ### Added
 - Project scaffold with Gradle, IntelliJ Platform Gradle Plugin 2.11.0
 - Plugin descriptor (plugin.xml) with action registrations
-- Toggle Bold action (Cmd/Ctrl+B)
-- Toggle Italic action (Cmd/Ctrl+I)
-- Toggle Strikethrough action (Alt+S)
-- Toggle Code Span action
-- Toggle Code Block action
-- Heading level increase/decrease actions (Ctrl+Shift+]/[)
-- Task list checkbox toggle (Alt+C)
+- Toggle Bold, Italic, Strikethrough, Code Span, Code Block actions
+- Heading level increase/decrease actions
+- Task list checkbox toggle
 - Plugin settings page with formatting, list, TOC, and table options
 - Message bundle for i18n support
 - Unit tests for formatting utilities

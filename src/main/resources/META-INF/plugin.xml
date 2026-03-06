@@ -52,36 +52,42 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
 
             <!-- Formatting actions -->
+            <!-- Formatting: Cmd+M,B / Cmd+M,I / Cmd+M,S / Cmd+M,` / Cmd+M,C -->
+            <!-- Uses chord shortcuts (Cmd+M then key) to avoid conflicts with PHPStorm builtins -->
             <action id="com.tribus.markdown.actions.ToggleBold"
                     class="com.tribus.markdown.actions.ToggleBoldAction"
                     text="Toggle Bold"
                     description="Toggle bold formatting on selection">
-                <keyboard-shortcut keymap="$default" first-keystroke="meta B"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="B"/>
             </action>
 
             <action id="com.tribus.markdown.actions.ToggleItalic"
                     class="com.tribus.markdown.actions.ToggleItalicAction"
                     text="Toggle Italic"
                     description="Toggle italic formatting on selection">
-                <keyboard-shortcut keymap="$default" first-keystroke="meta I"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="I"/>
             </action>
 
             <action id="com.tribus.markdown.actions.ToggleStrikethrough"
                     class="com.tribus.markdown.actions.ToggleStrikethroughAction"
                     text="Toggle Strikethrough"
                     description="Toggle strikethrough formatting on selection">
-                <keyboard-shortcut keymap="$default" first-keystroke="alt S"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="S"/>
             </action>
 
             <action id="com.tribus.markdown.actions.ToggleCodeSpan"
                     class="com.tribus.markdown.actions.ToggleCodeSpanAction"
                     text="Toggle Code Span"
-                    description="Toggle inline code formatting on selection"/>
+                    description="Toggle inline code formatting on selection">
+                <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="BACK_QUOTE"/>
+            </action>
 
             <action id="com.tribus.markdown.actions.ToggleCodeBlock"
                     class="com.tribus.markdown.actions.ToggleCodeBlockAction"
                     text="Toggle Code Block"
-                    description="Toggle fenced code block on selection"/>
+                    description="Toggle fenced code block on selection">
+                <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="C"/>
+            </action>
 
             <separator/>
 
@@ -90,14 +96,14 @@
                     class="com.tribus.markdown.actions.HeadingUpAction"
                     text="Increase Heading Level"
                     description="Increase heading level (# to ##)">
-                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift CLOSE_BRACKET"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="CLOSE_BRACKET"/>
             </action>
 
             <action id="com.tribus.markdown.actions.HeadingDown"
                     class="com.tribus.markdown.actions.HeadingDownAction"
                     text="Decrease Heading Level"
                     description="Decrease heading level (## to #)">
-                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift OPEN_BRACKET"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="OPEN_BRACKET"/>
             </action>
 
             <separator/>
@@ -130,12 +136,12 @@
                     description="Export current markdown file to HTML"/>
         </group>
 
-        <!-- Task list toggle (standalone for keybinding) -->
+        <!-- Task list toggle: Cmd+M,X -->
         <action id="com.tribus.markdown.actions.ToggleTaskList"
                 class="com.tribus.markdown.actions.ToggleTaskListAction"
                 text="Toggle Task Checkbox"
                 description="Toggle task list checkbox state">
-            <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="meta M" second-keystroke="X"/>
         </action>
     </actions>
 </idea-plugin>

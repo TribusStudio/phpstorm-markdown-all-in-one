@@ -124,6 +124,16 @@ All builds run inside a Docker devcontainer. Use the `./dev` CLI from the host:
     ...
   ```
 
+## Versioning
+
+- **SEMVER** is enforced: every build that produces a distributable artifact MUST have a unique version
+- Before running `./dev package` or `./dev build` for distribution, bump the version using `./scripts/bump-version.sh [major|minor|patch]`
+  - `patch` — bug fixes, minor tweaks, no user-facing behavior change
+  - `minor` — new features, shortcut changes, user-facing improvements
+  - `major` — breaking changes, incompatible settings migration
+- The version lives in `gradle.properties` as `pluginVersion`
+- Update `CHANGELOG.md` with the new version section before committing
+
 ## Claude Workflow Preferences
 
 - **Automation:** Commits, pushes, docs, testing, and planning are all authorized for automation
