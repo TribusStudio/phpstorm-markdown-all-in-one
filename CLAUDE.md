@@ -10,6 +10,7 @@ This is a free, open-source PHPStorm plugin that provides a superior Markdown ed
 **Target IDE:** PHPStorm 2025.1+ (IntelliJ Platform 2025.1+)
 **Language:** Kotlin (with Kotlin 2.x as required by IntelliJ 2025.1+)
 **Build System:** Gradle with IntelliJ Platform Gradle Plugin 2.11.0
+**Architecture:** Standalone — NO dependency on IntelliJ's bundled Markdown plugin
 
 ## Tech Stack
 

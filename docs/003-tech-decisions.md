@@ -33,15 +33,23 @@
 - No need to support older versions for a new plugin
 - Current PHPStorm: 2025.3.3
 
-## Extending the Bundled Markdown Plugin
+## Standalone Plugin (No Dependency on Bundled Markdown)
 
-**Decision:** Depend on `org.intellij.plugins.markdown` (IntelliJ's bundled Markdown plugin) rather than building from scratch.
+**Decision:** Do NOT depend on `org.intellij.plugins.markdown`. Our plugin is fully standalone.
 
 **Rationale:**
-- The bundled plugin provides PSI tree, parsing, basic highlighting, and preview
-- We extend it with editor actions, smart editing, and productivity features
-- Avoids duplicating significant parser/renderer work
-- Users get our features on top of the existing Markdown support they already have
+- Full control over the editing experience — shortcuts, settings, behavior
+- No risk of the bundled plugin's updates breaking our features
+- True "All-in-One" — we own the entire experience
+- We can progressively add our own parsing, highlighting, and preview without conflicts
+
+**Coexistence strategy:**
+- We do NOT register our own Markdown file type (would conflict with the bundled plugin)
+- Instead, we detect `.md` files by extension and attach our actions/handlers regardless of which plugin owns the file type
+- This means our plugin works whether the bundled Markdown plugin is enabled or disabled
+- Our `lang/` package contains `MarkdownLanguage`, `MarkdownFileType`, and `MarkdownIcons` classes reserved for future use when we implement our own full language support
+
+**Previous decision (superseded):** We originally depended on `org.intellij.plugins.markdown` to reuse its parser and file type. This was changed because it made us beholden to another plugin's implementation decisions and prevented us from controlling the full user experience.
 
 ## Testing: JUnit 5
 

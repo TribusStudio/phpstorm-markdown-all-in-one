@@ -24,8 +24,6 @@ dependencies {
     intellijPlatform {
         phpstorm(providers.gradleProperty("platformVersion"))
 
-        bundledPlugin("org.intellij.plugins.markdown")
-
         pluginVerifier()
         zipSigner()
         testFramework(TestFrameworkType.Platform)
