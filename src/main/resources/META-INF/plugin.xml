@@ -23,12 +23,13 @@
     <depends>com.intellij.modules.platform</depends>
 
     <!-- Register shortcuts on editor component for markdown files.
+         EditorFactoryListener fires at editor creation time for reliable timing.
          Component-level shortcuts always override global keymap shortcuts,
          guaranteeing our actions fire instead of IDE builtins like GotoDeclaration. -->
-    <projectListeners>
+    <applicationListeners>
         <listener class="com.tribus.markdown.editor.MarkdownFileEditorListener"
-                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
-    </projectListeners>
+                  topic="com.intellij.openapi.editor.event.EditorFactoryListener"/>
+    </applicationListeners>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- File type and language support -->
@@ -83,14 +84,14 @@
                     class="com.tribus.markdown.actions.ToggleBoldAction"
                     text="Toggle Bold"
                     description="Toggle bold formatting on selection">
-                <keyboard-shortcut keymap="$default" first-keystroke="meta B"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl B"/>
             </action>
 
             <action id="com.tribus.markdown.actions.ToggleItalic"
                     class="com.tribus.markdown.actions.ToggleItalicAction"
                     text="Toggle Italic"
                     description="Toggle italic formatting on selection">
-                <keyboard-shortcut keymap="$default" first-keystroke="meta I"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl I"/>
             </action>
 
             <action id="com.tribus.markdown.actions.ToggleStrikethrough"
@@ -104,14 +105,14 @@
                     class="com.tribus.markdown.actions.ToggleCodeSpanAction"
                     text="Toggle Code Span"
                     description="Toggle inline code formatting on selection">
-                <keyboard-shortcut keymap="$default" first-keystroke="meta BACK_QUOTE"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl BACK_QUOTE"/>
             </action>
 
             <action id="com.tribus.markdown.actions.ToggleCodeBlock"
                     class="com.tribus.markdown.actions.ToggleCodeBlockAction"
                     text="Toggle Code Block"
                     description="Toggle fenced code block on selection">
-                <keyboard-shortcut keymap="$default" first-keystroke="meta shift BACK_QUOTE"/>
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift BACK_QUOTE"/>
             </action>
 
             <separator/>

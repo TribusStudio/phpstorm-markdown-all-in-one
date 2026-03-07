@@ -3,11 +3,10 @@ package com.tribus.markdown.editor
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.CustomShortcutSet
 import com.intellij.openapi.actionSystem.KeyboardShortcut
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.FileEditorManagerListener
-import com.intellij.openapi.fileEditor.TextEditor
+import com.intellij.openapi.editor.event.EditorFactoryEvent
+import com.intellij.openapi.editor.event.EditorFactoryListener
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.vfs.VirtualFile
 import com.tribus.markdown.util.MarkdownFileUtil
 import java.awt.Toolkit
 import java.awt.event.InputEvent
@@ -20,36 +19,38 @@ import javax.swing.KeyStroke
  * keymap shortcuts, which guarantees our actions fire instead of IDE builtins
  * like GotoDeclaration (Cmd+B) or Go to Implementation (Cmd+I).
  *
+ * Uses EditorFactoryListener (fires at editor creation) for reliable timing.
+ *
  * If the user has customized shortcuts in Settings > Keymap, those are used.
  * Otherwise, falls back to platform-aware defaults (Cmd on macOS, Ctrl on
  * Windows/Linux).
  */
-class MarkdownFileEditorListener : FileEditorManagerListener {
+class MarkdownFileEditorListener : EditorFactoryListener {
 
-    override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
+    override fun editorCreated(event: EditorFactoryEvent) {
+        val editor = event.editor
+        val document = editor.document
+        val file = FileDocumentManager.getInstance().getFile(document) ?: return
+
         if (!MarkdownFileUtil.isMarkdownFile(file)) return
 
         val actionManager = ActionManager.getInstance()
         val keymap = KeymapManager.getInstance()?.activeKeymap
+        val component = editor.contentComponent
 
-        for (fileEditor in source.getEditors(file)) {
-            val textEditor = fileEditor as? TextEditor ?: continue
-            val component = textEditor.editor.contentComponent
+        for ((actionId, defaultShortcut) in DEFAULT_SHORTCUTS) {
+            val action = actionManager.getAction(actionId) ?: continue
 
-            for ((actionId, defaultShortcut) in DEFAULT_SHORTCUTS) {
-                val action = actionManager.getAction(actionId) ?: continue
-
-                // Use keymap shortcuts if available (respects user customization),
-                // otherwise fall back to our platform-aware defaults
-                val keymapShortcuts = keymap?.getShortcuts(actionId)
-                val shortcutSet = if (keymapShortcuts != null && keymapShortcuts.isNotEmpty()) {
-                    CustomShortcutSet(*keymapShortcuts)
-                } else {
-                    defaultShortcut
-                }
-
-                action.registerCustomShortcutSet(shortcutSet, component)
+            // Use keymap shortcuts if available (respects user customization),
+            // otherwise fall back to our platform-aware defaults
+            val keymapShortcuts = keymap?.getShortcuts(actionId)
+            val shortcutSet = if (keymapShortcuts != null && keymapShortcuts.isNotEmpty()) {
+                CustomShortcutSet(*keymapShortcuts)
+            } else {
+                defaultShortcut
             }
+
+            action.registerCustomShortcutSet(shortcutSet, component)
         }
     }
 

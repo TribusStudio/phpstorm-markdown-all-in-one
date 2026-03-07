@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-03-06
+
+### Fixed
+- Keyboard shortcuts on macOS: changed plugin.xml keymap from `meta` to `ctrl` — IntelliJ's `$default` keymap auto-remaps `ctrl` to `Cmd` on Mac; using `meta` incorrectly mapped to `Ctrl`
+- Switched from `FileEditorManagerListener` to `EditorFactoryListener` for more reliable component-level shortcut registration timing
+
 ## [0.3.3] - 2026-03-06
 
 ### Fixed
