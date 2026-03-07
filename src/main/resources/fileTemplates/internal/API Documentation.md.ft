@@ -1,0 +1,65 @@
+# ${NAME}
+
+## Base URL
+
+```
+https://api.example.com/v1
+```
+
+## Authentication
+
+Describe authentication method (API key, OAuth, etc.)
+
+## Endpoints
+
+### GET /resource
+
+Retrieve a list of resources.
+
+**Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `limit` | integer | No | Max results (default: 20) |
+| `offset` | integer | No | Pagination offset |
+
+**Response:**
+
+```json
+{
+  "data": [],
+  "total": 0
+}
+```
+
+### POST /resource
+
+Create a new resource.
+
+**Request Body:**
+
+```json
+{
+  "name": "string",
+  "description": "string"
+}
+```
+
+**Response:**
+
+```json
+{
+  "id": "string",
+  "name": "string",
+  "created_at": "string"
+}
+```
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| 400 | Bad Request |
+| 401 | Unauthorized |
+| 404 | Not Found |
+| 500 | Internal Server Error |

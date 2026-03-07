@@ -67,6 +67,14 @@
 
         <backspaceHandlerDelegate
                 implementation="com.tribus.markdown.editor.MarkdownBackspaceHandler"/>
+
+        <!-- File templates for New > Markdown File -->
+        <internalFileTemplate name="Blank Markdown"/>
+        <internalFileTemplate name="README"/>
+        <internalFileTemplate name="Document"/>
+        <internalFileTemplate name="Meeting Notes"/>
+        <internalFileTemplate name="Changelog"/>
+        <internalFileTemplate name="API Documentation"/>
     </extensions>
 
     <actions>
@@ -186,5 +194,56 @@
                 description="Toggle task list checkbox state">
             <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
         </action>
+
+        <!-- New > Markdown File (with template chooser) -->
+        <action id="com.tribus.markdown.actions.CreateMarkdownFile"
+                class="com.tribus.markdown.actions.CreateMarkdownFileAction"
+                text="Markdown File"
+                description="Create a new Markdown file from template">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
+
+        <!-- Generate menu (Cmd+N / Alt+Insert in editor) -->
+        <group id="com.tribus.markdown.GenerateGroup"
+               text="Markdown"
+               description="Markdown generators"
+               popup="true">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+
+            <action id="com.tribus.markdown.generate.Table"
+                    class="com.tribus.markdown.actions.generate.GenerateTableAction"
+                    text="Table"
+                    description="Insert a GFM table"/>
+
+            <action id="com.tribus.markdown.generate.CodeBlock"
+                    class="com.tribus.markdown.actions.generate.GenerateCodeBlockAction"
+                    text="Code Block"
+                    description="Insert a fenced code block"/>
+
+            <action id="com.tribus.markdown.generate.Image"
+                    class="com.tribus.markdown.actions.generate.GenerateImageAction"
+                    text="Image"
+                    description="Insert an image tag"/>
+
+            <action id="com.tribus.markdown.generate.Footnote"
+                    class="com.tribus.markdown.actions.generate.GenerateFootnoteAction"
+                    text="Footnote"
+                    description="Insert a footnote reference and definition"/>
+
+            <action id="com.tribus.markdown.generate.LinkReference"
+                    class="com.tribus.markdown.actions.generate.GenerateLinkReferenceAction"
+                    text="Link Reference"
+                    description="Insert a reference-style link"/>
+
+            <action id="com.tribus.markdown.generate.FrontMatter"
+                    class="com.tribus.markdown.actions.generate.GenerateFrontMatterAction"
+                    text="Front Matter"
+                    description="Insert YAML front matter"/>
+
+            <action id="com.tribus.markdown.generate.TOC"
+                    class="com.tribus.markdown.actions.CreateTocAction"
+                    text="Table of Contents"
+                    description="Insert table of contents from headings"/>
+        </group>
     </actions>
 </idea-plugin>

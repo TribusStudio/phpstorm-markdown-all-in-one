@@ -6,7 +6,7 @@ A comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by t
 
 ### Keyboard Shortcuts
 
-Shortcuts automatically take priority over built-in IDE actions when editing markdown files via `ActionPromoter`. In non-markdown files, the standard IDE shortcuts work as normal.
+Shortcuts automatically take priority over built-in IDE actions when editing markdown files. In non-markdown files, the standard IDE shortcuts work as normal.
 
 | Shortcut | Action |
 |----------|--------|
@@ -20,6 +20,44 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 | `Cmd/Ctrl+]` | Indent list item |
 | `Cmd/Ctrl+[` | Outdent list item |
 | `Alt+C` | Toggle task list checkbox |
+
+### Selection Wrapping
+
+Select text and type any of these characters to wrap the selection:
+
+| Character | Result |
+|-----------|--------|
+| `*` | `*selection*` (italic) |
+| `~` | `~selection~` (strikethrough) |
+| `_` | `_selection_` (emphasis) |
+| `` ` `` | `` `selection` `` (code) |
+| `\|` | `\| selection \|` (table cell — smart: detects preceding pipe) |
+| `-` | Fills with dashes inside table cells (header borders) |
+
+### New File Templates
+
+Right-click a directory > **New > Markdown File** to create from a template:
+
+- **Blank** — empty file with a `# Title` heading
+- **README** — standard open-source README skeleton
+- **Document** — general document with author, date, sections
+- **Meeting Notes** — date, attendees, agenda, action items
+- **Changelog** — Keep a Changelog format
+- **API Documentation** — endpoint docs with request/response tables
+
+### Generate Menu (Cmd+N / Alt+Insert)
+
+Press `Cmd+N` (macOS) or `Alt+Insert` (Windows/Linux) while editing a markdown file to access the **Markdown** generate submenu:
+
+- **Table** — prompts for column count, inserts a GFM table skeleton
+- **Code Block** — prompts for language, inserts a fenced code block
+- **Image** — inserts `![alt](path)` (uses selected text as alt text)
+- **Footnote** — inserts `[^n]` reference at cursor and definition at end of file
+- **Link Reference** — inserts `[text][ref]` and appends `[ref]: url` definition
+- **Front Matter** — inserts YAML front matter at the top of the document
+- **Table of Contents** — generates TOC from existing headings
+
+> **Note:** `Cmd+N` in the editor opens the **Generate** popup, not the **New File** dialog. This is standard PHPStorm behavior. To create a new file, use `Cmd+N` in the **Project panel** (click the project tree first), or right-click > New > Markdown File. If you prefer `Cmd+N` to always open the New File dialog, you can rebind it in **Settings > Keymap**: search for "Generate" and remove/change its shortcut, then assign `Cmd+N` to "New..." instead.
 
 ### Syntax Highlighting
 - Headings, code blocks, inline code, blockquotes, list markers, horizontal rules

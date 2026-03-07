@@ -1,0 +1,36 @@
+# ${NAME}
+
+**Date:** ${DATE}
+**Attendees:**
+
+- Name 1
+- Name 2
+
+## Agenda
+
+1. Topic 1
+2. Topic 2
+3. Topic 3
+
+## Discussion
+
+### Topic 1
+
+Notes here.
+
+### Topic 2
+
+Notes here.
+
+## Action Items
+
+- [ ] Action item 1 — @owner
+- [ ] Action item 2 — @owner
+- [ ] Action item 3 — @owner
+
+## Next Meeting
+
+**Date:** TBD
+**Topics:**
+
+-
