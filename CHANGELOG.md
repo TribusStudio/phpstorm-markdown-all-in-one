@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-03-06
+
+### Changed
+- Selection wrapping now uses Swing InputMap/ActionMap with KEY_TYPED keystrokes instead of TypedHandlerDelegate — registers directly on the editor component for reliable character interception
+- Wrapping characters: `*`, `~`, `_`, `` ` ``, `|`, `-`
+
 ## [0.4.2] - 2026-03-06
 
 ### Fixed

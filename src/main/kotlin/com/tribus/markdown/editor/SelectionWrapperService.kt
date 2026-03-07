@@ -1,169 +1,146 @@
 package com.tribus.markdown.editor
 
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
+import java.awt.event.ActionEvent
+import javax.swing.AbstractAction
+import javax.swing.JComponent
+import javax.swing.KeyStroke
 
 /**
- * Dispatches typed characters to selection wrapper strategies when text is
- * selected in a markdown editor. Each wrapper handles a specific character
- * with contextual markdown-aware behavior.
+ * Registers selection-aware character wrapping directly on the editor component
+ * via Swing's InputMap/ActionMap. When text is selected and a trigger character
+ * is typed, it wraps or transforms the selection instead of replacing it.
  *
- * Returns true if the character was handled (caller should consume the event).
+ * Uses KEY_TYPED keystrokes which fire for plain characters (*, ~, _, |, -).
+ * This is lower-level than IntelliJ's action system (which uses KEY_PRESSED)
+ * and reliably intercepts typed characters before the editor processes them.
+ *
+ * When no text is selected, the binding is a no-op and the character types
+ * normally via the WHEN_ANCESTOR_OF_FOCUSED_COMPONENT fallback.
  */
 object SelectionWrapperService {
 
-    private val wrappers: Map<Char, SelectionWrapper> = mapOf(
-        '*' to AsteriskWrapper,
-        '|' to PipeWrapper,
-        '-' to DashWrapper,
-        '`' to SimpleSymmetricWrapper('`'),
-        '~' to SimpleSymmetricWrapper('~'),
-        '_' to SimpleSymmetricWrapper('_'),
+    private val WRAPPER_CHARS = mapOf(
+        '*' to WrapSpec.Symmetric("*"),
+        '~' to WrapSpec.Symmetric("~"),
+        '_' to WrapSpec.Symmetric("_"),
+        '`' to WrapSpec.Symmetric("`"),
+        '|' to WrapSpec.Pipe,
+        '-' to WrapSpec.Dash,
     )
 
-    fun handleIfSelected(c: Char, editor: Editor): Boolean {
-        val selectionModel = editor.selectionModel
-        if (!selectionModel.hasSelection()) return false
+    /**
+     * Registers KEY_TYPED bindings on the editor component for all wrapper characters.
+     * Must be called when a markdown editor is created.
+     */
+    fun registerOn(editor: Editor) {
+        val component = editor.contentComponent
+        val inputMap = component.getInputMap(JComponent.WHEN_FOCUSED)
+        val actionMap = component.actionMap
 
-        val wrapper = wrappers[c] ?: return false
-        return wrapper.wrap(editor)
-    }
-}
+        for ((char, spec) in WRAPPER_CHARS) {
+            val keyStroke = KeyStroke.getKeyStroke(char)
+            val actionKey = "markdown-wrap-selection-$char"
 
-/**
- * Strategy interface for selection wrapping. Each implementation handles
- * a specific trigger character with its own contextual logic.
- */
-interface SelectionWrapper {
-    fun wrap(editor: Editor): Boolean
-}
-
-/**
- * Wraps selection symmetrically with a single character: c + selection + c
- * Used for *, `, ~, _
- */
-class SimpleSymmetricWrapper(private val c: Char) : SelectionWrapper {
-    override fun wrap(editor: Editor): Boolean {
-        val selectionModel = editor.selectionModel
-        val selectedText = selectionModel.selectedText ?: return false
-        val start = selectionModel.selectionStart
-        val end = selectionModel.selectionEnd
-
-        val replacement = "$c$selectedText$c"
-        editor.document.replaceString(start, end, replacement)
-        // Place caret after the closing wrapper char
-        editor.caretModel.moveToOffset(start + replacement.length)
-        selectionModel.removeSelection()
-        return true
-    }
-}
-
-/**
- * Asterisk wrapper: wraps selection with * for italic-style formatting.
- * Identical to SimpleSymmetricWrapper('*') but exists as a named object
- * for clarity and potential future enhancement (e.g., double-* detection).
- */
-object AsteriskWrapper : SelectionWrapper {
-    override fun wrap(editor: Editor): Boolean {
-        val selectionModel = editor.selectionModel
-        val selectedText = selectionModel.selectedText ?: return false
-        val start = selectionModel.selectionStart
-        val end = selectionModel.selectionEnd
-
-        val replacement = "*${selectedText}*"
-        editor.document.replaceString(start, end, replacement)
-        editor.caretModel.moveToOffset(start + replacement.length)
-        selectionModel.removeSelection()
-        return true
-    }
-}
-
-/**
- * Pipe wrapper for table cell creation:
- * - If no pipe before selection: wraps as "| selection |"
- * - If pipe already exists before selection: only adds closing " |"
- * Adds spaces between pipes and content for legibility.
- */
-object PipeWrapper : SelectionWrapper {
-    override fun wrap(editor: Editor): Boolean {
-        val selectionModel = editor.selectionModel
-        val selectedText = selectionModel.selectedText ?: return false
-        val start = selectionModel.selectionStart
-        val end = selectionModel.selectionEnd
-        val docText = editor.document.charsSequence
-
-        // Look backwards from selection start for an existing pipe
-        val hasPipeBefore = hasPrecedingPipe(docText, start)
-
-        val replacement = if (hasPipeBefore) {
-            // Pipe already before — just add closing pipe with space
-            "${selectedText} |"
-        } else {
-            // No pipe — wrap fully as a table cell
-            "| ${selectedText} |"
+            inputMap.put(keyStroke, actionKey)
+            actionMap.put(actionKey, WrapAction(editor, char, spec))
         }
-
-        editor.document.replaceString(start, end, replacement)
-        editor.caretModel.moveToOffset(start + replacement.length)
-        selectionModel.removeSelection()
-        return true
     }
 
     /**
-     * Checks if there's a pipe character before the selection start,
-     * ignoring only whitespace between the pipe and the selection.
+     * Swing action that wraps the selection when triggered by a KEY_TYPED event.
+     * If no selection exists, does nothing — Swing falls through to default typing.
      */
-    private fun hasPrecedingPipe(text: CharSequence, selectionStart: Int): Boolean {
-        var i = selectionStart - 1
-        // Skip whitespace
-        while (i >= 0 && text[i] == ' ') i--
-        return i >= 0 && text[i] == '|'
+    private class WrapAction(
+        private val editor: Editor,
+        private val char: Char,
+        private val spec: WrapSpec
+    ) : AbstractAction() {
+
+        override fun actionPerformed(e: ActionEvent) {
+            val selectionModel = editor.selectionModel
+            if (!selectionModel.hasSelection()) {
+                // No selection — insert the character normally
+                val project = editor.project
+                WriteCommandAction.runWriteCommandAction(project) {
+                    editor.document.insertString(editor.caretModel.offset, char.toString())
+                    editor.caretModel.moveToOffset(editor.caretModel.offset + 1)
+                }
+                return
+            }
+
+            val project = editor.project ?: return
+            WriteCommandAction.runWriteCommandAction(project) {
+                val selectedText = selectionModel.selectedText ?: return@runWriteCommandAction
+                val start = selectionModel.selectionStart
+                val end = selectionModel.selectionEnd
+                val docText = editor.document.charsSequence
+
+                val replacement = spec.transform(selectedText, docText, start, end)
+                editor.document.replaceString(start, end, replacement)
+                editor.caretModel.moveToOffset(start + replacement.length)
+                selectionModel.removeSelection()
+            }
+        }
     }
-}
 
-/**
- * Dash wrapper for table header borders:
- * - When inside a table cell (between pipes), replaces the selected text
- *   with dashes of exactly the same length, preserving the cell width.
- * - Outside a table context, wraps symmetrically: - selection -
- */
-object DashWrapper : SelectionWrapper {
-    override fun wrap(editor: Editor): Boolean {
-        val selectionModel = editor.selectionModel
-        val selectedText = selectionModel.selectedText ?: return false
-        val start = selectionModel.selectionStart
-        val end = selectionModel.selectionEnd
+    sealed class WrapSpec {
+        abstract fun transform(selected: String, docText: CharSequence, start: Int, end: Int): String
 
-        val replacement = if (isInsideTableCell(editor.document.charsSequence, start, end)) {
-            // Fill the selected region with dashes (preserves cell width)
-            "-".repeat(selectedText.length)
-        } else {
-            // Outside table context: simple symmetric wrap
-            "-${selectedText}-"
+        /**
+         * Wraps selection symmetrically: marker + selection + marker
+         */
+        class Symmetric(private val marker: String) : WrapSpec() {
+            override fun transform(selected: String, docText: CharSequence, start: Int, end: Int): String {
+                return "$marker$selected$marker"
+            }
         }
 
-        editor.document.replaceString(start, end, replacement)
-        editor.caretModel.moveToOffset(start + replacement.length)
-        selectionModel.removeSelection()
-        return true
-    }
+        /**
+         * Pipe wrapper for table cell creation:
+         * - If no pipe before selection: wraps as "| selection |"
+         * - If pipe already exists before selection: only adds closing " |"
+         */
+        object Pipe : WrapSpec() {
+            override fun transform(selected: String, docText: CharSequence, start: Int, end: Int): String {
+                return if (hasPrecedingPipe(docText, start)) {
+                    "$selected |"
+                } else {
+                    "| $selected |"
+                }
+            }
 
-    /**
-     * Checks if the selection is between two pipe characters on the same line,
-     * indicating we're inside a table cell.
-     */
-    private fun isInsideTableCell(text: CharSequence, selStart: Int, selEnd: Int): Boolean {
-        // Find the start of the current line
-        var lineStart = selStart
-        while (lineStart > 0 && text[lineStart - 1] != '\n') lineStart--
+            private fun hasPrecedingPipe(text: CharSequence, selectionStart: Int): Boolean {
+                var i = selectionStart - 1
+                while (i >= 0 && text[i] == ' ') i--
+                return i >= 0 && text[i] == '|'
+            }
+        }
 
-        // Find the end of the current line
-        var lineEnd = selEnd
-        while (lineEnd < text.length && text[lineEnd] != '\n') lineEnd++
+        /**
+         * Dash wrapper for table header borders:
+         * - Inside a table cell (between pipes): fills with dashes of same length
+         * - Outside table context: wraps symmetrically with dashes
+         */
+        object Dash : WrapSpec() {
+            override fun transform(selected: String, docText: CharSequence, start: Int, end: Int): String {
+                return if (isInsideTableCell(docText, start, end)) {
+                    "-".repeat(selected.length)
+                } else {
+                    "-$selected-"
+                }
+            }
 
-        // Look for a pipe before the selection on this line
-        val beforeSel = text.subSequence(lineStart, selStart)
-        val afterSel = text.subSequence(selEnd, lineEnd)
-
-        return beforeSel.contains('|') && afterSel.contains('|')
+            private fun isInsideTableCell(text: CharSequence, selStart: Int, selEnd: Int): Boolean {
+                var lineStart = selStart
+                while (lineStart > 0 && text[lineStart - 1] != '\n') lineStart--
+                var lineEnd = selEnd
+                while (lineEnd < text.length && text[lineEnd] != '\n') lineEnd++
+                val beforeSel = text.subSequence(lineStart, selStart)
+                val afterSel = text.subSequence(selEnd, lineEnd)
+                return beforeSel.contains('|') && afterSel.contains('|')
+            }
+        }
     }
 }
