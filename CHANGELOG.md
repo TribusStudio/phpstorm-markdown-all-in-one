@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-03-07
+
+### Added
+- **New File templates** — right-click > New > Markdown File with template chooser (Blank, README, Document, Meeting Notes, Changelog, API Documentation)
+- **Generate menu** — `Cmd+N` / `Alt+Insert` in editor shows Markdown submenu with: Table, Code Block, Image, Footnote, Link Reference, Front Matter, Table of Contents
+- **List indent/outdent** — `Cmd+]` / `Cmd+[` (macOS) or `Ctrl+]` / `Ctrl+[` (Win/Linux)
+- Release notes now include commit log since previous tag
+
 ## [0.6.0] - 2026-03-07
 
 ### Added
