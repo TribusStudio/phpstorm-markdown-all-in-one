@@ -35,12 +35,72 @@ dependencies {
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.11.4")
 }
 
+/**
+ * Extract the current version's section from CHANGELOG.md and convert to HTML
+ * for the "What's New" tab in the plugin dialog.
+ */
+fun extractChangeNotes(): String {
+    val changelog = file("CHANGELOG.md")
+    val repoUrl = "https://github.com/TribusStudio/phpstorm-markdown-all-in-one"
+    val footer = """<p><a href="$repoUrl">Full documentation on GitHub</a></p>"""
+
+    if (!changelog.exists()) return "<p>See <a href=\"$repoUrl\">GitHub</a> for details.</p>"
+
+    val pluginVersion = providers.gradleProperty("pluginVersion").get()
+    val lines = changelog.readLines()
+    val section = mutableListOf<String>()
+    var capturing = false
+
+    for (line in lines) {
+        if (line.startsWith("## ") && line.contains("[$pluginVersion]")) {
+            capturing = true
+            continue
+        }
+        if (capturing && line.startsWith("## ")) break
+        if (capturing) section.add(line)
+    }
+
+    if (section.isEmpty()) return "<p>Version $pluginVersion</p>$footer"
+
+    // Convert the markdown section to HTML
+    val html = StringBuilder()
+    var inList = false
+
+    for (line in section) {
+        when {
+            line.startsWith("### ") -> {
+                if (inList) { html.append("</ul>"); inList = false }
+                html.append("<h3>${line.removePrefix("### ")}</h3>")
+            }
+            line.startsWith("- ") -> {
+                if (!inList) { html.append("<ul>"); inList = true }
+                val content = line.removePrefix("- ")
+                    .replace(Regex("\\*\\*(.+?)\\*\\*"), "<b>$1</b>")
+                    .replace(Regex("`(.+?)`"), "<code>$1</code>")
+                html.append("<li>$content</li>")
+            }
+            line.isBlank() -> {}
+            else -> {
+                if (inList) { html.append("</ul>"); inList = false }
+                val content = line
+                    .replace(Regex("\\*\\*(.+?)\\*\\*"), "<b>$1</b>")
+                    .replace(Regex("`(.+?)`"), "<code>$1</code>")
+                html.append("<p>$content</p>")
+            }
+        }
+    }
+    if (inList) html.append("</ul>")
+
+    return "$html$footer"
+}
+
 intellijPlatform {
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
         ideaVersion {
             sinceBuild = "251"
         }
+        changeNotes = provider { extractChangeNotes() }
     }
 
     signing {
