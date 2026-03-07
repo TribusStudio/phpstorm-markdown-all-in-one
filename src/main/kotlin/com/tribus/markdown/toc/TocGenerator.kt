@@ -21,12 +21,11 @@ object TocGenerator {
     /**
      * Generate TOC text from document content.
      */
-    fun generate(documentText: String): String {
-        val settings = MarkdownSettings.getInstance()
-        val state = settings.state
+    fun generate(documentText: String, state: MarkdownSettings.State? = null): String {
+        val resolvedState = state ?: MarkdownSettings.getInstance().state
 
         val headings = HeadingExtractor.extract(documentText)
-        return generateFromHeadings(headings, state)
+        return generateFromHeadings(headings, resolvedState)
     }
 
     /**
@@ -66,8 +65,8 @@ object TocGenerator {
     /**
      * Generate TOC with surrounding markers.
      */
-    fun generateWithMarkers(documentText: String): String {
-        val toc = generate(documentText)
+    fun generateWithMarkers(documentText: String, state: MarkdownSettings.State? = null): String {
+        val toc = generate(documentText, state)
         if (toc.isEmpty()) return "$TOC_START\n$TOC_END"
         return "$TOC_START\n$toc\n$TOC_END"
     }
@@ -103,9 +102,9 @@ object TocGenerator {
      * Update existing TOC or return null if no TOC region found.
      * Returns the new document text if updated, null otherwise.
      */
-    fun updateExistingToc(documentText: String): String? {
+    fun updateExistingToc(documentText: String, state: MarkdownSettings.State? = null): String? {
         val range = findTocRange(documentText) ?: return null
-        val newToc = generateWithMarkers(documentText)
+        val newToc = generateWithMarkers(documentText, state)
         val before = documentText.substring(0, range.startOffset)
         val after = if (range.endOffset < documentText.length) {
             documentText.substring(range.endOffset)

@@ -185,7 +185,7 @@ class TocGeneratorTest {
 
             ## New Heading
         """.trimIndent()
-        val updated = TocGenerator.updateExistingToc(text)
+        val updated = TocGenerator.updateExistingToc(text, MarkdownSettings.State())
         assertNotNull(updated)
         assert(updated!!.contains("New Heading"))
         assert(updated.contains("<!-- TOC -->"))
@@ -194,7 +194,7 @@ class TocGeneratorTest {
 
     @Test
     fun `updateExistingToc returns null when no TOC`() {
-        assertNull(TocGenerator.updateExistingToc("# Title\n\nNo TOC here"))
+        assertNull(TocGenerator.updateExistingToc("# Title\n\nNo TOC here", MarkdownSettings.State()))
     }
 
     // Section numbers
@@ -219,7 +219,7 @@ class TocGeneratorTest {
     @Test
     fun `generateWithMarkers wraps TOC`() {
         val text = "# Hello\n## World"
-        val result = TocGenerator.generateWithMarkers(text)
+        val result = TocGenerator.generateWithMarkers(text, MarkdownSettings.State())
         assert(result.startsWith("<!-- TOC -->"))
         assert(result.endsWith("<!-- /TOC -->"))
         assert(result.contains("[Hello]"))
@@ -228,7 +228,7 @@ class TocGeneratorTest {
 
     @Test
     fun `generateWithMarkers empty document`() {
-        val result = TocGenerator.generateWithMarkers("No headings here")
+        val result = TocGenerator.generateWithMarkers("No headings here", MarkdownSettings.State())
         assertEquals("<!-- TOC -->\n<!-- /TOC -->", result)
     }
 
