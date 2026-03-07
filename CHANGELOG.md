@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-03-07
+
+### Added
+- **Smart Enter key** — auto-continues unordered lists (`-`, `+`, `*`), ordered lists (`1.`, `2)`), task lists (`- [ ]`, `- [x]`), and blockquotes (`> `)
+- **Empty list item handling** — pressing Enter on an empty list item outdents (if indented) or removes the marker (if top-level); task checkboxes are removed first
+- **Smart Backspace** — outdents indented list markers, replaces top-level markers with spaces, removes task checkboxes
+- Ordered list continuation auto-increments the marker number
+- Task list continuation resets checkbox to unchecked (`[ ]`)
+
 ## [0.5.1] - 2026-03-06
 
 ### Fixed

@@ -1,6 +1,6 @@
 # Markdown All-in-One for PHPStorm — Development Roadmap
 
-## Phase 1: Foundation (MVP)
+## Phase 1: Foundation (MVP) ✅
 Core plugin infrastructure and basic formatting actions.
 
 - [x] Project scaffold (Gradle, plugin.xml, build config)
@@ -16,18 +16,29 @@ Core plugin infrastructure and basic formatting actions.
 - [x] Task list checkbox toggle (`Alt+C`)
 - [x] Unit tests for formatting utilities
 - [x] Integration tests with editor fixtures (BasePlatformTestCase)
-- [x] Verify build compiles and passes in devcontainer (47 tests, 0 failures)
+- [x] Verify build compiles and passes in devcontainer
+- [x] Own file type registration (MarkdownAIO) — full language stack with lexer, parser, highlighter, annotator
+- [x] Keyboard shortcuts override IDE builtins via component-level registration (EditorFactoryListener)
+- [x] Selection wrapping — type `*`, `~`, `_`, `` ` ``, `|`, `-` with text selected to wrap contextually
+- [x] Pipe wrapper creates table cells (`| text |`) with smart preceding-pipe detection
+- [x] Dash wrapper fills with dashes inside table cells for header border generation
+- [x] GitHub Actions CI/CD pipeline with auto-release and custom plugin repository (updatePlugins.xml)
+- [x] Version bump script (`scripts/bump-version.sh`)
 
-## Phase 2: Smart List Editing
+## Phase 2: Smart List Editing ← CURRENT
 Context-aware list editing behavior.
 
-- [ ] Smart Enter key — auto-continue lists (unordered, ordered, task)
-- [ ] Smart Enter — auto-continue blockquotes
-- [ ] Smart Enter — remove empty list item on double-enter
-- [ ] Tab/Shift+Tab — indent/outdent list items
-- [ ] Smart Backspace — remove empty list markers
-- [ ] Ordered list auto-renumbering
-- [ ] Adaptive indentation (CommonMark-aware)
+- [ ] Smart Enter — auto-continue unordered lists (`-`, `+`, `*`)
+- [ ] Smart Enter — auto-continue ordered lists (`1.`, `2)`)
+- [ ] Smart Enter — auto-continue task lists (`- [ ]`, `- [x]`)
+- [ ] Smart Enter — auto-continue blockquotes (`> `)
+- [ ] Smart Enter — remove empty list item on double-enter (outdent or delete marker)
+- [ ] Tab — indent list items
+- [ ] Shift+Tab — outdent list items
+- [ ] Smart Backspace — outdent indented list markers
+- [ ] Smart Backspace — delete top-level list markers (replace with whitespace)
+- [ ] Smart Backspace — remove task list checkbox
+- [ ] Ordered list auto-renumbering after enter/indent/outdent
 - [ ] Tests for all list editing scenarios
 
 ## Phase 3: Table of Contents
