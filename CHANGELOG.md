@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0] - 2026-03-06
+## [0.5.1] - 2026-03-06
+
+### Fixed
+- Selection wrapping now uses `beforeSelectionRemoved` (not `beforeCharTyped`) — the selection is deleted before `beforeCharTyped` fires, which is why all previous approaches silently failed
+- Follows the same proven pattern as the AsciiDoc IntelliJ plugin's `FormattingQuotedTypedHandler`
+- Respects IDE Smart Keys setting ("Surround selection on typing quote or brace")
+- Preserves selection direction (LTR/RTL) and sticky selection state after wrapping
 
 ### Changed
-- Selection wrapping now uses Swing InputMap/ActionMap with KEY_TYPED keystrokes instead of TypedHandlerDelegate — registers directly on the editor component for reliable character interception
+- Removed Swing InputMap/ActionMap approach (unnecessary with correct delegate method)
 - Wrapping characters: `*`, `~`, `_`, `` ` ``, `|`, `-`
 
 ## [0.4.2] - 2026-03-06

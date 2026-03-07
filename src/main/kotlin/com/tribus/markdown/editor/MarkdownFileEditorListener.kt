@@ -52,10 +52,6 @@ class MarkdownFileEditorListener : EditorFactoryListener {
 
             action.registerCustomShortcutSet(shortcutSet, component)
         }
-
-        // Register selection-aware character wrapping (*, ~, _, `, |, -)
-        // via Swing InputMap/ActionMap for KEY_TYPED interception
-        SelectionWrapperService.registerOn(editor)
     }
 
     companion object {
