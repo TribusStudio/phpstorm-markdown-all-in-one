@@ -7,12 +7,13 @@ import com.intellij.ui.dsl.builder.*
 class MarkdownSettingsConfigurable : Configurable {
 
     private var panel: DialogPanel? = null
+    private var state = MarkdownSettings.State()
     private val settings get() = MarkdownSettings.getInstance()
 
     override fun getDisplayName(): String = "Markdown All-in-One"
 
     override fun createComponent(): DialogPanel {
-        val state = settings.state.copy()
+        state = settings.state.copy()
 
         panel = panel {
             group("Formatting") {
@@ -91,6 +92,7 @@ class MarkdownSettingsConfigurable : Configurable {
 
     override fun apply() {
         panel?.apply()
+        settings.loadState(state)
     }
 
     override fun reset() {

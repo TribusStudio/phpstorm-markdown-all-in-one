@@ -180,6 +180,110 @@ class HeadingExtractorTest {
         assertTrue(headings[1].canInToc)
     }
 
+    // Omit range tests
+
+    @Test
+    fun `omit range excludes headings between start and end markers`() {
+        val text = """
+            # Visible Before
+            <!-- omit from toc start -->
+            ## Hidden One
+            ## Hidden Two
+            <!-- omit from toc end -->
+            # Visible After
+        """.trimIndent()
+        val headings = HeadingExtractor.extract(text)
+        assertEquals(4, headings.size)
+        assertTrue(headings[0].canInToc)
+        assertFalse(headings[1].canInToc)
+        assertFalse(headings[2].canInToc)
+        assertTrue(headings[3].canInToc)
+    }
+
+    @Test
+    fun `omit range works with 'omit in toc' variant`() {
+        val text = """
+            # Before
+            <!-- omit in toc start -->
+            ## Hidden
+            <!-- omit in toc end -->
+            # After
+        """.trimIndent()
+        val headings = HeadingExtractor.extract(text)
+        assertEquals(3, headings.size)
+        assertTrue(headings[0].canInToc)
+        assertFalse(headings[1].canInToc)
+        assertTrue(headings[2].canInToc)
+    }
+
+    @Test
+    fun `omit range is case insensitive`() {
+        val text = """
+            <!-- OMIT FROM TOC START -->
+            ## Hidden
+            <!-- OMIT FROM TOC END -->
+        """.trimIndent()
+        val headings = HeadingExtractor.extract(text)
+        assertEquals(1, headings.size)
+        assertFalse(headings[0].canInToc)
+    }
+
+    @Test
+    fun `omit range with setext headings`() {
+        val text = """
+            Visible
+            =======
+            <!-- omit from toc start -->
+            Hidden Setext
+            -------------
+            <!-- omit from toc end -->
+            Also Visible
+            ============
+        """.trimIndent()
+        val headings = HeadingExtractor.extract(text)
+        assertEquals(3, headings.size)
+        assertTrue(headings[0].canInToc)
+        assertFalse(headings[1].canInToc)
+        assertTrue(headings[2].canInToc)
+    }
+
+    @Test
+    fun `multiple omit ranges`() {
+        val text = """
+            # Visible 1
+            <!-- omit from toc start -->
+            ## Hidden 1
+            <!-- omit from toc end -->
+            # Visible 2
+            <!-- omit from toc start -->
+            ## Hidden 2
+            <!-- omit from toc end -->
+            # Visible 3
+        """.trimIndent()
+        val headings = HeadingExtractor.extract(text)
+        assertEquals(5, headings.size)
+        assertTrue(headings[0].canInToc)
+        assertFalse(headings[1].canInToc)
+        assertTrue(headings[2].canInToc)
+        assertFalse(headings[3].canInToc)
+        assertTrue(headings[4].canInToc)
+    }
+
+    @Test
+    fun `unclosed omit range excludes rest of document`() {
+        val text = """
+            # Visible
+            <!-- omit from toc start -->
+            ## Hidden 1
+            ## Hidden 2
+        """.trimIndent()
+        val headings = HeadingExtractor.extract(text)
+        assertEquals(3, headings.size)
+        assertTrue(headings[0].canInToc)
+        assertFalse(headings[1].canInToc)
+        assertFalse(headings[2].canInToc)
+    }
+
     @Test
     fun `extracts setext headings`() {
         val text = """

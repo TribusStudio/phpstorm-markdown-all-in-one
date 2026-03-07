@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-03-07
+
+### Added
+- **TOC omit range markers** — `<!-- omit from toc start -->` / `<!-- omit from toc end -->` to exclude entire sections of headings from the TOC (also supports `omit in toc` variant, case-insensitive)
+
+### Fixed
+- **Settings not saving** — clicking Apply/OK in the settings dialog now correctly persists values (bold indicator, TOC levels, etc.)
+- **CI test failures** — `TocGenerator.generateWithMarkers()` and `updateExistingToc()` no longer NPE in environments without IntelliJ application context
+
 ## [0.8.0] - 2026-03-07
 
 ### Added

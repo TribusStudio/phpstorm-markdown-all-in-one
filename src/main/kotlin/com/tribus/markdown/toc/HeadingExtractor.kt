@@ -2,7 +2,7 @@ package com.tribus.markdown.toc
 
 /**
  * Extracts headings from markdown document text, skipping code blocks,
- * front matter, and HTML comments. Supports omit markers.
+ * front matter, and HTML comments. Supports omit markers (single and range).
  */
 object HeadingExtractor {
 
@@ -32,8 +32,12 @@ object HeadingExtractor {
     private val HTML_COMMENT_OPEN = Regex("^\\s{0,3}<!--")
     private val HTML_COMMENT_CLOSE = Regex("-->")
 
-    // Omit from TOC marker
+    // Omit from TOC marker (single heading)
     private val OMIT_MARKER = Regex("<!--\\s*omit\\s+(in|from)\\s+toc\\s*-->", RegexOption.IGNORE_CASE)
+
+    // Omit from TOC range markers (start/end pair, must be on own line)
+    private val OMIT_RANGE_START = Regex("^\\s{0,3}<!--\\s*omit\\s+(in|from)\\s+toc\\s+start\\s*-->\\s*$", RegexOption.IGNORE_CASE)
+    private val OMIT_RANGE_END = Regex("^\\s{0,3}<!--\\s*omit\\s+(in|from)\\s+toc\\s+end\\s*-->\\s*$", RegexOption.IGNORE_CASE)
 
     /**
      * Extract all headings from the given markdown text.
@@ -48,6 +52,7 @@ object HeadingExtractor {
         var fenceChar = ' '
         var fenceLength = 0
         var inHtmlComment = false
+        var inOmitRange = false
         var prevLineOmit = false
         var prevLineText: String? = null
         var prevLineNumber = -1
@@ -75,21 +80,6 @@ object HeadingExtractor {
                 continue
             }
 
-            // Check for single-line HTML comment
-            val singleComment = HTML_COMMENT_SINGLE.matchEntire(line)
-            if (singleComment != null) {
-                prevLineOmit = OMIT_MARKER.containsMatchIn(line)
-                prevLineText = null
-                prevLineNumber = -1
-                continue
-            }
-
-            // Check for multi-line HTML comment open
-            if (HTML_COMMENT_OPEN.containsMatchIn(line) && !HTML_COMMENT_CLOSE.containsMatchIn(line)) {
-                inHtmlComment = true
-                continue
-            }
-
             // Handle fenced code blocks
             if (inCodeFence) {
                 val closeMatch = FENCE_OPEN.find(line)
@@ -102,6 +92,35 @@ object HeadingExtractor {
                 }
                 prevLineText = null
                 prevLineNumber = -1
+                continue
+            }
+
+            // Check for omit range markers (before single-comment handling so they take priority)
+            if (OMIT_RANGE_START.matches(line)) {
+                inOmitRange = true
+                prevLineText = null
+                prevLineNumber = -1
+                continue
+            }
+            if (OMIT_RANGE_END.matches(line)) {
+                inOmitRange = false
+                prevLineText = null
+                prevLineNumber = -1
+                continue
+            }
+
+            // Check for single-line HTML comment
+            val singleComment = HTML_COMMENT_SINGLE.matchEntire(line)
+            if (singleComment != null) {
+                prevLineOmit = OMIT_MARKER.containsMatchIn(line)
+                prevLineText = null
+                prevLineNumber = -1
+                continue
+            }
+
+            // Check for multi-line HTML comment open
+            if (HTML_COMMENT_OPEN.containsMatchIn(line) && !HTML_COMMENT_CLOSE.containsMatchIn(line)) {
+                inHtmlComment = true
                 continue
             }
 
@@ -125,7 +144,7 @@ object HeadingExtractor {
 
                 // Check for inline omit marker
                 val inlineOmit = OMIT_MARKER.containsMatchIn(line)
-                val canInToc = !prevLineOmit && !inlineOmit
+                val canInToc = !prevLineOmit && !inlineOmit && !inOmitRange
 
                 headings.add(Heading(
                     level = level,
@@ -151,7 +170,7 @@ object HeadingExtractor {
                     !rawText.matches(Regex("^\\d+[.)].+"))
                 ) {
                     val inlineOmit = OMIT_MARKER.containsMatchIn(rawText)
-                    val canInToc = !prevLineOmit && !inlineOmit
+                    val canInToc = !prevLineOmit && !inlineOmit && !inOmitRange
 
                     headings.add(Heading(
                         level = level,

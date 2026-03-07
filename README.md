@@ -88,6 +88,15 @@ Generate and maintain a Table of Contents from your document's headings.
 ## Also Hidden <!-- omit in toc -->
 ```
 
+**Omit entire sections** using range markers:
+
+```markdown
+<!-- omit from toc start -->
+## Hidden Section 1
+## Hidden Section 2
+<!-- omit from toc end -->
+```
+
 **Section numbering:** Use `Markdown > Add Section Numbers` / `Remove Section Numbers` to add or strip hierarchical numbering (e.g., `1.1.`, `1.2.`) from headings.
 
 ### Syntax Highlighting

@@ -55,6 +55,7 @@ TOC generation and management.
 - [x] Section numbering (add/remove)
 - [x] Auto-update TOC on save (configurable)
 - [x] Heading omission via comment markers (`<!-- omit from toc -->`, `<!-- omit in toc -->`)
+- [x] Range-based heading omission (`<!-- omit from toc start -->` / `<!-- omit from toc end -->`)
 - [x] TOC region markers (`<!-- TOC -->` / `<!-- /TOC -->`)
 - [x] Duplicate heading slug handling (-1, -2 suffixes)
 - [x] Setext heading support
