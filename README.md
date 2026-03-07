@@ -66,31 +66,10 @@ Press `Cmd+N` (macOS) or `Alt+Insert` (Windows/Linux) while editing a markdown f
 - Theme-aware — adapts to your IDE color scheme
 
 ### Smart List Editing
-- Auto-continue lists on Enter (unordered, ordered, task lists)
-- Tab/Shift+Tab to indent/outdent list items
-- Smart backspace to remove empty list markers
-- Ordered list auto-renumbering
-
-### Table of Contents
-- Generate TOC from document headings
-- Auto-update on save
-- Configurable heading level range
-- Multiple slug generation modes (GitHub, GitLab, Azure DevOps, etc.)
-
-### Table Formatting
-- Auto-format GFM tables with proper alignment
-- Preserve column alignment markers
-
-### Auto-Completion
-- File and image path completion
-- Reference link label completion
-- Heading reference completion
-
-### Smart Paste
-- Paste a URL with text selected to create a markdown link
-
-### HTML Export
-- Export markdown to styled HTML
+- **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
+- **Empty list handling** — Enter on an empty list item outdents it (if indented) or removes the marker (if top-level)
+- **Indent/Outdent** — `Cmd+]` / `Cmd+[` to indent/outdent list items (supports multi-line selection)
+- **Smart Backspace** — outdents indented markers, removes top-level markers, strips task checkboxes
 
 ## Installation
 

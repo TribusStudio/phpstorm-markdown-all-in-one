@@ -23,25 +23,28 @@ Core plugin infrastructure and basic formatting actions.
 - [x] Pipe wrapper creates table cells (`| text |`) with smart preceding-pipe detection
 - [x] Dash wrapper fills with dashes inside table cells for header border generation
 - [x] GitHub Actions CI/CD pipeline with auto-release and custom plugin repository (updatePlugins.xml)
+- [x] Release notes auto-populated with commit log since previous tag
 - [x] Version bump script (`scripts/bump-version.sh`)
 
-## Phase 2: Smart List Editing ← CURRENT
-Context-aware list editing behavior.
+## Phase 2: Smart List Editing & File Scaffolding ✅
+Context-aware list editing behavior and markdown file creation tools.
 
-- [ ] Smart Enter — auto-continue unordered lists (`-`, `+`, `*`)
-- [ ] Smart Enter — auto-continue ordered lists (`1.`, `2)`)
-- [ ] Smart Enter — auto-continue task lists (`- [ ]`, `- [x]`)
-- [ ] Smart Enter — auto-continue blockquotes (`> `)
-- [ ] Smart Enter — remove empty list item on double-enter (outdent or delete marker)
-- [ ] Tab — indent list items
-- [ ] Shift+Tab — outdent list items
-- [ ] Smart Backspace — outdent indented list markers
-- [ ] Smart Backspace — delete top-level list markers (replace with whitespace)
-- [ ] Smart Backspace — remove task list checkbox
-- [ ] Ordered list auto-renumbering after enter/indent/outdent
+- [x] Smart Enter — auto-continue unordered lists (`-`, `+`, `*`)
+- [x] Smart Enter — auto-continue ordered lists (`1.`, `2)`) with auto-increment
+- [x] Smart Enter — auto-continue task lists (`- [ ]`, `- [x]`) with unchecked reset
+- [x] Smart Enter — auto-continue blockquotes (`> `)
+- [x] Smart Enter — remove empty list item on Enter (outdent if indented, delete marker if top-level)
+- [x] Indent list item (`Cmd+]` / `Ctrl+]`) — supports multi-line selection
+- [x] Outdent list item (`Cmd+[` / `Ctrl+[`) — supports multi-line selection
+- [x] Smart Backspace — outdent indented list markers
+- [x] Smart Backspace — delete top-level list markers (replace with whitespace)
+- [x] Smart Backspace — remove task list checkbox
+- [x] New File templates — right-click > New > Markdown File with template chooser (Blank, README, Document, Meeting Notes, Changelog, API Documentation)
+- [x] Generate menu (`Cmd+N` / `Alt+Insert`) — Table, Code Block, Image, Footnote, Link Reference, Front Matter, Table of Contents
+- [ ] Ordered list auto-renumbering after indent/outdent
 - [ ] Tests for all list editing scenarios
 
-## Phase 3: Table of Contents
+## Phase 3: Table of Contents ← NEXT
 TOC generation and management.
 
 - [ ] Create TOC from headings (insert at cursor)
