@@ -69,12 +69,29 @@ jobs:
           PAGES_URL: https://${{ github.repository_owner }}.github.io/phpstorm-markdown-all-in-one/updatePlugins.xml
         run: |
           TAG="v${VERSION}"
+
+          # Find the previous release tag to collect commits since then
+          git fetch --tags
+          PREV_TAG=$(git tag --sort=-v:refname | grep '^v' | grep -v "^${TAG}$" | head -1)
+          if [ -n "$PREV_TAG" ]; then
+            echo "Collecting commits since $PREV_TAG..."
+            COMMITS=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (%h)" --no-merges)
+          else
+            echo "No previous tag found, collecting all commits..."
+            COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          fi
+
           if gh release view "$TAG" &>/dev/null; then
             echo "Release $TAG exists, updating..."
             gh release upload "$TAG" "dist/${ARTIFACT}" --clobber
           else
             echo "Creating release $TAG..."
-            NOTES="## Markdown All-in-One v${VERSION}
+            NOTES="$(cat <<NOTESEOF
+          ## Markdown All-in-One v${VERSION}
+
+          ### Changes
+
+          ${COMMITS}
 
           ### Install
           1. Download \`${ARTIFACT}\` below
@@ -86,7 +103,11 @@ jobs:
           Add this custom plugin repository in Settings > Plugins > gear icon > Manage Plugin Repositories:
           \`\`\`
           ${PAGES_URL}
-          \`\`\`"
+          \`\`\`
+          NOTESEOF
+          )"
+            # Strip leading whitespace from heredoc
+            NOTES=$(echo "$NOTES" | sed 's/^          //')
             gh release create "$TAG" "dist/${ARTIFACT}" --title "v${VERSION}" --notes "$NOTES"
           fi
 
