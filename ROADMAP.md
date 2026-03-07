@@ -44,20 +44,24 @@ Context-aware list editing behavior and markdown file creation tools.
 - [ ] Ordered list auto-renumbering after indent/outdent
 - [ ] Tests for all list editing scenarios
 
-## Phase 3: Table of Contents ← NEXT
+## Phase 3: Table of Contents ✅
 TOC generation and management.
 
-- [ ] Create TOC from headings (insert at cursor)
-- [ ] Update existing TOC
-- [ ] TOC heading level filtering (e.g., 2..4)
-- [ ] Slug generation (GitHub mode)
-- [ ] Additional slug modes (GitLab, Azure DevOps, Bitbucket)
-- [ ] Section numbering (add/remove)
-- [ ] Auto-update TOC on save (configurable)
-- [ ] Heading omission via comment markers
-- [ ] Tests for TOC generation and slug modes
+- [x] Create TOC from headings (insert at cursor)
+- [x] Update existing TOC
+- [x] TOC heading level filtering (e.g., 2..4)
+- [x] Slug generation (GitHub mode)
+- [x] Additional slug modes (GitLab, Gitea, Azure DevOps, Bitbucket Cloud)
+- [x] Section numbering (add/remove)
+- [x] Auto-update TOC on save (configurable)
+- [x] Heading omission via comment markers (`<!-- omit from toc -->`, `<!-- omit in toc -->`)
+- [x] TOC region markers (`<!-- TOC -->` / `<!-- /TOC -->`)
+- [x] Duplicate heading slug handling (-1, -2 suffixes)
+- [x] Setext heading support
+- [x] Code block and front matter exclusion
+- [x] Tests for TOC generation, slug modes, and heading extraction
 
-## Phase 4: Table Formatting
+## Phase 4: Table Formatting ← NEXT
 GFM table auto-formatting.
 
 - [ ] Parse GFM table structure

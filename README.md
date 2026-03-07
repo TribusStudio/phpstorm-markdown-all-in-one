@@ -59,6 +59,37 @@ Press `Cmd+N` (macOS) or `Alt+Insert` (Windows/Linux) while editing a markdown f
 
 > **Note:** `Cmd+N` in the editor opens the **Generate** popup, not the **New File** dialog. This is standard PHPStorm behavior. To create a new file, use `Cmd+N` in the **Project panel** (click the project tree first), or right-click > New > Markdown File. If you prefer `Cmd+N` to always open the New File dialog, you can rebind it in **Settings > Keymap**: search for "Generate" and remove/change its shortcut, then assign `Cmd+N` to "New..." instead.
 
+### Table of Contents
+
+Generate and maintain a Table of Contents from your document's headings.
+
+**Create TOC:** Use `Markdown > Create Table of Contents` from the Tools menu, or `Cmd+N` > Markdown > Table of Contents in the editor. The TOC is inserted at the cursor wrapped in `<!-- TOC -->` / `<!-- /TOC -->` markers.
+
+**Update TOC:** Use `Markdown > Update Table of Contents`, or simply save the file — the TOC auto-updates on save (configurable in Settings).
+
+**Configuration** (Settings > Languages > Markdown All-in-One):
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Heading levels | `1..6` | Range of heading levels to include (e.g., `2..4`) |
+| Ordered list | `false` | Use numbered list instead of bullets |
+| List marker | `-` | Unordered list marker (`-`, `*`, `+`) |
+| Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud |
+| Update on save | `true` | Auto-update TOC when saving |
+
+**Omit headings** from the TOC using comment markers:
+
+```markdown
+## Visible Heading
+
+<!-- omit from toc -->
+## Hidden Heading
+
+## Also Hidden <!-- omit in toc -->
+```
+
+**Section numbering:** Use `Markdown > Add Section Numbers` / `Remove Section Numbers` to add or strip hierarchical numbering (e.g., `1.1.`, `1.2.`) from headings.
+
 ### Syntax Highlighting
 - Headings, code blocks, inline code, blockquotes, list markers, horizontal rules
 - Inline formatting: **bold**, *italic*, ~~strikethrough~~

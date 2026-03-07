@@ -142,3 +142,5 @@ All builds run inside a Docker devcontainer. Use the `./dev` CLI from the host:
 - **Agents:** Use developer and user-voice agents for review (see .claude/ skills)
 - **Documentation:** Keep README, CHANGELOG, help text, and numbered docs updated with each feature
 - **Transparency:** Log decisions and rationale in commit messages and PR descriptions
+- **ROADMAP:** Update `ROADMAP.md` after completing every phase — mark completed items with `[x]`, move the `← NEXT` marker to the next phase
+- **Phase skills:** Use `/phase N` to launch development of phase N (see skills in `.claude/` config)

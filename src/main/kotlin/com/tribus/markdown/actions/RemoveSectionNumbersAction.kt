@@ -8,36 +8,19 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.tribus.markdown.toc.TocGenerator
 import com.tribus.markdown.util.MarkdownFileUtil
 
-class CreateTocAction : AnAction(), MarkdownAction {
+class RemoveSectionNumbersAction : AnAction(), MarkdownAction {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         val project = e.project ?: return
         val document = editor.document
-        val documentText = document.text
-        val offset = editor.caretModel.offset
 
-        // Check if TOC already exists — if so, update it instead
-        val existingRange = TocGenerator.findTocRange(documentText)
-        if (existingRange != null) {
-            val newToc = TocGenerator.generateWithMarkers(documentText)
+        val cleaned = TocGenerator.removeSectionNumbers(document.text)
+        if (cleaned != document.text) {
             WriteCommandAction.runWriteCommandAction(project) {
-                document.replaceString(existingRange.startOffset, existingRange.endOffset, newToc)
+                document.setText(cleaned)
             }
-            return
-        }
-
-        // Insert new TOC at cursor
-        val tocText = TocGenerator.generateWithMarkers(documentText)
-        val insertText = if (offset > 0 && document.text[offset - 1] != '\n') {
-            "\n$tocText\n"
-        } else {
-            "$tocText\n"
-        }
-
-        WriteCommandAction.runWriteCommandAction(project) {
-            document.insertString(offset, insertText)
         }
     }
 

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-03-07
+
+### Added
+- **Table of Contents** — generate TOC from headings, insert at cursor with `<!-- TOC -->` / `<!-- /TOC -->` markers
+- **Update TOC** — update existing TOC manually or auto-update on save (configurable)
+- **Heading level filtering** — configure which heading levels to include (e.g., `2..4`)
+- **Slug generation** — GitHub mode (default) plus GitLab, Gitea, Azure DevOps, Bitbucket Cloud
+- **Duplicate heading handling** — auto-appends `-1`, `-2` suffixes for duplicate anchors
+- **Heading omission** — `<!-- omit from toc -->` / `<!-- omit in toc -->` comment markers (inline or previous line)
+- **Section numbering** — Add/Remove hierarchical section numbers on headings
+- **Setext heading support** — TOC extraction handles both ATX (`#`) and Setext (underlined) headings
+- Skips headings inside fenced code blocks, YAML front matter, and HTML comments
+- Comprehensive tests for slugification, heading extraction, and TOC generation
+
 ## [0.7.0] - 2026-03-07
 
 ### Added

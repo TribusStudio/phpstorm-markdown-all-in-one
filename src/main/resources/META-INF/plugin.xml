@@ -68,6 +68,10 @@
         <backspaceHandlerDelegate
                 implementation="com.tribus.markdown.editor.MarkdownBackspaceHandler"/>
 
+        <!-- Auto-update TOC on save -->
+        <fileDocumentManagerListener
+                implementation="com.tribus.markdown.toc.TocAutoUpdateListener"/>
+
         <!-- File templates for New > Markdown File -->
         <internalFileTemplate name="Blank Markdown"/>
         <internalFileTemplate name="README"/>
@@ -169,6 +173,16 @@
                     class="com.tribus.markdown.actions.UpdateTocAction"
                     text="Update Table of Contents"
                     description="Update existing table of contents"/>
+
+            <action id="com.tribus.markdown.actions.AddSectionNumbers"
+                    class="com.tribus.markdown.actions.AddSectionNumbersAction"
+                    text="Add Section Numbers"
+                    description="Add section numbers to headings"/>
+
+            <action id="com.tribus.markdown.actions.RemoveSectionNumbers"
+                    class="com.tribus.markdown.actions.RemoveSectionNumbersAction"
+                    text="Remove Section Numbers"
+                    description="Remove section numbers from headings"/>
 
             <separator/>
 
