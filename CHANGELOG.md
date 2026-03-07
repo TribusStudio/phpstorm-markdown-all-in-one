@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-03-06
+
+### Fixed
+- Selection wrapping now uses PsiFile check instead of editor.virtualFile (which can be null)
+- Added file type check against MarkdownFileType for more reliable markdown file detection
+
 ## [0.4.1] - 2026-03-06
 
 ### Added

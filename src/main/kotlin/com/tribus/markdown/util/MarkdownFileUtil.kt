@@ -4,6 +4,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
+import com.tribus.markdown.lang.MarkdownFileType
 
 object MarkdownFileUtil {
 
@@ -16,6 +18,11 @@ object MarkdownFileUtil {
 
     fun isMarkdownFile(file: VirtualFile): Boolean {
         return file.extension?.lowercase() in MARKDOWN_EXTENSIONS
+    }
+
+    fun isMarkdownFile(file: PsiFile): Boolean {
+        return file.fileType == MarkdownFileType.INSTANCE
+                || file.virtualFile?.extension?.lowercase() in MARKDOWN_EXTENSIONS
     }
 
     fun isMarkdownEditor(editor: Editor): Boolean {
