@@ -2,12 +2,17 @@ package com.tribus.markdown.editor
 
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.CustomShortcutSet
+import com.intellij.openapi.actionSystem.KeyboardShortcut
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.tribus.markdown.util.MarkdownFileUtil
+import java.awt.Toolkit
+import java.awt.event.InputEvent
+import java.awt.event.KeyEvent
+import javax.swing.KeyStroke
 
 /**
  * Registers plugin shortcuts directly on the editor component when a markdown
@@ -15,8 +20,9 @@ import com.tribus.markdown.util.MarkdownFileUtil
  * keymap shortcuts, which guarantees our actions fire instead of IDE builtins
  * like GotoDeclaration (Cmd+B) or Go to Implementation (Cmd+I).
  *
- * Shortcuts are read from the active keymap, so user customizations in
- * Settings > Keymap are respected.
+ * If the user has customized shortcuts in Settings > Keymap, those are used.
+ * Otherwise, falls back to platform-aware defaults (Cmd on macOS, Ctrl on
+ * Windows/Linux).
  */
 class MarkdownFileEditorListener : FileEditorManagerListener {
 
@@ -24,32 +30,66 @@ class MarkdownFileEditorListener : FileEditorManagerListener {
         if (!MarkdownFileUtil.isMarkdownFile(file)) return
 
         val actionManager = ActionManager.getInstance()
-        val keymap = KeymapManager.getInstance()?.activeKeymap ?: return
+        val keymap = KeymapManager.getInstance()?.activeKeymap
 
         for (fileEditor in source.getEditors(file)) {
             val textEditor = fileEditor as? TextEditor ?: continue
             val component = textEditor.editor.contentComponent
 
-            for (actionId in SHORTCUT_ACTION_IDS) {
+            for ((actionId, defaultShortcut) in DEFAULT_SHORTCUTS) {
                 val action = actionManager.getAction(actionId) ?: continue
-                val shortcuts = keymap.getShortcuts(actionId)
-                if (shortcuts.isNotEmpty()) {
-                    action.registerCustomShortcutSet(CustomShortcutSet(*shortcuts), component)
+
+                // Use keymap shortcuts if available (respects user customization),
+                // otherwise fall back to our platform-aware defaults
+                val keymapShortcuts = keymap?.getShortcuts(actionId)
+                val shortcutSet = if (keymapShortcuts != null && keymapShortcuts.isNotEmpty()) {
+                    CustomShortcutSet(*keymapShortcuts)
+                } else {
+                    defaultShortcut
                 }
+
+                action.registerCustomShortcutSet(shortcutSet, component)
             }
         }
     }
 
     companion object {
-        private val SHORTCUT_ACTION_IDS = listOf(
-            "com.tribus.markdown.actions.ToggleBold",
-            "com.tribus.markdown.actions.ToggleItalic",
-            "com.tribus.markdown.actions.ToggleStrikethrough",
-            "com.tribus.markdown.actions.ToggleCodeSpan",
-            "com.tribus.markdown.actions.ToggleCodeBlock",
-            "com.tribus.markdown.actions.HeadingUp",
-            "com.tribus.markdown.actions.HeadingDown",
-            "com.tribus.markdown.actions.ToggleTaskList",
-        )
+        // Cmd on macOS, Ctrl on Windows/Linux — lazy to avoid HeadlessException in tests
+        private val MENU_MOD by lazy {
+            try {
+                Toolkit.getDefaultToolkit().menuShortcutKeyMaskEx
+            } catch (_: java.awt.HeadlessException) {
+                InputEvent.CTRL_DOWN_MASK
+            }
+        }
+
+        private val DEFAULT_SHORTCUTS by lazy {
+            mapOf(
+                "com.tribus.markdown.actions.ToggleBold" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_B, MENU_MOD), null)
+                ),
+                "com.tribus.markdown.actions.ToggleItalic" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_I, MENU_MOD), null)
+                ),
+                "com.tribus.markdown.actions.ToggleStrikethrough" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.ToggleCodeSpan" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_QUOTE, MENU_MOD), null)
+                ),
+                "com.tribus.markdown.actions.ToggleCodeBlock" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_QUOTE, MENU_MOD or InputEvent.SHIFT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.HeadingUp" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, InputEvent.CTRL_DOWN_MASK or InputEvent.SHIFT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.HeadingDown" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, InputEvent.CTRL_DOWN_MASK or InputEvent.SHIFT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.ToggleTaskList" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), null)
+                ),
+            )
+        }
     }
 }
