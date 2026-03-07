@@ -17,6 +17,8 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 | `Cmd/Ctrl+Shift+`` ` `` | Toggle code block |
 | `Ctrl+Shift+]` | Increase heading level |
 | `Ctrl+Shift+[` | Decrease heading level |
+| `Cmd/Ctrl+]` | Indent list item |
+| `Cmd/Ctrl+[` | Outdent list item |
 | `Alt+C` | Toggle task list checkbox |
 
 ### Syntax Highlighting

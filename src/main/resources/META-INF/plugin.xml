@@ -134,6 +134,23 @@
 
             <separator/>
 
+            <!-- List indent/outdent -->
+            <action id="com.tribus.markdown.actions.ListIndent"
+                    class="com.tribus.markdown.actions.ListIndentAction"
+                    text="Indent List Item"
+                    description="Indent list item one level">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl CLOSE_BRACKET"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.ListOutdent"
+                    class="com.tribus.markdown.actions.ListOutdentAction"
+                    text="Outdent List Item"
+                    description="Outdent list item one level">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl OPEN_BRACKET"/>
+            </action>
+
+            <separator/>
+
             <!-- TOC actions -->
             <action id="com.tribus.markdown.actions.CreateToc"
                     class="com.tribus.markdown.actions.CreateTocAction"

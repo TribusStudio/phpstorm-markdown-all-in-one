@@ -90,6 +90,12 @@ class MarkdownFileEditorListener : EditorFactoryListener {
                 "com.tribus.markdown.actions.ToggleTaskList" to CustomShortcutSet(
                     KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_DOWN_MASK), null)
                 ),
+                "com.tribus.markdown.actions.ListIndent" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, MENU_MOD), null)
+                ),
+                "com.tribus.markdown.actions.ListOutdent" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, MENU_MOD), null)
+                ),
             )
         }
     }
