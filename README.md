@@ -147,6 +147,23 @@ Auto-format GFM tables with consistent padding and alignment.
 - Links and images with distinct colors for text and URL
 - Theme-aware — adapts to your IDE color scheme
 
+### Auto-Completion
+
+Context-aware completions while editing markdown:
+
+- **Heading references** — type `[text](#` to see all document headings with their anchor slugs
+- **Reference link labels** — type `[text][` to see all `[label]: url` definitions in the document
+- **File/image paths** — type `[text](` or `![alt](` to browse files relative to the current document; supports directory navigation
+
+### Smart Paste
+
+Paste a URL while text is selected to automatically create a markdown link:
+
+- **Regular URL** — `[selected text](https://example.com)`
+- **Image URL** (`.png`, `.jpg`, `.gif`, `.svg`, etc.) — `![selected text](https://example.com/photo.png)`
+
+Configurable via Settings > Languages > Markdown All-in-One > Smart paste enabled.
+
 ### Smart List Editing
 - **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
 - **Empty list handling** — Enter on an empty list item outdents it (if indented) or removes the marker (if top-level)

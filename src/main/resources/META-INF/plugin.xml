@@ -76,6 +76,15 @@
         <fileDocumentManagerListener
                 implementation="com.tribus.markdown.table.TableFormatOnSaveListener"/>
 
+        <!-- Completion providers -->
+        <completion.contributor language="MarkdownAIO"
+                                implementationClass="com.tribus.markdown.completion.MarkdownCompletionContributor"
+                                order="first"/>
+
+        <!-- Smart paste (URL over selection creates markdown link) -->
+        <copyPastePreProcessor
+                implementation="com.tribus.markdown.editor.MarkdownSmartPasteProcessor"/>
+
         <!-- Tab navigation in tables -->
         <editorActionHandler action="EditorTab"
                              implementationClass="com.tribus.markdown.table.TableTabHandler"

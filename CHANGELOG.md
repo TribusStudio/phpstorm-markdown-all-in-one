@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-03-08
+
+### Added
+- **Heading reference completion** — type `[text](#` to get a dropdown of all document headings with their slugs
+- **Reference link label completion** — type `[text][` to get a dropdown of all `[label]: url` definitions in the document
+- **File/image path completion** — type `[text](` or `![alt](` to get file/directory suggestions from the current file's location
+- **Smart paste** — paste a URL while text is selected to create `[selected text](url)`; image URLs produce `![text](url)` (configurable in settings)
+- Unit tests for completion pattern matching, slug generation, and smart paste logic
+
 ## [0.10.0] - 2026-03-08
 
 ### Added

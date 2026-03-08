@@ -76,16 +76,16 @@ GFM table auto-formatting.
 - [x] Tab key navigation between cells
 - [x] Tests for table formatting
 
-## Phase 5: Auto-Completion ← NEXT
+## Phase 5: Auto-Completion ✅
 Completion providers for markdown-specific content.
 
-- [ ] File/image path completion (triggered by `(`, `[`)
-- [ ] Reference link label completion
-- [ ] Heading reference completion (for `[text](#heading)`)
-- [ ] Smart paste — paste URL over selected text creates `[text](url)`
-- [ ] Tests for completion providers
+- [x] File/image path completion (triggered by `(`, `[`)
+- [x] Reference link label completion
+- [x] Heading reference completion (for `[text](#heading)`)
+- [x] Smart paste — paste URL over selected text creates `[text](url)`
+- [x] Tests for completion providers
 
-## Phase 6: Toolbars and Context Actions
+## Phase 6: Toolbars and Context Actions ← NEXT
 In editor-mode toolbars for quick and easy access to common text formatting and layout functions.
 
 - [ ] Right click Context Action menu for selection and mouse position function awareness
