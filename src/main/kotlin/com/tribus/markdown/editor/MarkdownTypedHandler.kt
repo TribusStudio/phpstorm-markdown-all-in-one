@@ -124,12 +124,13 @@ class MarkdownTypedHandler : TypedHandlerDelegate() {
 
         /**
          * Dash: table header border generation.
-         * - Inside table cell: fills with dashes of same length
+         * - Inside table cell: fills with " --- " (space-padded dashes matching cell width)
          * - Outside: wraps symmetrically
          */
         private fun wrapDash(selected: String, docText: CharSequence, selStart: Int, selEnd: Int): String {
             return if (isInsideTableCell(docText, selStart, selEnd)) {
-                "-".repeat(selected.length)
+                val dashCount = maxOf(selected.length - 2, 3)
+                " ${"-".repeat(dashCount)} "
             } else {
                 "-$selected-"
             }

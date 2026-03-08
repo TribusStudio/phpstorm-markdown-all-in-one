@@ -8,31 +8,31 @@ A comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by t
 
 Shortcuts automatically take priority over built-in IDE actions when editing markdown files. In non-markdown files, the standard IDE shortcuts work as normal.
 
-| Shortcut | Action |
-|----------|--------|
-| `Cmd/Ctrl+B` | Toggle **bold** |
-| `Cmd/Ctrl+I` | Toggle *italic* |
-| `Alt+S` | Toggle ~~strikethrough~~ |
-| `Cmd/Ctrl+`` ` `` | Toggle `code span` |
-| `Cmd/Ctrl+Shift+`` ` `` | Toggle code block |
-| `Ctrl+Shift+]` | Increase heading level |
-| `Ctrl+Shift+[` | Decrease heading level |
-| `Cmd/Ctrl+]` | Indent list item |
-| `Cmd/Ctrl+[` | Outdent list item |
-| `Alt+C` | Toggle task list checkbox |
+| Shortcut                | Action                    |
+| ----------------------- | ------------------------- |
+| `Cmd/Ctrl+B`            | Toggle **bold**           |
+| `Cmd/Ctrl+I`            | Toggle *italic*           |
+| `Alt+S`                 | Toggle ~~strikethrough~~  |
+| `Cmd/Ctrl+`` ` ``       | Toggle `code span`        |
+| `Cmd/Ctrl+Shift+`` ` `` | Toggle code block         |
+| `Ctrl+Shift+]`          | Increase heading level    |
+| `Ctrl+Shift+[`          | Decrease heading level    |
+| `Cmd/Ctrl+]`            | Indent list item          |
+| `Cmd/Ctrl+[`            | Outdent list item         |
+| `Alt+C`                 | Toggle task list checkbox |
 
 ### Selection Wrapping
 
 Select text and type any of these characters to wrap the selection:
 
-| Character | Result |
-|-----------|--------|
-| `*` | `*selection*` (italic) |
-| `~` | `~selection~` (strikethrough) |
-| `_` | `_selection_` (emphasis) |
-| `` ` `` | `` `selection` `` (code) |
-| `\|` | `\| selection \|` (table cell — smart: detects preceding pipe) |
-| `-` | Fills with dashes inside table cells (header borders) |
+| Character | Result                                                         |
+| --------- | -------------------------------------------------------------- |
+| `*`       | `*selection*` (italic)                                         |
+| `~`       | `~selection~` (strikethrough)                                  |
+| `_`       | `_selection_` (emphasis)                                       |
+| `` ` ``   | `` `selection` `` (code)                                       |
+| `\|`      | `\| selection \|` (table cell — smart: detects preceding pipe) |
+| `-`       | Fills with dashes inside table cells (header borders)          |
 
 ### New File Templates
 
@@ -69,13 +69,13 @@ Generate and maintain a Table of Contents from your document's headings.
 
 **Configuration** (Settings > Languages > Markdown All-in-One):
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| Heading levels | `1..6` | Range of heading levels to include (e.g., `2..4`) |
-| Ordered list | `false` | Use numbered list instead of bullets |
-| List marker | `-` | Unordered list marker (`-`, `*`, `+`) |
-| Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud |
-| Update on save | `true` | Auto-update TOC when saving |
+| Setting        | Default  | Description                                                             |
+| -------------- | -------- | ----------------------------------------------------------------------- |
+| Heading levels | `1..6`   | Range of heading levels to include (e.g., `2..4`)                       |
+| Ordered list   | `false`  | Use numbered list instead of bullets                                    |
+| List marker    | `-`      | Unordered list marker (`-`, `*`, `+`)                                   |
+| Slug mode      | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud |
+| Update on save | `true`   | Auto-update TOC when saving                                             |
 
 **Omit headings** from the TOC using comment markers:
 
@@ -136,9 +136,9 @@ Auto-format GFM tables with consistent padding and alignment.
 **Alignment preservation:** Column alignment markers are detected and preserved during formatting:
 
 ```markdown
-| Left   | Center | Right |
-| :----- | :----: | ----: |
-| text   |  text  |  text |
+| Left | Center | Right |
+| :--- | :----: | ----: |
+| text |  text  |  text |
 ```
 
 ### Syntax Highlighting
