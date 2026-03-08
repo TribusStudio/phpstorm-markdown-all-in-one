@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-03-08
+
+### Added
+- **Named TOCs with attribute overrides** — `<!-- TOC name="api" type="ordered" level="2..4" -->` for per-TOC settings
+- **TOC content ranges** — `<!-- toc range name="api" start -->` / `<!-- toc range end -->` to scope a named TOC to specific document sections
+- **Multiple TOCs per document** — each independently configured and auto-updated
+- Auto-update-on-save now updates all TOC blocks in the document
+
+### Fixed
+- **Ordered TOC numbering** — per-level counters instead of global index (child sections restart at 1)
+
 ## [0.8.1] - 2026-03-07
 
 ### Added

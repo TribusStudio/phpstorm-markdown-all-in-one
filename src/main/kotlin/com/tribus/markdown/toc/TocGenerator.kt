@@ -4,12 +4,76 @@ import com.tribus.markdown.settings.MarkdownSettings
 
 /**
  * Generates and updates Table of Contents from document headings.
+ *
+ * Supports multiple TOCs per document:
+ * - Generic: `<!-- TOC -->` ... `<!-- /TOC -->` — includes all document headings
+ * - Named with overrides: `<!-- TOC name="api" type="ordered" level="2..4" -->` ... `<!-- /TOC -->`
+ *
+ * Named TOCs can be scoped to content ranges:
+ * - `<!-- toc range name="api" start -->` ... `<!-- toc range end -->`
  */
 object TocGenerator {
 
-    // TOC region markers
-    const val TOC_START = "<!-- TOC -->"
     const val TOC_END = "<!-- /TOC -->"
+
+    // Matches TOC start markers with optional attributes
+    private val TOC_START_PATTERN = Regex(
+        """^\s{0,3}<!--\s*TOC(?!\s+range\b)(\s[^>]*)?\s*-->""",
+        RegexOption.IGNORE_CASE
+    )
+
+    // Matches <!-- /TOC -->
+    private val TOC_END_PATTERN = Regex(
+        """^\s{0,3}<!--\s*/TOC\s*-->""",
+        RegexOption.IGNORE_CASE
+    )
+
+    // Matches toc range start: <!-- toc range name="x" start -->
+    private val TOC_RANGE_START_PATTERN = Regex(
+        """^\s{0,3}<!--\s*toc\s+range\s+name\s*=\s*"([^"]+)"\s+start\s*-->""",
+        RegexOption.IGNORE_CASE
+    )
+
+    // Matches toc range end: <!-- toc range end -->
+    private val TOC_RANGE_END_PATTERN = Regex(
+        """^\s{0,3}<!--\s*toc\s+range\s+end\s*-->""",
+        RegexOption.IGNORE_CASE
+    )
+
+    // Parses key="value" pairs from TOC start marker attributes
+    private val ATTR_PATTERN = Regex("(\\w+)\\s*=\\s*\"([^\"]*)\"")
+
+    /**
+     * Parsed attributes from a TOC start marker.
+     */
+    data class TocAttributes(
+        val name: String? = null,
+        val type: String? = null,   // "bullet" or "ordered"
+        val level: String? = null   // e.g. "1..2"
+    )
+
+    /**
+     * A TOC block found in the document.
+     */
+    data class TocBlock(
+        val startLine: Int,
+        val endLine: Int,
+        val startOffset: Int,
+        val endOffset: Int,
+        val attributes: TocAttributes,
+        val rawStartLine: String
+    )
+
+    /**
+     * A content range associated with a named TOC.
+     */
+    data class ContentRange(
+        val name: String,
+        val startLine: Int,
+        val endLine: Int
+    )
+
+    // --- Legacy compatibility: TocRange used by actions ---
 
     data class TocRange(
         val startLine: Int,
@@ -19,13 +83,160 @@ object TocGenerator {
     )
 
     /**
-     * Generate TOC text from document content.
+     * Parse attributes from a TOC start marker line.
+     */
+    fun parseAttributes(line: String): TocAttributes {
+        val match = TOC_START_PATTERN.find(line.trim())
+        val attrString = match?.groupValues?.getOrNull(1) ?: return TocAttributes()
+
+        val attrs = mutableMapOf<String, String>()
+        ATTR_PATTERN.findAll(attrString).forEach {
+            attrs[it.groupValues[1].lowercase()] = it.groupValues[2]
+        }
+
+        return TocAttributes(
+            name = attrs["name"],
+            type = attrs["type"],
+            level = attrs["level"]
+        )
+    }
+
+    /**
+     * Build the TOC start marker line from attributes.
+     */
+    fun buildStartMarker(attrs: TocAttributes): String {
+        val parts = mutableListOf<String>()
+        attrs.name?.let { parts.add("name=\"$it\"") }
+        attrs.type?.let { parts.add("type=\"$it\"") }
+        attrs.level?.let { parts.add("level=\"$it\"") }
+        return if (parts.isEmpty()) "<!-- TOC -->" else "<!-- TOC ${parts.joinToString(" ")} -->"
+    }
+
+    /**
+     * Find all TOC blocks in the document.
+     */
+    fun findAllTocBlocks(documentText: String): List<TocBlock> {
+        val lines = documentText.lines()
+        val blocks = mutableListOf<TocBlock>()
+        var currentOffset = 0
+        var pendingStart: Triple<Int, Int, String>? = null // (line, offset, rawLine)
+
+        for ((index, line) in lines.withIndex()) {
+            val trimmed = line.trim()
+            if (TOC_START_PATTERN.matches(trimmed) && pendingStart == null) {
+                pendingStart = Triple(index, currentOffset, line)
+            } else if (TOC_END_PATTERN.matches(trimmed) && pendingStart != null) {
+                val (startLine, startOffset, rawStartLine) = pendingStart
+                blocks.add(TocBlock(
+                    startLine = startLine,
+                    endLine = index,
+                    startOffset = startOffset,
+                    endOffset = currentOffset + line.length,
+                    attributes = parseAttributes(rawStartLine),
+                    rawStartLine = rawStartLine.trim()
+                ))
+                pendingStart = null
+            }
+            currentOffset += line.length + 1
+        }
+
+        return blocks
+    }
+
+    /**
+     * Find all content ranges in the document.
+     */
+    fun findAllContentRanges(documentText: String): List<ContentRange> {
+        val lines = documentText.lines()
+        val ranges = mutableListOf<ContentRange>()
+        var pendingName: String? = null
+        var pendingStartLine = -1
+
+        for ((index, line) in lines.withIndex()) {
+            val startMatch = TOC_RANGE_START_PATTERN.find(line.trim())
+            if (startMatch != null && pendingName == null) {
+                pendingName = startMatch.groupValues[1]
+                pendingStartLine = index
+                continue
+            }
+            if (pendingName != null && TOC_RANGE_END_PATTERN.matches(line.trim())) {
+                ranges.add(ContentRange(
+                    name = pendingName,
+                    startLine = pendingStartLine,
+                    endLine = index
+                ))
+                pendingName = null
+            }
+        }
+
+        return ranges
+    }
+
+    /**
+     * Find first TOC block (legacy compatibility for actions).
+     */
+    fun findTocRange(documentText: String): TocRange? {
+        val block = findAllTocBlocks(documentText).firstOrNull() ?: return null
+        return TocRange(
+            startLine = block.startLine,
+            endLine = block.endLine,
+            startOffset = block.startOffset,
+            endOffset = block.endOffset
+        )
+    }
+
+    /**
+     * Generate TOC text from document content using default or provided settings.
      */
     fun generate(documentText: String, state: MarkdownSettings.State? = null): String {
         val resolvedState = state ?: MarkdownSettings.getInstance().state
-
         val headings = HeadingExtractor.extract(documentText)
         return generateFromHeadings(headings, resolvedState)
+    }
+
+    /**
+     * Generate TOC for a specific named TOC block, scoped to its content range(s).
+     */
+    fun generateForBlock(
+        documentText: String,
+        block: TocBlock,
+        contentRanges: List<ContentRange>,
+        state: MarkdownSettings.State? = null
+    ): String {
+        val resolvedState = state ?: MarkdownSettings.getInstance().state
+
+        // Build effective state by merging block attributes over defaults
+        val effectiveState = resolvedState.copy(
+            tocOrderedList = when (block.attributes.type?.lowercase()) {
+                "ordered" -> true
+                "bullet" -> false
+                else -> resolvedState.tocOrderedList
+            },
+            tocLevels = block.attributes.level ?: resolvedState.tocLevels
+        )
+
+        val allHeadings = HeadingExtractor.extract(documentText)
+
+        // If named, filter headings to those within matching content ranges
+        val headings = if (block.attributes.name != null) {
+            val matchingRanges = contentRanges.filter {
+                it.name.equals(block.attributes.name, ignoreCase = true)
+            }
+            if (matchingRanges.isEmpty()) {
+                emptyList()
+            } else {
+                allHeadings.filter { heading ->
+                    matchingRanges.any { range ->
+                        heading.lineNumber in (range.startLine + 1) until range.endLine
+                    }
+                }
+            }
+        } else {
+            // Unnamed TOC: all headings in the document
+            allHeadings
+        }
+
+        return generateFromHeadings(headings, effectiveState)
     }
 
     /**
@@ -48,14 +259,22 @@ object TocGenerator {
 
         val slugOccurrences = mutableMapOf<String, Int>()
         val lines = mutableListOf<String>()
+        // Per-level counters for ordered lists (index 0-6 for heading levels 0-6)
+        val levelCounters = IntArray(7)
 
-        for ((index, heading) in filtered.withIndex()) {
+        for (heading in filtered) {
+            if (ordered) {
+                // Reset counters for all deeper levels when we return to a shallower level
+                for (i in heading.level + 1..6) levelCounters[i] = 0
+                levelCounters[heading.level]++
+            }
+
             val indent = "    ".repeat(heading.level - minLevel)
             val slug = Slugify.slugify(heading.rawText, slugMode)
             val uniqueSlug = Slugify.makeUnique(slug, slugOccurrences)
             val linkText = escapeLinkText(heading.rawText)
 
-            val listMarker = if (ordered) "${index + 1}." else marker
+            val listMarker = if (ordered) "${levelCounters[heading.level]}." else marker
             lines.add("$indent$listMarker [$linkText](#$uniqueSlug)")
         }
 
@@ -63,55 +282,65 @@ object TocGenerator {
     }
 
     /**
-     * Generate TOC with surrounding markers.
+     * Generate TOC with surrounding markers (for unnamed/generic TOC insertion).
      */
     fun generateWithMarkers(documentText: String, state: MarkdownSettings.State? = null): String {
         val toc = generate(documentText, state)
-        if (toc.isEmpty()) return "$TOC_START\n$TOC_END"
-        return "$TOC_START\n$toc\n$TOC_END"
+        return if (toc.isEmpty()) "<!-- TOC -->\n$TOC_END" else "<!-- TOC -->\n$toc\n$TOC_END"
     }
 
     /**
-     * Find existing TOC region in document (between markers).
+     * Generate TOC with surrounding markers for a specific block.
      */
-    fun findTocRange(documentText: String): TocRange? {
-        val lines = documentText.lines()
-        var startLine = -1
-        var startOffset = 0
-        var currentOffset = 0
+    fun generateBlockWithMarkers(
+        documentText: String,
+        block: TocBlock,
+        contentRanges: List<ContentRange>,
+        state: MarkdownSettings.State? = null
+    ): String {
+        val toc = generateForBlock(documentText, block, contentRanges, state)
+        val startMarker = buildStartMarker(block.attributes)
+        return if (toc.isEmpty()) "$startMarker\n$TOC_END" else "$startMarker\n$toc\n$TOC_END"
+    }
 
-        for ((index, line) in lines.withIndex()) {
-            if (line.trim() == TOC_START && startLine == -1) {
-                startLine = index
-                startOffset = currentOffset
-            } else if (line.trim() == TOC_END && startLine != -1) {
-                return TocRange(
-                    startLine = startLine,
-                    endLine = index,
-                    startOffset = startOffset,
-                    endOffset = currentOffset + line.length
-                )
-            }
-            currentOffset += line.length + 1 // +1 for newline
+    /**
+     * Update all TOC blocks in the document.
+     * Returns the new document text if any TOC was updated, null otherwise.
+     */
+    fun updateAllTocs(documentText: String, state: MarkdownSettings.State? = null): String? {
+        val blocks = findAllTocBlocks(documentText)
+        if (blocks.isEmpty()) return null
+
+        val contentRanges = findAllContentRanges(documentText)
+        var result = documentText
+        var changed = false
+
+        // Pre-generate all TOCs from the original document (line numbers are consistent)
+        val newTocs = blocks.map { block ->
+            generateBlockWithMarkers(documentText, block, contentRanges, state)
         }
 
-        return null
+        // Apply replacements in reverse order so offsets remain valid
+        for ((i, block) in blocks.withIndex().reversed()) {
+            val newToc = newTocs[i]
+            val currentToc = result.substring(block.startOffset, block.endOffset)
+
+            if (currentToc != newToc) {
+                result = result.substring(0, block.startOffset) + newToc +
+                    if (block.endOffset < result.length) result.substring(block.endOffset) else ""
+                changed = true
+            }
+        }
+
+        return if (changed) result else null
     }
 
     /**
      * Update existing TOC or return null if no TOC region found.
-     * Returns the new document text if updated, null otherwise.
+     * Updates all TOC blocks in the document.
      */
     fun updateExistingToc(documentText: String, state: MarkdownSettings.State? = null): String? {
-        val range = findTocRange(documentText) ?: return null
-        val newToc = generateWithMarkers(documentText, state)
-        val before = documentText.substring(0, range.startOffset)
-        val after = if (range.endOffset < documentText.length) {
-            documentText.substring(range.endOffset)
-        } else {
-            ""
-        }
-        return before + newToc + after
+        return updateAllTocs(documentText, state)
     }
 
     /**
@@ -213,7 +442,6 @@ object TocGenerator {
      * Escape special characters in link text for markdown.
      */
     private fun escapeLinkText(text: String): String {
-        // In TOC link text, we need to escape brackets and backslashes
         return text
             .replace("\\", "\\\\")
             .replace("[", "\\[")

@@ -97,6 +97,30 @@ Generate and maintain a Table of Contents from your document's headings.
 <!-- omit from toc end -->
 ```
 
+**Multiple TOCs:** You can have multiple TOCs in one document, each with independent settings:
+
+```markdown
+<!-- TOC name="overview" level="1..2" -->
+<!-- /TOC -->
+
+<!-- TOC name="api" type="ordered" level="2..4" -->
+<!-- /TOC -->
+```
+
+Supported attributes: `name` (unique identifier), `type` (`bullet` or `ordered`), `level` (heading range).
+
+**TOC content ranges:** Scope a named TOC to specific sections of the document:
+
+```markdown
+<!-- toc range name="api" start -->
+## Endpoints
+### GET /users
+### POST /users
+<!-- toc range end -->
+```
+
+A named TOC only includes headings from its matching range. An unnamed `<!-- TOC -->` always includes all document headings.
+
 **Section numbering:** Use `Markdown > Add Section Numbers` / `Remove Section Numbers` to add or strip hierarchical numbering (e.g., `1.1.`, `1.2.`) from headings.
 
 ### Syntax Highlighting

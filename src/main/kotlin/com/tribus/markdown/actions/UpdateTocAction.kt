@@ -15,32 +15,21 @@ class UpdateTocAction : AnAction(), MarkdownAction {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         val project = e.project ?: return
         val document = editor.document
-        val documentText = document.text
 
-        val range = TocGenerator.findTocRange(documentText)
-        if (range == null) {
-            // No TOC region found — nothing to update
-            return
-        }
+        val updatedText = TocGenerator.updateAllTocs(document.text) ?: return
 
-        val newToc = TocGenerator.generateWithMarkers(documentText)
-        val currentToc = documentText.substring(range.startOffset, range.endOffset)
-
-        if (currentToc != newToc) {
-            WriteCommandAction.runWriteCommandAction(project) {
-                document.replaceString(range.startOffset, range.endOffset, newToc)
-            }
+        WriteCommandAction.runWriteCommandAction(project) {
+            document.setText(updatedText)
         }
     }
 
     override fun update(e: AnActionEvent) {
         val hasFile = MarkdownFileUtil.isMarkdownFile(e)
         e.presentation.isEnabled = hasFile
-        // Show "Update" only when TOC exists
         if (hasFile) {
             val editor = e.getData(CommonDataKeys.EDITOR)
             if (editor != null) {
-                val hasToc = TocGenerator.findTocRange(editor.document.text) != null
+                val hasToc = TocGenerator.findAllTocBlocks(editor.document.text).isNotEmpty()
                 e.presentation.isEnabled = hasToc
             }
         }

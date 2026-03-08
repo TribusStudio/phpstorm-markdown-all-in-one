@@ -60,6 +60,10 @@ TOC generation and management.
 - [x] Duplicate heading slug handling (-1, -2 suffixes)
 - [x] Setext heading support
 - [x] Code block and front matter exclusion
+- [x] Named TOCs with attribute overrides (`name`, `type`, `level`)
+- [x] TOC content ranges for scoping named TOCs to document sections
+- [x] Multiple TOCs per document with independent settings
+- [x] Per-level ordered list numbering (branch-specific counters)
 - [x] Tests for TOC generation, slug modes, and heading extraction
 
 ## Phase 4: Table Formatting ← NEXT
