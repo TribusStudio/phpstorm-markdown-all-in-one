@@ -96,6 +96,9 @@ class MarkdownFileEditorListener : EditorFactoryListener {
                 "com.tribus.markdown.actions.ListOutdent" to CustomShortcutSet(
                     KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, MENU_MOD), null)
                 ),
+                "com.tribus.markdown.actions.FormatTable" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK or InputEvent.SHIFT_DOWN_MASK or InputEvent.ALT_DOWN_MASK), null)
+                ),
             )
         }
     }

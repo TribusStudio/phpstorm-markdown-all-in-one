@@ -9,18 +9,17 @@ import com.tribus.markdown.table.TableFormatter
 import com.tribus.markdown.table.TableParser
 import com.tribus.markdown.util.MarkdownFileUtil
 
-class FormatTableAction : AnAction(), MarkdownAction {
+class FormatAllTablesAction : AnAction(), MarkdownAction {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent) {
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         val project = e.project ?: return
         val document = editor.document
-        val caretLine = editor.caretModel.logicalPosition.line
 
-        val formatted = TableFormatter.formatTableInText(document.text, caretLine) ?: return
+        val formatted = TableFormatter.formatAll(document.text) ?: return
 
-        WriteCommandAction.runWriteCommandAction(project, "Format Table", null, {
+        WriteCommandAction.runWriteCommandAction(project, "Format All Tables", null, {
             document.setText(formatted)
         })
     }
@@ -31,9 +30,8 @@ class FormatTableAction : AnAction(), MarkdownAction {
         if (hasFile) {
             val editor = e.getData(CommonDataKeys.EDITOR)
             if (editor != null) {
-                val caretLine = editor.caretModel.logicalPosition.line
-                val hasTable = TableParser.findTableAt(editor.document.text, caretLine) != null
-                e.presentation.isEnabled = hasTable
+                val hasTables = TableParser.findAll(editor.document.text).isNotEmpty()
+                e.presentation.isEnabled = hasTables
             }
         }
     }

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-03-08
+
+### Added
+- **GFM table parsing** — full parser for GitHub Flavored Markdown tables with header, separator, and data rows
+- **Table auto-formatting** — pads cells to uniform column widths with consistent spacing
+- **Column alignment detection and preservation** — `:---` (left), `:---:` (center), `---:` (right) markers are maintained during formatting
+- **Format Table action** (`Ctrl+Shift+Alt+T`) — format the table at cursor position
+- **Format All Tables action** — format every table in the document
+- **Format tables on save** — auto-format all tables when saving (configurable via settings)
+- **Tab navigation in tables** — Tab moves to next cell, Shift+Tab moves to previous cell, wrapping between rows
+- Unit tests for table parsing and formatting (20+ test cases)
+
 ## [0.9.0] - 2026-03-08
 
 ### Added

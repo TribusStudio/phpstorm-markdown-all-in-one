@@ -123,6 +123,24 @@ A named TOC only includes headings from its matching range. An unnamed `<!-- TOC
 
 **Section numbering:** Use `Markdown > Add Section Numbers` / `Remove Section Numbers` to add or strip hierarchical numbering (e.g., `1.1.`, `1.2.`) from headings.
 
+### Table Formatting
+
+Auto-format GFM tables with consistent padding and alignment.
+
+**Format Table:** Use `Markdown > Format Table` (`Ctrl+Shift+Alt+T`) to format the table at the cursor. Use `Markdown > Format All Tables` to format every table in the document.
+
+**Format on save:** Tables are automatically formatted when saving (configurable in Settings > Languages > Markdown All-in-One > Table formatter enabled).
+
+**Tab navigation:** Press `Tab` inside a table to jump to the next cell. `Shift+Tab` jumps to the previous cell. Navigation wraps between rows and skips the separator row.
+
+**Alignment preservation:** Column alignment markers are detected and preserved during formatting:
+
+```markdown
+| Left   | Center | Right |
+| :----- | :----: | ----: |
+| text   |  text  |  text |
+```
+
 ### Syntax Highlighting
 - Headings, code blocks, inline code, blockquotes, list markers, horizontal rules
 - Inline formatting: **bold**, *italic*, ~~strikethrough~~

@@ -66,17 +66,17 @@ TOC generation and management.
 - [x] Per-level ordered list numbering (branch-specific counters)
 - [x] Tests for TOC generation, slug modes, and heading extraction
 
-## Phase 4: Table Formatting ← NEXT
+## Phase 4: Table Formatting ✅
 GFM table auto-formatting.
 
-- [ ] Parse GFM table structure
-- [ ] Auto-format table with padding and alignment
-- [ ] Detect and preserve column alignment (`:---`, `:--:`, `---:`)
-- [ ] Format on action / format on save
-- [ ] Tab key navigation between cells
-- [ ] Tests for table formatting
+- [x] Parse GFM table structure
+- [x] Auto-format table with padding and alignment
+- [x] Detect and preserve column alignment (`:---`, `:--:`, `---:`)
+- [x] Format on action / format on save
+- [x] Tab key navigation between cells
+- [x] Tests for table formatting
 
-## Phase 5: Auto-Completion
+## Phase 5: Auto-Completion ← NEXT
 Completion providers for markdown-specific content.
 
 - [ ] File/image path completion (triggered by `(`, `[`)
@@ -85,7 +85,17 @@ Completion providers for markdown-specific content.
 - [ ] Smart paste — paste URL over selected text creates `[text](url)`
 - [ ] Tests for completion providers
 
-## Phase 6: Export & Preview Enhancements
+## Phase 6: Toolbars and Context Actions
+In editor-mode toolbars for quick and easy access to common text formatting and layout functions.
+
+- [ ] Right click Context Action menu for selection and mouse position function awareness
+- [ ] Hover toolbar for text formatting on seletion
+- [ ] Top of Editor window toolbar with text formatting, power tools, settings, quick access to common tasks
+- [ ] Top of Preview window toolbar with text sizing (+/- zoom size), render style (github, gitlab, vscode, etc)
+- [ ] Top right of editor window toolbar will show, like the standard JetBrains Markdown plugin, three states for viewing a markdown file "editor | preview | split mode"
+- [ ] Tests for toolbar layout and placement along with icons
+
+## Phase 7: Export & Preview Enhancements
 HTML export and preview improvements.
 
 - [ ] Export current file to HTML
@@ -95,7 +105,7 @@ HTML export and preview improvements.
 - [ ] Link validation on export
 - [ ] Tests for HTML export
 
-## Phase 7: Polish & Release
+## Phase 8: Polish & Release
 Final polish, documentation, and marketplace publishing.
 
 - [ ] Comprehensive settings page with all options

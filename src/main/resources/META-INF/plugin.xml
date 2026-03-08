@@ -72,6 +72,18 @@
         <fileDocumentManagerListener
                 implementation="com.tribus.markdown.toc.TocAutoUpdateListener"/>
 
+        <!-- Auto-format tables on save -->
+        <fileDocumentManagerListener
+                implementation="com.tribus.markdown.table.TableFormatOnSaveListener"/>
+
+        <!-- Tab navigation in tables -->
+        <editorActionHandler action="EditorTab"
+                             implementationClass="com.tribus.markdown.table.TableTabHandler"
+                             order="first"/>
+        <editorActionHandler action="EditorUnindentSelection"
+                             implementationClass="com.tribus.markdown.table.TableShiftTabHandler"
+                             order="first"/>
+
         <!-- File templates for New > Markdown File -->
         <internalFileTemplate name="Blank Markdown"/>
         <internalFileTemplate name="README"/>
@@ -190,7 +202,14 @@
             <action id="com.tribus.markdown.actions.FormatTable"
                     class="com.tribus.markdown.actions.FormatTableAction"
                     text="Format Table"
-                    description="Auto-format the GFM table at cursor"/>
+                    description="Auto-format the GFM table at cursor">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift alt T"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.FormatAllTables"
+                    class="com.tribus.markdown.actions.FormatAllTablesAction"
+                    text="Format All Tables"
+                    description="Auto-format all GFM tables in the document"/>
 
             <separator/>
 
