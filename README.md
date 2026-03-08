@@ -155,6 +155,16 @@ Context-aware completions while editing markdown:
 - **Reference link labels** — type `[text][` to see all `[label]: url` definitions in the document
 - **File/image paths** — type `[text](` or `![alt](` to browse files relative to the current document; supports directory navigation
 
+1. Type `[link text](` — after the `(`, start typing a path and press `Ctrl+Space` to trigger completion
+2. Type `![alt text](` — same for images
+
+The completion provider checks if the text before the cursor matches the pattern `[...](` or `![...](`, then lists files relative to the current document's directory.
+
+- `[text](#` + `Ctrl+Space` → heading slugs
+- `[text][` + `Ctrl+Space` → reference labels
+- `[text](` + `Ctrl+Space` → file paths
+- `![alt](` + `Ctrl+Space` → file paths (images)
+
 ### Smart Paste
 
 Paste a URL while text is selected to automatically create a markdown link:

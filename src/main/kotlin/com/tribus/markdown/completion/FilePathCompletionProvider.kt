@@ -3,6 +3,8 @@ package com.tribus.markdown.completion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.completion.InsertionContext
+import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.vfs.VirtualFile
@@ -65,6 +67,12 @@ class FilePathCompletionProvider : CompletionProvider<CompletionParameters>() {
                     .withPresentableText(child.name + "/")
                     .withIcon(AllIcons.Nodes.Folder)
                     .withTypeText("dir")
+                    .withInsertHandler { ctx: InsertionContext, _: LookupElement ->
+                        // Re-trigger completion to browse into the directory
+                        com.intellij.codeInsight.AutoPopupController
+                            .getInstance(ctx.project)
+                            .scheduleAutoPopup(ctx.editor)
+                    }
             } else {
                 val ext = child.extension?.lowercase() ?: ""
                 val icon = when {
@@ -76,6 +84,15 @@ class FilePathCompletionProvider : CompletionProvider<CompletionParameters>() {
                     .withPresentableText(child.name)
                     .withIcon(icon)
                     .withTypeText(ext)
+                    .withInsertHandler { ctx: InsertionContext, _: LookupElement ->
+                        // Append closing ) if not already present
+                        val doc = ctx.document
+                        val tail = ctx.tailOffset
+                        if (tail >= doc.textLength || doc.charsSequence[tail] != ')') {
+                            doc.insertString(tail, ")")
+                            ctx.editor.caretModel.moveToOffset(tail + 1)
+                        }
+                    }
             }
 
             resultWithPrefix.addElement(element)

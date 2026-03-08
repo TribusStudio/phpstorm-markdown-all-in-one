@@ -3,6 +3,8 @@ package com.tribus.markdown.completion
 import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.completion.InsertionContext
+import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.util.ProcessingContext
@@ -56,6 +58,15 @@ class ReferenceLinkCompletionProvider : CompletionProvider<CompletionParameters>
                     .withTailText("  $url", true)
                     .withTypeText("ref")
                     .withIcon(AllIcons.Nodes.PpWeb)
+                    .withInsertHandler { ctx: InsertionContext, _: LookupElement ->
+                        // Append closing ] if not already present
+                        val doc = ctx.document
+                        val tail = ctx.tailOffset
+                        if (tail >= doc.textLength || doc.charsSequence[tail] != ']') {
+                            doc.insertString(tail, "]")
+                            ctx.editor.caretModel.moveToOffset(tail + 1)
+                        }
+                    }
             )
         }
     }

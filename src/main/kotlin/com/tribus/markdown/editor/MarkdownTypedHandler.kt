@@ -1,5 +1,6 @@
 package com.tribus.markdown.editor
 
+import com.intellij.codeInsight.AutoPopupController
 import com.intellij.codeInsight.CodeInsightSettings
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.openapi.editor.Editor
@@ -8,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiFile
 import com.tribus.markdown.lang.MarkdownLanguage
+import com.tribus.markdown.settings.MarkdownSettings
 
 /**
  * Handles selection wrapping for markdown formatting characters.
@@ -75,8 +77,37 @@ class MarkdownTypedHandler : TypedHandlerDelegate() {
         if (file.language != MarkdownLanguage) {
             return Result.CONTINUE
         }
-        // TODO: Phase 2 — smart list editing, auto-pairs, etc.
+
+        // Auto-popup completion for link/image paths and heading references
+        if (shouldAutoPopupCompletion(c, editor)) {
+            AutoPopupController.getInstance(project).scheduleAutoPopup(editor)
+        }
+
         return Result.CONTINUE
+    }
+
+    /**
+     * Determines if typing the given character should trigger auto-popup completion.
+     * Triggers on:
+     * - `(` after `]` — file/image path context: `[text](`
+     * - `#` after `(` — heading reference context: `[text](#`
+     * - `[` after `]` — reference link context: `[text][`
+     */
+    private fun shouldAutoPopupCompletion(c: Char, editor: Editor): Boolean {
+        val settings = try { MarkdownSettings.getInstance() } catch (_: Exception) { return false }
+        if (!settings.state.autoPopupCompletionEnabled) return false
+
+        val offset = editor.caretModel.offset
+        if (offset < 2) return false
+        val doc = editor.document
+        val prevChar = doc.charsSequence[offset - 2]
+
+        return when (c) {
+            '(' -> prevChar == ']'     // [text](
+            '#' -> prevChar == '('     // [text](#  — the ( was just typed before
+            '[' -> prevChar == ']'     // [text][
+            else -> false
+        }
     }
 
     companion object {

@@ -32,6 +32,9 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // Table formatting
         var tableFormatterEnabled: Boolean = true,
 
+        // Completion
+        var autoPopupCompletionEnabled: Boolean = true,
+
         // Smart paste
         var smartPasteEnabled: Boolean = true,
     )

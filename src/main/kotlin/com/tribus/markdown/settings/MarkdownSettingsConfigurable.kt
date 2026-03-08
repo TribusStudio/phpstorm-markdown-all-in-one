@@ -77,6 +77,14 @@ class MarkdownSettingsConfigurable : Configurable {
                 }
             }
 
+            group("Completion") {
+                row {
+                    checkBox("Auto-popup completion in link/image paths")
+                        .bindSelected(state::autoPopupCompletionEnabled)
+                        .comment("Show completion popup automatically when typing ( after ] or # in links")
+                }
+            }
+
             group("Smart Paste") {
                 row {
                     checkBox("Smart paste (auto-create links from URLs)")
