@@ -235,6 +235,11 @@
                     class="com.tribus.markdown.actions.ExportHtmlAction"
                     text="Export to HTML"
                     description="Export current markdown file to HTML"/>
+
+            <action id="com.tribus.markdown.actions.BatchExportHtml"
+                    class="com.tribus.markdown.actions.BatchExportHtmlAction"
+                    text="Batch Export to HTML"
+                    description="Export all markdown files in a folder to HTML"/>
         </group>
 
         <!-- Task list toggle (standalone for keybinding) -->

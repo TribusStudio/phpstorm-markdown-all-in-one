@@ -208,6 +208,25 @@ Paste a URL while text is selected to automatically create a markdown link:
 
 Configurable via Settings > Languages > Markdown All-in-One > Smart paste enabled.
 
+### HTML Export
+
+Export markdown files to styled, standalone HTML documents.
+
+**Export current file:** Use `Markdown > Export to HTML` from the Tools menu or the toolbar's tools popup (`...`). A file save dialog lets you choose the output location.
+
+**Batch export:** Use `Markdown > Batch Export to HTML` to export all markdown files in a folder (with recursive subdirectory support) to a chosen output directory.
+
+**Features:**
+
+| Feature               | Description                                                                |
+| --------------------- | -------------------------------------------------------------------------- |
+| Styled output         | Exported HTML includes the selected preview theme CSS                      |
+| Custom CSS            | Any custom CSS overrides from settings are applied                         |
+| Image path resolution | Relative image paths are resolved to absolute `file://` paths              |
+| Base64 image embed    | Optionally embed local images as base64 for self-contained HTML            |
+| Link validation       | Warns about broken anchor links, missing file references, undefined labels |
+| Document title        | HTML `<title>` extracted from first heading, falls back to filename        |
+
 ### Smart List Editing
 - **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
 - **Empty list handling** — Enter on an empty list item outdents it (if indented) or removes the marker (if top-level)

@@ -99,17 +99,17 @@ In-editor toolbars, context menus, and JCEF-based markdown preview.
 - [x] Markdown-to-HTML converter — full GFM support without external dependencies
 - [x] Tests for HTML converter (22 test cases)
 
-## Phase 7: Export & Preview Enhancements ← NEXT
+## Phase 7: Export & Preview Enhancements ✅
 HTML export and preview improvements.
 
-- [ ] Export current file to HTML
-- [ ] Batch export (folder of .md files)
-- [ ] Image path resolution (absolute/base64)
-- [ ] Styled HTML output with themes
-- [ ] Link validation on export
-- [ ] Tests for HTML export
+- [x] Export current file to HTML
+- [x] Batch export (folder of .md files)
+- [x] Image path resolution (absolute/base64)
+- [x] Styled HTML output with themes
+- [x] Link validation on export
+- [x] Tests for HTML export
 
-## Phase 8: Polish & Release
+## Phase 8: Polish & Release ← NEXT
 Final polish, documentation, and marketplace publishing.
 
 - [ ] Comprehensive settings page with all options

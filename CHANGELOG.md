@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-03-09
+
+### Added
+- **Export to HTML** — export the current markdown file to a styled HTML document via file save dialog (Tools > Markdown > Export to HTML)
+- **Batch export to HTML** — export all markdown files in a folder (with recursive subdirectory support) to HTML (Tools > Markdown > Batch Export to HTML)
+- **Image path resolution** — relative image paths in exported HTML are resolved to absolute `file://` paths; optional base64 embedding for self-contained documents
+- **Styled HTML output** — exported HTML includes the selected preview theme CSS (GitHub, GitHub Dark, GitLab, VSCode, Auto) plus any custom CSS overrides
+- **Link validation on export** — validates anchor links (#headings), relative file links, and reference-style link definitions; warnings displayed after export
+- **Document title extraction** — exported HTML `<title>` is set from the first heading (ATX or Setext), falling back to the filename
+- 22 unit tests for HTML export (single file, batch, image resolution, link validation, title extraction)
+
+## [0.12.4] - 2026-03-09
+
+### Fixed
+- **Toolbar persists across window operations** — `HierarchyListener` detects when the editor component's showing state changes (window move, split, combine) and re-triggers `EditorNotifications.updateNotifications()` to recreate the toolbar
+
+### Added
+- **Better toolbar button grouping** — buttons organized into logical groups: Text Formatting (Bold, Italic, Strikethrough, Code, Code Block) | Structure (H+, H-) | Lists (Indent, Outdent, Task) | Tables & TOC (Format Table, Create TOC)
+- **Missing toolbar buttons** — added Code Block, List Indent, List Outdent, and Task Toggle to the toolbar
+- **Tools popup menu** — `...` button next to settings gear opens a dropdown with: Update TOC, Create TOC, Format Table at Cursor, Format All Tables, Add/Remove Section Numbers, Export to HTML
+- Uses `AllIcons.Actions.More` for the tools dropdown and `AllIcons.Actions.MoveRight`/`MoveLeft` for list indent/outdent
+
 ## [0.12.3] - 2026-03-09
 
 ### Fixed
