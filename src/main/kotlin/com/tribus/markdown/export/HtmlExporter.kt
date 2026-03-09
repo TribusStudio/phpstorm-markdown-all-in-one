@@ -206,11 +206,13 @@ object HtmlExporter {
 
     fun defaultOptions(): ExportOptions {
         return try {
-            val settings = MarkdownSettings.getInstance()
-            val theme = PreviewTheme.Theme.fromName(settings.state.previewTheme)
+            val state = MarkdownSettings.getInstance().state
+            val theme = PreviewTheme.Theme.fromName(state.previewTheme)
             ExportOptions(
                 theme = theme,
-                customCssPath = settings.state.previewCustomCssPath
+                customCssPath = state.previewCustomCssPath,
+                embedImages = state.exportEmbedImages,
+                validateLinks = state.exportValidateLinks
             )
         } catch (_: Exception) {
             ExportOptions()

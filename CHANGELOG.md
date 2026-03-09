@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-03-09
+
+### Added
+- **Comprehensive settings page** — all plugin options now exposed in Settings > Languages > Markdown All-in-One:
+  - TOC unordered list marker (`-`, `*`, `+`)
+  - Format tables on save (separate from table formatter enabled)
+  - Toolbar enabled/disabled toggle
+  - Export options: embed images as base64, validate links on export
+  - Descriptive comments on all settings
+- **Plugin icon and branding** — 40x40 `pluginIcon.svg` and `pluginIcon_dark.svg` for JetBrains Marketplace listing
+- **Marketplace-ready plugin description** — expanded `<description>` in plugin.xml with full feature list and getting started guide
+- **Plugin signing in CI** — GitHub Actions workflow signs the plugin when `CERTIFICATE_CHAIN`, `PRIVATE_KEY`, and `PRIVATE_KEY_PASSWORD` secrets are configured
+- **IDE compatibility range** — `untilBuild` set to `261.*` for clear version compatibility
+
 ## [0.13.2] - 2026-03-09
 
 ### Fixed

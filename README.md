@@ -233,6 +233,32 @@ Export markdown files to styled, standalone HTML documents.
 - **Indent/Outdent** — `Cmd+]` / `Cmd+[` to indent/outdent list items (supports multi-line selection)
 - **Smart Backspace** — outdents indented markers, removes top-level markers, strips task checkboxes
 
+### Settings
+
+All options are in **Settings > Languages > Markdown All-in-One**:
+
+| Group | Setting | Default |
+| ----- | ------- | ------- |
+| Formatting | Bold indicator (`**` / `__`) | `**` |
+| Formatting | Italic indicator (`*` / `_`) | `*` |
+| List Editing | Auto-renumber ordered lists | On |
+| List Editing | Indentation size (adaptive/inherit) | adaptive |
+| Table of Contents | Heading levels | `1..6` |
+| Table of Contents | Update on save | On |
+| Table of Contents | Ordered list | Off |
+| Table of Contents | Unordered list marker (`-`/`*`/`+`) | `-` |
+| Table of Contents | Slug generation mode | github |
+| Table Formatting | Enable auto-formatting | On |
+| Table Formatting | Format on save | On |
+| Preview | Render theme | Auto (follow IDE) |
+| Preview | Custom CSS path | (empty) |
+| Toolbar | Show editor toolbar | On |
+| Toolbar | Button display | icons |
+| Completion | Auto-popup completion | On |
+| Smart Paste | Auto-create links from URLs | On |
+| Export | Embed images as base64 | Off |
+| Export | Validate links on export | On |
+
 ## Installation
 
 ### Auto-Update (Recommended)

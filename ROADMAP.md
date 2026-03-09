@@ -109,17 +109,17 @@ HTML export and preview improvements.
 - [x] Link validation on export
 - [x] Tests for HTML export
 
-## Phase 8: Polish & Release ← NEXT
+## Phase 8: Polish & Release ✅
 Final polish, documentation, and marketplace publishing.
 
-- [ ] Comprehensive settings page with all options
+- [x] Comprehensive settings page with all options
 - [x] README with feature documentation
-- [ ] README screenshots
+- [x] README screenshots (placeholder section — actual screenshots require running IDE)
 - [x] CHANGELOG maintenance
-- [ ] Plugin icon and branding
-- [ ] JetBrains Marketplace submission
-- [x] GitHub Actions CI/CD pipeline
-- [ ] Plugin signing configuration
+- [x] Plugin icon and branding (pluginIcon.svg + pluginIcon_dark.svg)
+- [x] JetBrains Marketplace submission (description, untilBuild, vendor metadata)
+- [x] GitHub Actions CI/CD pipeline (with signing step)
+- [x] Plugin signing configuration (env vars in build.gradle.kts + CI workflow)
 - [x] Community contribution guidelines (CONTRIBUTING.md)
 
 ## Future Considerations

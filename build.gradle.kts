@@ -99,6 +99,7 @@ intellijPlatform {
         name = providers.gradleProperty("pluginName")
         ideaVersion {
             sinceBuild = "251"
+            untilBuild = "261.*"
         }
         changeNotes = provider { extractChangeNotes() }
     }

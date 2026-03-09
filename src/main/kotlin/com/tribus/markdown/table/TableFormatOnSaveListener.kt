@@ -14,7 +14,8 @@ class TableFormatOnSaveListener : FileDocumentManagerListener {
 
     override fun beforeDocumentSaving(document: Document) {
         val settings = MarkdownSettings.getInstance()
-        if (!settings.state.tableFormatterEnabled) return
+        val state = settings.state
+        if (!state.tableFormatterEnabled || !state.tableFormatOnSave) return
 
         val file = FileDocumentManager.getInstance().getFile(document) ?: return
         if (!MarkdownFileUtil.isMarkdownFile(file)) return

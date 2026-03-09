@@ -5,19 +5,28 @@
 
     <description><![CDATA[
     <h2>Markdown All-in-One for PHPStorm</h2>
-    <p>A comprehensive Markdown editing experience — keyboard shortcuts, table of contents,
-    auto-completion, list editing, table formatting, and more.</p>
+    <p>A comprehensive Markdown editing experience inspired by VSCode's Markdown All-in-One,
+    purpose-built for the JetBrains ecosystem. No external dependencies required.</p>
 
     <h3>Features</h3>
     <ul>
-        <li><b>Keyboard shortcuts</b> — Bold, italic, strikethrough, code spans, headings</li>
-        <li><b>Smart list editing</b> — Auto-continue lists, indent/outdent, task list toggling</li>
-        <li><b>Table of Contents</b> — Generate and auto-update TOC from headings</li>
-        <li><b>Table formatting</b> — Auto-format GFM tables with alignment</li>
-        <li><b>Auto-completion</b> — File paths, image paths, link references</li>
-        <li><b>Smart paste</b> — Paste URLs as markdown links</li>
-        <li><b>HTML export</b> — Export markdown to styled HTML</li>
+        <li><b>Keyboard shortcuts</b> — Bold, italic, strikethrough, code spans, headings with platform-aware keys</li>
+        <li><b>Smart list editing</b> — Auto-continue lists on Enter, indent/outdent, task list toggling, smart Backspace</li>
+        <li><b>Table of Contents</b> — Generate, auto-update on save, multiple TOCs per document, named TOCs with attribute overrides</li>
+        <li><b>Table formatting</b> — Auto-format GFM tables with alignment, Tab navigation between cells, format on save</li>
+        <li><b>Live preview</b> — JCEF-based HTML preview with split editor, CSS themes (GitHub, GitHub Dark, GitLab, VSCode), custom CSS</li>
+        <li><b>Auto-completion</b> — Heading references, file/image paths, reference link labels</li>
+        <li><b>Smart paste</b> — Paste URLs over selected text to create markdown links</li>
+        <li><b>Editor toolbar</b> — Persistent formatting toolbar with configurable display (icons/labels/both)</li>
+        <li><b>Context menu</b> — Right-click context-aware actions, floating selection toolbar</li>
+        <li><b>HTML export</b> — Export single files or batch folders to styled, self-contained HTML</li>
+        <li><b>Selection wrapping</b> — Type *, ~, _, `, |, or - with text selected to wrap contextually</li>
+        <li><b>File templates</b> — New > Markdown File with 6 templates (README, Document, Meeting Notes, etc.)</li>
     </ul>
+
+    <h3>Getting Started</h3>
+    <p>Install the plugin, disable the bundled "Markdown" plugin, and restart. Open any .md file to see
+    the toolbar and preview. Configure in Settings &gt; Languages &gt; Markdown All-in-One.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>

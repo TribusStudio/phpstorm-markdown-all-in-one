@@ -46,6 +46,7 @@ class MarkdownSettingsConfigurable : Configurable {
                             { state.listIndentationSize },
                             { state.listIndentationSize = it ?: "adaptive" }
                         )
+                        .comment("\"adaptive\" uses 2 or 4 spaces based on list marker width")
                 }
             }
 
@@ -63,12 +64,20 @@ class MarkdownSettingsConfigurable : Configurable {
                     checkBox("Use ordered list for TOC")
                         .bindSelected(state::tocOrderedList)
                 }
+                row("Unordered list marker:") {
+                    comboBox(listOf("-", "*", "+"))
+                        .bindItem(
+                            { state.tocUnorderedListMarker },
+                            { state.tocUnorderedListMarker = it ?: "-" }
+                        )
+                }
                 row("Slug generation mode:") {
                     comboBox(listOf("github", "gitlab", "azure-devops", "bitbucket", "gitea"))
                         .bindItem(
                             { state.tocSlugifyMode },
                             { state.tocSlugifyMode = it ?: "github" }
                         )
+                        .comment("How heading anchor IDs are generated")
                 }
             }
 
@@ -76,6 +85,10 @@ class MarkdownSettingsConfigurable : Configurable {
                 row {
                     checkBox("Enable table auto-formatting")
                         .bindSelected(state::tableFormatterEnabled)
+                }
+                row {
+                    checkBox("Format tables on save")
+                        .bindSelected(state::tableFormatOnSave)
                 }
             }
 
@@ -96,13 +109,17 @@ class MarkdownSettingsConfigurable : Configurable {
             }
 
             group("Toolbar") {
+                row {
+                    checkBox("Show editor toolbar")
+                        .bindSelected(state::toolbarEnabled)
+                        .comment("Display the formatting toolbar at the top of markdown editors")
+                }
                 row("Button display:") {
                     comboBox(listOf("icons", "labels", "icons and labels"))
                         .bindItem(
                             { state.toolbarDisplayMode },
                             { state.toolbarDisplayMode = it ?: "icons" }
                         )
-                        .comment("How toolbar buttons are displayed in the editor toolbar")
                 }
             }
 
@@ -118,6 +135,19 @@ class MarkdownSettingsConfigurable : Configurable {
                 row {
                     checkBox("Smart paste (auto-create links from URLs)")
                         .bindSelected(state::smartPasteEnabled)
+                }
+            }
+
+            group("Export") {
+                row {
+                    checkBox("Embed images as base64 in exported HTML")
+                        .bindSelected(state::exportEmbedImages)
+                        .comment("Creates self-contained HTML files (larger file size)")
+                }
+                row {
+                    checkBox("Validate links on export")
+                        .bindSelected(state::exportValidateLinks)
+                        .comment("Warn about broken anchors, file links, and reference definitions")
                 }
             }
         }

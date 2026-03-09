@@ -61,17 +61,21 @@ class EditorToolbarProvider : EditorNotificationProvider {
             if (!MarkdownFileUtil.isMarkdownFile(file)) return@Function null
             if (fileEditor is MarkdownPreviewFileEditor) return@Function null
 
+            val settings = try {
+                MarkdownSettings.getInstance().state
+            } catch (_: Exception) {
+                null
+            }
+
+            if (settings?.toolbarEnabled == false) return@Function null
+
             val editor = when (fileEditor) {
                 is TextEditor -> fileEditor.editor
                 is MarkdownSplitEditor -> (fileEditor.textEditor as? TextEditor)?.editor
                 else -> null
             } ?: return@Function null
 
-            val displayMode = try {
-                MarkdownSettings.getInstance().state.toolbarDisplayMode
-            } catch (_: Exception) {
-                "icons"
-            }
+            val displayMode = settings?.toolbarDisplayMode ?: "icons"
 
             val actionButtons = mutableListOf<JButton>()
 

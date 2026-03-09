@@ -36,6 +36,7 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
 
         // Table formatting
         var tableFormatterEnabled: Boolean = true,
+        var tableFormatOnSave: Boolean = true,
 
         // Completion
         var autoPopupCompletionEnabled: Boolean = true,
@@ -46,9 +47,14 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
 
         // Toolbar
         var toolbarDisplayMode: String = "icons",
+        var toolbarEnabled: Boolean = true,
 
         // Smart paste
         var smartPasteEnabled: Boolean = true,
+
+        // Export
+        var exportEmbedImages: Boolean = false,
+        var exportValidateLinks: Boolean = true,
     )
 
     private var state = State()
