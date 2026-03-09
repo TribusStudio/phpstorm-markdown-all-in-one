@@ -5,6 +5,7 @@ import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Service
 @State(
@@ -12,6 +13,10 @@ import com.intellij.openapi.components.Storage
     storages = [Storage("MarkdownAllInOne.xml")]
 )
 class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
+
+    fun interface ChangeListener {
+        fun settingsChanged(state: State)
+    }
 
     data class State(
         // Formatting
@@ -35,16 +40,39 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // Completion
         var autoPopupCompletionEnabled: Boolean = true,
 
+        // Preview
+        var previewTheme: String = "auto",
+        var previewCustomCssPath: String = "",
+
+        // Toolbar
+        var toolbarDisplayMode: String = "icons",
+
         // Smart paste
         var smartPasteEnabled: Boolean = true,
     )
 
     private var state = State()
+    private val listeners = CopyOnWriteArrayList<ChangeListener>()
 
     override fun getState(): State = state
 
     override fun loadState(state: State) {
         this.state = state
+        notifyListeners()
+    }
+
+    fun addChangeListener(listener: ChangeListener) {
+        listeners.add(listener)
+    }
+
+    fun removeChangeListener(listener: ChangeListener) {
+        listeners.remove(listener)
+    }
+
+    private fun notifyListeners() {
+        for (listener in listeners) {
+            listener.settingsChanged(state)
+        }
     }
 
     companion object {

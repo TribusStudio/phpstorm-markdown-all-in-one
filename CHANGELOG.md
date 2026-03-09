@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.3] - 2026-03-09
+
+### Fixed
+- **Toolbar display mode setting now sticks** — comboBox values are stored and read in consistent lowercase; previously a case mismatch caused "icons" mode to not be recognized
+- **Toolbar appears immediately on file open** — `EditorNotifications.updateAllNotifications()` is triggered from `editorCreated()` so the toolbar renders as soon as the editor opens, not on the next lazy evaluation cycle
+- **Toolbar rebuilds on settings change** — applying settings now calls `EditorNotifications.updateAllNotifications()` across all open projects so display mode changes take effect immediately
+
+## [0.12.2] - 2026-03-09
+
+### Fixed
+- **Toolbar hover state** — buttons now show a translucent highlight and hand cursor on hover; disabled buttons suppress hover entirely
+- **Toolbar appears immediately** — buttons start enabled instead of waiting for a focus event that fires after construction
+- **Tighter button spacing** — switched from `FlowLayout` to `BoxLayout` with 24x24 fixed-size icon buttons and minimal padding
+
+## [0.12.1] - 2026-03-09
+
+### Fixed
+- **Toolbar rewritten as custom panel** — proper `BorderLayout` with left-justified action buttons and right-justified settings gear (`AllIcons.General.GearPlain`)
+- **Toolbar icons now render** — replaced `EditorNotificationPanel` text links with actual `JButton` components that display SVG icons via `IconLoader`
+- **Toolbar buttons disabled when preview focused** — action buttons are focus-aware; disabled when editor loses focus, re-enabled on focus gain
+- **Backtick rendering in preview** — double/triple backtick code spans (`` `` ` `` ``) now render correctly per CommonMark spec
+- **Preview hot-swaps CSS on settings change** — changing the render theme in settings immediately re-renders the preview without needing to edit the document
+
+### Added
+- **Toolbar display mode setting** — choose between Icons (default), Labels, or Icons and Labels (`Settings > Toolbar > Button display`)
+- **Settings change listener** — `MarkdownSettings` now notifies subscribers when settings are applied, enabling live preview updates
+- 2 new unit tests for multi-backtick inline code rendering
+
+## [0.12.0] - 2026-03-08
+
+### Added
+- **Right-click context menu** — context-aware Markdown submenu in the editor popup with formatting actions (shown on selection), table actions (shown when cursor is in a table), and TOC actions (shown when TOC exists)
+- **Floating selection toolbar** — Notion-style popup toolbar appears on text selection with quick-access buttons for Bold, Italic, Strikethrough, Code, Heading Up/Down, and Task Toggle
+- **Editor notification toolbar** — persistent toolbar at the top of markdown editors with formatting shortcuts (B, I, S, Code, H+, H-), power tools (Table, TOC), and Settings link
+- **JCEF markdown preview** — live HTML preview panel using Chromium Embedded Framework with automatic refresh on document changes
+- **Split editor** — editor/preview/split mode toggle via IntelliJ's TextEditorWithPreview (same UX as the built-in Markdown plugin)
+- **CSS theme system** — preview supports GitHub, GitHub Dark, GitLab, VSCode themes, plus Auto mode that follows the IDE's light/dark theme
+- **Custom CSS override** — specify a `.css` file path in settings for additional style overrides on the preview
+- **Preview zoom** — zoom in, zoom out, and reset zoom level on the preview panel
+- **Markdown-to-HTML converter** — full GFM-compatible converter (headings, bold, italic, strikethrough, code, links, images, lists, task lists, blockquotes, tables with alignment, horizontal rules, front matter skipping) with no external dependencies
+- 22 unit tests for the HTML converter covering all supported markdown elements
+
 ## [0.11.0] - 2026-03-08
 
 ### Added

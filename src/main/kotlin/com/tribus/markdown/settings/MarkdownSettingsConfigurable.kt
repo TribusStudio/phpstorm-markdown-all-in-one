@@ -1,7 +1,9 @@
 package com.tribus.markdown.settings
 
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.ui.EditorNotifications
 import com.intellij.ui.dsl.builder.*
 
 class MarkdownSettingsConfigurable : Configurable {
@@ -77,6 +79,33 @@ class MarkdownSettingsConfigurable : Configurable {
                 }
             }
 
+            group("Preview") {
+                row("Render theme:") {
+                    comboBox(listOf("Auto (follow IDE theme)", "GitHub", "GitHub Dark", "GitLab", "VSCode"))
+                        .bindItem(
+                            { state.previewTheme },
+                            { state.previewTheme = it ?: "auto" }
+                        )
+                        .comment("CSS theme for the markdown preview panel")
+                }
+                row("Custom CSS path:") {
+                    textField()
+                        .bindText(state::previewCustomCssPath)
+                        .comment("Optional path to a .css file for additional style overrides")
+                }
+            }
+
+            group("Toolbar") {
+                row("Button display:") {
+                    comboBox(listOf("icons", "labels", "icons and labels"))
+                        .bindItem(
+                            { state.toolbarDisplayMode },
+                            { state.toolbarDisplayMode = it ?: "icons" }
+                        )
+                        .comment("How toolbar buttons are displayed in the editor toolbar")
+                }
+            }
+
             group("Completion") {
                 row {
                     checkBox("Auto-popup completion in link/image paths")
@@ -101,6 +130,11 @@ class MarkdownSettingsConfigurable : Configurable {
     override fun apply() {
         panel?.apply()
         settings.loadState(state)
+
+        // Rebuild editor notification toolbars so display mode changes take effect
+        for (project in ProjectManager.getInstance().openProjects) {
+            EditorNotifications.getInstance(project).updateAllNotifications()
+        }
     }
 
     override fun reset() {

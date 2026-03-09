@@ -8,18 +8,18 @@ A comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by t
 
 Shortcuts automatically take priority over built-in IDE actions when editing markdown files. In non-markdown files, the standard IDE shortcuts work as normal.
 
-| Shortcut                | Action                    |
-| ----------------------- | ------------------------- |
-| `Cmd/Ctrl+B`            | Toggle **bold**           |
-| `Cmd/Ctrl+I`            | Toggle *italic*           |
-| `Alt+S`                 | Toggle ~~strikethrough~~  |
-| `Cmd/Ctrl+`` ` ``       | Toggle `code span`        |
-| `Cmd/Ctrl+Shift+`` ` `` | Toggle code block         |
-| `Ctrl+Shift+]`          | Increase heading level    |
-| `Ctrl+Shift+[`          | Decrease heading level    |
-| `Cmd/Ctrl+]`            | Indent list item          |
-| `Cmd/Ctrl+[`            | Outdent list item         |
-| `Alt+C`                 | Toggle task list checkbox |
+| Shortcut                  | Action                    |
+| ------------------------- | ------------------------- |
+| `Cmd/Ctrl+B`              | Toggle **bold**           |
+| `Cmd/Ctrl+I`              | Toggle *italic*           |
+| `Alt+S`                   | Toggle ~~strikethrough~~  |
+| `Cmd/Ctrl+`               | Toggle `code span`        |
+| `Cmd/Ctrl+Shift+` `` ` `` | Toggle code block         |
+| `Ctrl+Shift+]`            | Increase heading level    |
+| `Ctrl+Shift+[`            | Decrease heading level    |
+| `Cmd/Ctrl+]`              | Indent list item          |
+| `Cmd/Ctrl+[`              | Outdent list item         |
+| `Alt+C`                   | Toggle task list checkbox |
 
 ### Selection Wrapping
 
@@ -140,6 +140,40 @@ Auto-format GFM tables with consistent padding and alignment.
 | :--- | :----: | ----: |
 | text |  text  |  text |
 ```
+
+### Live Preview
+
+JCEF-based live preview with split editor support — just like the built-in Markdown plugin, but with theming and customization.
+
+**Split editor modes:** Click the editor/split/preview toggle in the top-right corner:
+- **Editor** — text editor only
+- **Split** — editor and preview side by side
+- **Preview** — preview only
+
+**CSS themes** (Settings > Languages > Markdown All-in-One > Preview):
+
+| Theme             | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| Auto (follow IDE) | GitHub Light in light themes, GitHub Dark in dark themes |
+| GitHub            | GitHub's light markdown rendering                        |
+| GitHub Dark       | GitHub's dark markdown rendering                         |
+| GitLab            | GitLab's markdown style                                  |
+| VSCode            | VSCode's markdown preview style                          |
+
+**Custom CSS:** Set a path to a `.css` file in settings to apply additional style overrides on top of the selected theme.
+
+**Zoom:** The preview panel supports zoom in/out/reset for comfortable reading.
+
+### Toolbars & Context Menu
+
+**Floating toolbar:** Select text to see a Notion-style popup toolbar with quick formatting buttons (Bold, Italic, Strikethrough, Code, Heading Up/Down, Task Toggle).
+
+**Editor toolbar:** A persistent toolbar at the top of markdown editors provides one-click access to formatting (B, I, S, Code, H+, H-), power tools (Table, TOC), and Settings.
+
+**Right-click context menu:** Right-click in a markdown file to see the **Markdown** submenu with context-aware actions:
+- Formatting actions appear when text is selected
+- Table formatting appears when the cursor is inside a table
+- TOC update appears when a TOC block exists in the document
 
 ### Syntax Highlighting
 - Headings, code blocks, inline code, blockquotes, list markers, horizontal rules

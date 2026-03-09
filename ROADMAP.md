@@ -85,17 +85,21 @@ Completion providers for markdown-specific content.
 - [x] Smart paste — paste URL over selected text creates `[text](url)`
 - [x] Tests for completion providers
 
-## Phase 6: Toolbars and Context Actions ← NEXT
-In editor-mode toolbars for quick and easy access to common text formatting and layout functions.
+## Phase 6: Toolbars, Context Actions & Preview ✅
+In-editor toolbars, context menus, and JCEF-based markdown preview.
 
-- [ ] Right click Context Action menu for selection and mouse position function awareness
-- [ ] Hover toolbar for text formatting on seletion
-- [ ] Top of Editor window toolbar with text formatting, power tools, settings, quick access to common tasks
-- [ ] Top of Preview window toolbar with text sizing (+/- zoom size), render style (github, gitlab, vscode, etc)
-- [ ] Top right of editor window toolbar will show, like the standard JetBrains Markdown plugin, three states for viewing a markdown file "editor | preview | split mode"
-- [ ] Tests for toolbar layout and placement along with icons
+- [x] Right-click context menu — context-aware actions based on selection, cursor position (table/TOC awareness)
+- [x] Floating selection toolbar — Notion-style popup on text selection (Bold, Italic, Strikethrough, Code, Headings, Task Toggle)
+- [x] Editor notification toolbar — top-of-editor bar with formatting, power tools, and settings links
+- [x] JCEF markdown preview — live HTML preview with document change listener
+- [x] CSS theme system — GitHub, GitHub Dark, GitLab, VSCode, Auto (follows IDE theme)
+- [x] Custom CSS override — user-specified CSS file path in settings
+- [x] Preview zoom — zoom in/out/reset support
+- [x] Split editor — editor | preview | split mode via TextEditorWithPreview
+- [x] Markdown-to-HTML converter — full GFM support without external dependencies
+- [x] Tests for HTML converter (22 test cases)
 
-## Phase 7: Export & Preview Enhancements
+## Phase 7: Export & Preview Enhancements ← NEXT
 HTML export and preview improvements.
 
 - [ ] Export current file to HTML

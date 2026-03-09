@@ -7,11 +7,15 @@ import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.ui.EditorNotifications
+import com.tribus.markdown.toolbar.FloatingToolbar
 import com.tribus.markdown.util.MarkdownFileUtil
 import java.awt.Toolkit
 import java.awt.event.InputEvent
 import java.awt.event.KeyEvent
 import javax.swing.KeyStroke
+import javax.swing.SwingUtilities
 
 /**
  * Registers plugin shortcuts directly on the editor component when a markdown
@@ -51,6 +55,20 @@ class MarkdownFileEditorListener : EditorFactoryListener {
             }
 
             action.registerCustomShortcutSet(shortcutSet, component)
+        }
+
+        // Register floating toolbar for text selections
+        val floatingToolbar = FloatingToolbar(editor)
+        editor.selectionModel.addSelectionListener(floatingToolbar)
+
+        // Kick editor notification providers so the toolbar appears immediately
+        // rather than waiting for IntelliJ's lazy evaluation cycle
+        SwingUtilities.invokeLater {
+            for (project in ProjectManager.getInstance().openProjects) {
+                if (!project.isDisposed) {
+                    EditorNotifications.getInstance(project).updateAllNotifications()
+                }
+            }
         }
     }
 
