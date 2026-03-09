@@ -31,6 +31,13 @@
                   topic="com.intellij.openapi.editor.event.EditorFactoryListener"/>
     </applicationListeners>
 
+    <!-- FileEditorManagerListener fires after the FileEditor tab is fully constructed,
+         ensuring editor.project is available and EditorNotificationProvider can evaluate. -->
+    <projectListeners>
+        <listener class="com.tribus.markdown.toolbar.ToolbarInitListener"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    </projectListeners>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- File type and language support -->
         <fileType name="MarkdownAIO"

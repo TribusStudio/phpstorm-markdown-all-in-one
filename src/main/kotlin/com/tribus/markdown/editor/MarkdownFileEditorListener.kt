@@ -7,10 +7,6 @@ import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.ui.EditorNotifications
 import com.tribus.markdown.toolbar.FloatingToolbar
 import com.tribus.markdown.util.MarkdownFileUtil
 import java.awt.Toolkit
@@ -61,19 +57,6 @@ class MarkdownFileEditorListener : EditorFactoryListener {
         // Register floating toolbar for text selections
         val floatingToolbar = FloatingToolbar(editor)
         editor.selectionModel.addSelectionListener(floatingToolbar)
-
-        // Kick editor notification providers so the toolbar appears immediately
-        // rather than waiting for IntelliJ's lazy evaluation cycle.
-        // Use ModalityState.any() to run as soon as possible on the EDT,
-        // and only update the project that owns this editor.
-        val project = editor.project
-        if (project != null && !project.isDisposed) {
-            ApplicationManager.getApplication().invokeLater({
-                if (!project.isDisposed) {
-                    EditorNotifications.getInstance(project).updateNotifications(file)
-                }
-            }, ModalityState.any())
-        }
     }
 
     companion object {
