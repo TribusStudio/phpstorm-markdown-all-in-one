@@ -15,8 +15,8 @@ object MarkdownHtmlConverter {
         val codeBlockContent = StringBuilder()
         var inFrontMatter = false
         var frontMatterDone = false
-        var inList = false
-        var listType = ""
+        val listStack = mutableListOf<String>() // stack of "ol" or "ul"
+        val listIndents = mutableListOf<Int>() // stack of indentation levels
         var inBlockquote = false
 
         while (i < lines.size) {
@@ -64,9 +64,8 @@ object MarkdownHtmlConverter {
             }
 
             // Close open lists if we hit a non-list line
-            if (inList && !isListItem(line) && line.isNotBlank()) {
-                html.append(if (listType == "ol") "</ol>\n" else "</ul>\n")
-                inList = false
+            if (listStack.isNotEmpty() && !isListItem(line) && line.isNotBlank()) {
+                closeAllLists(html, listStack, listIndents)
             }
 
             // Close blockquote
@@ -77,9 +76,8 @@ object MarkdownHtmlConverter {
 
             // Blank line
             if (line.isBlank()) {
-                if (inList) {
-                    html.append(if (listType == "ol") "</ol>\n" else "</ul>\n")
-                    inList = false
+                if (listStack.isNotEmpty()) {
+                    closeAllLists(html, listStack, listIndents)
                 }
                 if (inBlockquote) {
                     html.append("</blockquote>\n")
@@ -147,11 +145,8 @@ object MarkdownHtmlConverter {
             // Unordered list
             val ulMatch = Regex("^(\\s*)([-*+])\\s+(.+)$").find(line)
             if (ulMatch != null) {
-                if (!inList) {
-                    html.append("<ul>\n")
-                    inList = true
-                    listType = "ul"
-                }
+                val indent = ulMatch.groupValues[1].length
+                adjustListNesting(html, listStack, listIndents, indent, "ul")
                 val content = ulMatch.groupValues[3]
                 val taskMatch = Regex("^\\[([ xX])\\]\\s+(.+)$").find(content)
                 if (taskMatch != null) {
@@ -167,11 +162,8 @@ object MarkdownHtmlConverter {
             // Ordered list
             val olMatch = Regex("^(\\s*)(\\d+)[.)\\]]\\s+(.+)$").find(line)
             if (olMatch != null) {
-                if (!inList) {
-                    html.append("<ol>\n")
-                    inList = true
-                    listType = "ol"
-                }
+                val indent = olMatch.groupValues[1].length
+                adjustListNesting(html, listStack, listIndents, indent, "ol")
                 html.append("<li>${convertInline(olMatch.groupValues[3])}</li>\n")
                 i++
                 continue
@@ -193,8 +185,8 @@ object MarkdownHtmlConverter {
         if (inCodeBlock) {
             html.append("<pre><code>${escapeHtml(codeBlockContent.toString().trimEnd())}</code></pre>\n")
         }
-        if (inList) {
-            html.append(if (listType == "ol") "</ol>\n" else "</ul>\n")
+        if (listStack.isNotEmpty()) {
+            closeAllLists(html, listStack, listIndents)
         }
         if (inBlockquote) {
             html.append("</blockquote>\n")
@@ -327,10 +319,46 @@ object MarkdownHtmlConverter {
         return line.matches(Regex("^\\s*[-*+]\\s+.*")) || line.matches(Regex("^\\s*\\d+[.)\\]]\\s+.*"))
     }
 
+    private fun adjustListNesting(
+        html: StringBuilder,
+        listStack: MutableList<String>,
+        listIndents: MutableList<Int>,
+        indent: Int,
+        listType: String
+    ) {
+        if (listStack.isEmpty()) {
+            // Start first list
+            html.append(if (listType == "ol") "<ol>\n" else "<ul>\n")
+            listStack.add(listType)
+            listIndents.add(indent)
+        } else if (indent > listIndents.last()) {
+            // Deeper nesting — open a new sub-list
+            html.append(if (listType == "ol") "<ol>\n" else "<ul>\n")
+            listStack.add(listType)
+            listIndents.add(indent)
+        } else if (indent < listIndents.last()) {
+            // Outdent — close lists until we match
+            while (listStack.size > 1 && listIndents.last() > indent) {
+                html.append(if (listStack.removeLast() == "ol") "</ol>\n" else "</ul>\n")
+                listIndents.removeLast()
+            }
+        }
+        // Same indent level — continue current list (type change handled by just continuing)
+    }
+
+    private fun closeAllLists(
+        html: StringBuilder,
+        listStack: MutableList<String>,
+        listIndents: MutableList<Int>
+    ) {
+        while (listStack.isNotEmpty()) {
+            html.append(if (listStack.removeLast() == "ol") "</ol>\n" else "</ul>\n")
+            listIndents.removeLast()
+        }
+    }
+
     private fun slugify(text: String): String {
-        return text.lowercase()
-            .replace(Regex("[^\\w\\s-]"), "")
-            .replace(Regex("\\s+"), "-")
+        return com.tribus.markdown.toc.Slugify.slugify(text)
     }
 
     fun escapeHtml(text: String): String {

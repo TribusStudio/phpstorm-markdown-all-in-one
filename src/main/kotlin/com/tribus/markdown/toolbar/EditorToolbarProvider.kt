@@ -117,10 +117,10 @@ class EditorToolbarProvider : EditorNotificationProvider {
             addSeparator(leftPanel)
 
             // Group 4: Tables & TOC
-            actionButtons.add(addButton(leftPanel, "Table", MarkdownIcons.TOOLBAR_TABLE, displayMode,
+            actionButtons.add(addButton(leftPanel, "Format Table", MarkdownIcons.TOOLBAR_TABLE, displayMode,
                 "com.tribus.markdown.actions.FormatTable", editor))
-            actionButtons.add(addButton(leftPanel, "TOC", MarkdownIcons.TOOLBAR_TOC, displayMode,
-                "com.tribus.markdown.actions.CreateToc", editor))
+            actionButtons.add(addButton(leftPanel, "Update Table of Contents", MarkdownIcons.TOOLBAR_TOC, displayMode,
+                "com.tribus.markdown.actions.UpdateToc", editor))
 
             toolbar.add(leftPanel, BorderLayout.WEST)
 

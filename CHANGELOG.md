@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-03-09
+
+### Fixed
+- **TOC anchor links now match heading IDs** — HTML converter reuses `Slugify.slugify()` so TOC `#anchor` references and heading `id` attributes are always identical
+- **Nested list rendering in preview** — indented list items now produce proper nested `<ol>`/`<ul>` elements instead of a flat list; TOC with multiple heading levels renders correctly
+- **Toolbar loads faster** — uses `ApplicationManager.invokeLater` with `ModalityState.any()` targeting only the specific file instead of iterating all projects via `SwingUtilities.invokeLater`
+- **TOC toolbar button** — changed from "Create TOC" to "Update Table of Contents" (`UpdateToc` action) with descriptive tooltip
+- **Table toolbar button tooltip** — changed from "Table" to "Format Table" to clarify it formats the table at cursor
+
 ## [0.13.0] - 2026-03-09
 
 ### Added
