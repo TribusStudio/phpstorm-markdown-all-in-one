@@ -258,12 +258,16 @@ class MarkdownSplitEditor(
         editor.scrollingModel.addVisibleAreaListener { e ->
             if (scrollingFromPreview) return@addVisibleAreaListener
 
+            val topLine = editor.xyToLogicalPosition(Point(0, e.newRectangle.y)).line
+
+            // Always track the current visible line so preview updates can restore position
+            preview.lastVisibleSourceLine = topLine
+
             val scrollEnabled = try {
                 MarkdownSettings.getInstance().state.scrollSyncEnabled
             } catch (_: Exception) { true }
             if (!scrollEnabled) return@addVisibleAreaListener
 
-            val topLine = editor.xyToLogicalPosition(Point(0, e.newRectangle.y)).line
             scrollingFromEditor = true
             preview.scrollToSourceLine(topLine)
 

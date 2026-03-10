@@ -81,8 +81,14 @@ object MarkdownHtmlConverter {
 
             // Blank line
             if (line.isBlank()) {
+                // Look ahead: if the next non-blank line is a list item, keep the list open
+                // (CommonMark "loose list" — blank lines between items don't end the list)
                 if (listStack.isNotEmpty()) {
-                    closeAllLists(html, listStack, listIndents)
+                    val nextContentLine = lines.drop(i + 1).firstOrNull { it.isNotBlank() }
+                    if (nextContentLine == null || !isListItem(nextContentLine)) {
+                        closeAllLists(html, listStack, listIndents)
+                    }
+                    // else: keep list open, blank line is just loose-list spacing
                 }
                 if (inBlockquote) {
                     html.append("</blockquote>\n")

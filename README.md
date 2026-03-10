@@ -2,6 +2,8 @@
 
 A comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by the best of VSCode's Markdown experience, purpose-built for the IntelliJ Platform.
 
+Big thank you to the creators of 
+
 ## Features
 
 ### Keyboard Shortcuts
@@ -69,13 +71,13 @@ Generate and maintain a Table of Contents from your document's headings.
 
 **Configuration** (Settings > Languages > Markdown All-in-One):
 
-| Setting        | Default  | Description                                                             |
-| -------------- | -------- | ----------------------------------------------------------------------- |
-| Heading levels | `1..6`   | Range of heading levels to include (e.g., `2..4`)                       |
-| Ordered list   | `false`  | Use numbered list instead of bullets                                    |
-| List marker    | `-`      | Unordered list marker (`-`, `*`, `+`)                                   |
-| Slug mode      | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud |
-| Update on save | `true`   | Auto-update TOC when saving                                             |
+| Setting | Default | Description |
+| ------- | ------- | ----------- |
+| Heading levels | `1..6` | Range of heading levels to include (e.g., `2..4`) |
+| Ordered list | `false` | Use numbered list instead of bullets |
+| List marker | `-` | Unordered list marker (`-`, `*`, `+`) |
+| Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud |
+| Update on save | `true` | Auto-update TOC when saving |
 
 **Omit headings** from the TOC using comment markers:
 
@@ -220,14 +222,14 @@ Export markdown files to styled, standalone HTML documents.
 
 **Features:**
 
-| Feature               | Description                                                                |
-| --------------------- | -------------------------------------------------------------------------- |
-| Styled output         | Exported HTML includes the selected preview theme CSS                      |
-| Custom CSS            | Any custom CSS overrides from settings are applied                         |
-| Image path resolution | Relative image paths are resolved to absolute `file://` paths              |
-| Base64 image embed    | Optionally embed local images as base64 for self-contained HTML            |
-| Link validation       | Warns about broken anchor links, missing file references, undefined labels |
-| Document title        | HTML `<title>` extracted from first heading, falls back to filename        |
+| Feature | Description |
+| ------- | ----------- |
+| Styled output | Exported HTML includes the selected preview theme CSS |
+| Custom CSS | Any custom CSS overrides from settings are applied |
+| Image path resolution | Relative image paths are resolved to absolute `file://` paths |
+| Base64 image embed | Optionally embed local images as base64 for self-contained HTML |
+| Link validation | Warns about broken anchor links, missing file references, undefined labels |
+| Document title | HTML `<title>` extracted from first heading, falls back to filename |
 
 ### Smart List Editing
 - **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
@@ -239,28 +241,28 @@ Export markdown files to styled, standalone HTML documents.
 
 All options are in **Settings > Languages > Markdown All-in-One**:
 
-| Group | Setting | Default |
-| ----- | ------- | ------- |
-| Formatting | Bold indicator (`**` / `__`) | `**` |
-| Formatting | Italic indicator (`*` / `_`) | `*` |
-| List Editing | Auto-renumber ordered lists | On |
-| List Editing | Indentation size (adaptive/inherit) | adaptive |
-| Table of Contents | Heading levels | `1..6` |
-| Table of Contents | Update on save | On |
-| Table of Contents | Ordered list | Off |
-| Table of Contents | Unordered list marker (`-`/`*`/`+`) | `-` |
-| Table of Contents | Slug generation mode | github |
-| Table Formatting | Enable auto-formatting | On |
-| Table Formatting | Format on save | On |
-| Preview | Render theme | Auto (follow IDE) |
-| Preview | Custom CSS path | (empty) |
-| Preview | Scroll sync | On |
-| Toolbar | Show editor toolbar | On |
-| Toolbar | Button display | icons |
-| Completion | Auto-popup completion | On |
-| Smart Paste | Auto-create links from URLs | On |
-| Export | Embed images as base64 | Off |
-| Export | Validate links on export | On |
+| Group             | Setting                             | Default           |
+| ----------------- | ----------------------------------- | ----------------- |
+| Formatting        | Bold indicator (`**` / `__`)        | `**`              |
+| Formatting        | Italic indicator (`*` / `_`)        | `*`               |
+| List Editing      | Auto-renumber ordered lists         | On                |
+| List Editing      | Indentation size (adaptive/inherit) | adaptive          |
+| Table of Contents | Heading levels                      | `1..6`            |
+| Table of Contents | Update on save                      | On                |
+| Table of Contents | Ordered list                        | Off               |
+| Table of Contents | Unordered list marker (`-`/`*`/`+`) | `-`               |
+| Table of Contents | Slug generation mode                | github            |
+| Table Formatting  | Enable auto-formatting              | On                |
+| Table Formatting  | Format on save                      | On                |
+| Preview           | Render theme                        | Auto (follow IDE) |
+| Preview           | Custom CSS path                     | (empty)           |
+| Preview           | Scroll sync                         | On                |
+| Toolbar           | Show editor toolbar                 | On                |
+| Toolbar           | Button display                      | icons             |
+| Completion        | Auto-popup completion               | On                |
+| Smart Paste       | Auto-create links from URLs         | On                |
+| Export            | Embed images as base64              | Off               |
+| Export            | Validate links on export            | On                |
 
 ## Installation
 

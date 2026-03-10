@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-03-10
+
+### Fixed
+- **Loose list rendering** — ordered and unordered lists with blank lines between items now render as a single list instead of being split into separate lists (which reset numbering to 1). The converter now looks ahead past blank lines to determine if the list continues
+- **Preview scroll position preserved on update** — the preview no longer jumps to the top of the document after every edit. The editor's current visible line is tracked and restored after the full HTML reload
+
 ## [0.15.0] - 2026-03-10
 
 ### Added

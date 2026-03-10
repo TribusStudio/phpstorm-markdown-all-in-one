@@ -267,4 +267,53 @@ class MarkdownHtmlConverterTest {
         val html = MarkdownHtmlConverter.convertInline("[task lists (`- \\[ \\]`, `- \\[x\\]`)](#slug)")
         assertTrue(html.contains("<a href=\"#slug\">"))
     }
+
+    // ── Loose list tests (blank lines between items) ─────────────────
+
+    @Test
+    fun `ordered list with blank lines between items stays one list`() {
+        val md = "1. first\n\n2. second\n\n3. third"
+        val html = MarkdownHtmlConverter.convert(md)
+        // Should be a single <ol> with 3 items, not three separate <ol>s
+        assertEquals(1, Regex("<ol>").findAll(html).count(), "Expected exactly one <ol> tag")
+        assertTrue(html.contains("<li>first</li>"))
+        assertTrue(html.contains("<li>second</li>"))
+        assertTrue(html.contains("<li>third</li>"))
+    }
+
+    @Test
+    fun `unordered list with blank lines between items stays one list`() {
+        val md = "- alpha\n\n- beta\n\n- gamma"
+        val html = MarkdownHtmlConverter.convert(md)
+        assertEquals(1, Regex("<ul>").findAll(html).count(), "Expected exactly one <ul> tag")
+        assertTrue(html.contains("<li>alpha</li>"))
+        assertTrue(html.contains("<li>beta</li>"))
+        assertTrue(html.contains("<li>gamma</li>"))
+    }
+
+    @Test
+    fun `ordered list with bold items and blank lines stays one list`() {
+        val md = "1. **Modular JAR packaging:** Details here\n\n2. **Extension point-driven preview:** More details\n\n3. **JCEF-based preview:** Even more"
+        val html = MarkdownHtmlConverter.convert(md)
+        assertEquals(1, Regex("<ol>").findAll(html).count(), "Expected exactly one <ol> tag")
+        assertTrue(html.contains("<strong>Modular JAR packaging:</strong>"))
+        assertTrue(html.contains("<strong>Extension point-driven preview:</strong>"))
+        assertTrue(html.contains("<strong>JCEF-based preview:</strong>"))
+    }
+
+    @Test
+    fun `list ends when non-list content follows blank line`() {
+        val md = "1. first\n\n2. second\n\nSome paragraph"
+        val html = MarkdownHtmlConverter.convert(md)
+        assertEquals(1, Regex("<ol>").findAll(html).count())
+        assertTrue(html.contains("</ol>"))
+        assertTrue(html.contains("<p>Some paragraph</p>"))
+    }
+
+    @Test
+    fun `multiple blank lines between list items still keeps one list`() {
+        val md = "- one\n\n\n- two\n\n\n- three"
+        val html = MarkdownHtmlConverter.convert(md)
+        assertEquals(1, Regex("<ul>").findAll(html).count(), "Expected exactly one <ul> tag")
+    }
 }

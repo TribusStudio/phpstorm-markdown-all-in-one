@@ -82,6 +82,13 @@ class MarkdownPreviewFileEditor(
         }
     }
 
+    /**
+     * Track the last known source line for scroll position restoration after preview updates.
+     * Set by the scroll sync callback or by the split editor before triggering an update.
+     */
+    @Volatile
+    var lastVisibleSourceLine: Int = -1
+
     fun updatePreview() {
         val settings = try { MarkdownSettings.getInstance() } catch (_: Exception) { null }
         val themeName = settings?.state?.previewTheme ?: "auto"
@@ -104,9 +111,23 @@ class MarkdownPreviewFileEditor(
             bodyHtml = HtmlExporter.resolveImagePaths(bodyHtml, baseDir, false, warnings)
         }
 
+        // Capture the line to restore after the full-page reload
+        val restoreLine = lastVisibleSourceLine
+
         val scrollJs = buildScrollSyncJs()
         val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark, scrollJs)
         browser?.loadHTML(fullHtml)
+
+        // After loadHTML, the page reloads asynchronously. Schedule a scroll restore
+        // once the DOM is ready. We use a short delay to allow the JCEF page to load.
+        if (restoreLine >= 0) {
+            javax.swing.Timer(150) {
+                scrollToSourceLine(restoreLine)
+            }.apply {
+                isRepeats = false
+                start()
+            }
+        }
     }
 
     /**
