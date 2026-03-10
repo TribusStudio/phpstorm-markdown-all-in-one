@@ -155,10 +155,69 @@ Editor–preview scroll synchronization, architectural toolbar fix, and marketin
 - [ ] Update plugin description in plugin.xml with screenshot references (raw GitHub URLs)
 - [ ] Document screenshot capture instructions for future updates
 
+## Phase 10: Math & LaTeX Support
+Full math editing and rendering to match VSCode parity.
+
+- [ ] Toggle Math action (`Ctrl+M`) — cycles: no math → `$...$` (inline) → `$$...$$` (display)
+- [ ] Toggle Math Reverse action (command palette) — cycles in opposite direction
+- [ ] KaTeX rendering in preview — embed KaTeX JS library in JCEF, render `$...$` and `$$...$$` as formatted equations
+- [ ] Math-aware syntax highlighting — lexer tokens for `$` and `$$` delimiters, distinct text attributes for math content
+- [ ] Math completion provider — LaTeX command autocompletion inside math environments (e.g., `\frac`, `\sum`, `\alpha`, `\int`)
+- [ ] Settings: `mathEnabled` toggle, `katexMacros` for custom macro definitions
+- [ ] Tests for math toggle action, math rendering, and math completions
+
+## Phase 11: Advanced List Editing
+List editing enhancements for full VSCode parity.
+
+- [ ] Toggle List action — cycle current line through marker candidates (`-`, `*`, `+`, `1.`, `1)`)
+- [ ] Configurable marker candidates setting (`list.toggleCandidateMarkers`)
+- [ ] Move line up/down (`Alt+Up/Down`) with ordered list auto-renumber
+- [ ] Copy line up/down (`Shift+Alt+Up/Down`) with ordered list auto-renumber
+- [ ] `Ctrl+Enter` to exit list continuation (insert plain line)
+- [ ] `Shift+Enter` for soft break within list item (insert `<br>` or trailing double-space)
+- [ ] Tab/Shift+Tab for list indent/outdent (context-aware: list vs table)
+- [ ] Ordered list marker style setting — "ordered" (incrementing: 1. 2. 3.) vs "one" (always 1.)
+- [ ] Adaptive list indentation — align sublists with parent content instead of fixed tab size
+- [ ] Ordered list auto-renumbering after indent/outdent (carried from Phase 2)
+- [ ] Tests for all new list editing behaviors
+
+## Phase 12: Editor Decorations & Visual Theming
+Visual decorations in the editor (not just preview) for richer editing experience.
+
+- [ ] Code span background/border — inline `` `code` `` gets visible background and border in the editor
+- [ ] Strikethrough rendering — `~~text~~` shown with line-through text decoration in editor
+- [ ] Formatting mark dimming — `**`, `~~`, `` ` `` markers rendered in muted/faded foreground color
+- [ ] Trailing space shading — trailing whitespace highlighted with background color
+- [ ] Hard line break indicator — visual marker for trailing double-space line breaks
+- [ ] Link visual distinction — separate styling for link text vs URL portion
+- [ ] Per-decoration toggle settings (enable/disable each decoration type individually)
+- [ ] Color scheme keys in plugin descriptor for theme integration
+- [ ] Decoration file size limit setting — skip decorations on large files for performance
+- [ ] Tests for decoration rendering
+
+## Phase 13: Export & Preview Polish
+Minor export improvements and preview conveniences.
+
+- [ ] Auto-export on save — `exportOnSave` setting to automatically generate HTML when saving `.md` files
+- [ ] HTML title from comment — `<!-- title: Your Title -->` sets `<title>` in exported HTML
+- [ ] `.md` → `.html` link conversion in export — internal markdown links rewritten for HTML output
+- [ ] Pure HTML export mode — export without any CSS stylesheets
+- [ ] Auto-show preview on file open — `autoShowPreview` setting to open split preview automatically
+- [ ] Zola slug mode — additional slugify mode for Zola static site generator
+- [ ] Tests for new export features and slug mode
+
+## Phase 14: Diagram Rendering (Mermaid & Beyond)
+Render diagram code blocks as visual diagrams in the preview.
+
+- [ ] Mermaid diagram rendering — detect ```` ```mermaid ```` blocks, render via embedded Mermaid.js in JCEF
+- [ ] PlantUML rendering — detect ```` ```plantuml ```` blocks, render via PlantUML library or server
+- [ ] Graceful fallback — show raw code if rendering library fails to load
+- [ ] Diagram theme integration — diagrams respect the selected preview theme (light/dark)
+- [ ] Tests for diagram detection and rendering
+
 ## Future Considerations
-- Math/LaTeX support (KaTeX rendering)
-- Syntax decorations (visual indicators for formatting marks)
-- Mermaid diagram preview
 - Custom markdown-it extensions integration
 - Multi-language support (i18n beyond English)
 - Vim mode compatibility
+- R Markdown / Quarto language support
+- GFM Alerts rendering (NOTE, TIP, IMPORTANT, WARNING, CAUTION)
