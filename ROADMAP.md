@@ -215,9 +215,81 @@ Render diagram code blocks as visual diagrams in the preview.
 - [ ] Diagram theme integration — diagrams respect the selected preview theme (light/dark)
 - [ ] Tests for diagram detection and rendering
 
+## Phase 15: Table Column & Row Operations
+Advanced table editing to match JetBrains bundled plugin parity.
+
+- [ ] Insert row above/below cursor
+- [ ] Insert column before/after cursor
+- [ ] Delete current row
+- [ ] Delete current column
+- [ ] Swap columns left/right
+- [ ] Swap rows up/down
+- [ ] Set column alignment (left/center/right/none) via action
+- [ ] Register table actions in Markdown menu and context menu
+- [ ] Keybindings for common operations (insert row, insert column)
+- [ ] Tests for all table modification operations
+
+## Phase 16: Structure View & Code Folding
+IDE integration features for navigation and document management.
+
+- [ ] Structure view — heading hierarchy in Structure tool window (`StructureViewBuilder` + `StructureViewCompositeModel`)
+- [ ] Go To Symbol support — headings searchable via `Ctrl+Shift+Alt+N`
+- [ ] Code folding — collapsible regions for headings, code fences, front matter, HTML blocks, and long blockquotes
+- [ ] Folding settings — configurable default fold state per element type
+- [ ] Breadcrumb support — show heading path in editor breadcrumb bar
+- [ ] Tests for structure view elements and folding regions
+
+## Phase 17: IncrementalDOM Preview & Performance
+Replace full HTML replacement with efficient DOM patching for large document performance.
+
+- [ ] Implement IncrementalDOM-based preview updates — parse HTML diff, generate JS patch calls
+- [ ] Preserve scroll position across preview updates (no flicker on edit)
+- [ ] Preview static server — serve local resources via `httpRequestHandler` instead of `file://` URLs
+- [ ] CSP headers and security hardening for preview content
+- [ ] Debounced preview updates with visual loading indicator for very large documents
+- [ ] Performance benchmarks: measure preview update latency for 100/500/1000/5000-line documents
+- [ ] Tests for incremental update correctness
+
+## Phase 18: Extension Point Architecture
+Open the plugin for third-party extensions.
+
+- [ ] Define `previewExtensionProvider` EP — inject JS/CSS into JCEF preview (for math, diagrams, custom renderers)
+- [ ] Define `fenceLanguageProvider` EP — map custom info strings to rendering logic
+- [ ] Define `exportProvider` EP — additional export formats (PDF, DOCX)
+- [ ] Define `markdownFlavourProvider` EP — override parsing behavior per file
+- [ ] All extension points marked `dynamic="true"` for hot-swap
+- [ ] Documentation for extension point API (contributor guide)
+- [ ] Migrate built-in math/diagram support to use own extension points (dogfooding)
+- [ ] Tests for extension point loading and lifecycle
+
+## Phase 19: Language Injection in Code Fences
+Full IDE language support inside fenced code blocks (JetBrains' marquee feature).
+
+- [ ] `MultiHostInjector` implementation for code fence content ranges
+- [ ] Map fence info strings to IntelliJ `Language` instances (with alias resolution)
+- [ ] Syntax highlighting from target language inside code fences in the editor
+- [ ] Completion from target language inside code fences
+- [ ] Error highlighting toggle (`showProblemsInCodeBlocks` setting) — opt-in to avoid noise
+- [ ] Proper PSI range mapping between fence content and injected language fragments
+- [ ] Tests for injection activation, highlighting, and completion in common languages (Kotlin, Java, SQL, JSON, HTML)
+
+## Phase 20: Project-Level Settings & Advanced Configuration
+Per-project markdown configuration for multi-project workflows.
+
+- [ ] Migrate settings from application-level to project-level (`Service.Level.PROJECT`)
+- [ ] Update all `getInstance()` calls to `getInstance(project)`
+- [ ] Settings inheritance — project settings override application defaults
+- [ ] Front matter parsing — extract YAML/TOML metadata for document properties
+- [ ] Registry keys for experimental features (boundary scroll, etc.)
+- [ ] Settings import/export for team sharing
+- [ ] Tests for project-level settings isolation
+
 ## Future Considerations
 - Custom markdown-it extensions integration
 - Multi-language support (i18n beyond English)
 - Vim mode compatibility
 - R Markdown / Quarto language support
 - GFM Alerts rendering (NOTE, TIP, IMPORTANT, WARNING, CAUTION)
+- PDF/DOCX export via extension point providers
+- Stub-based indexing for fast heading navigation without full AST parsing
+- Spellcheck integration with markdown-aware word boundaries
