@@ -122,6 +122,39 @@ Final polish, documentation, and marketplace publishing.
 - [x] Plugin signing configuration (env vars in build.gradle.kts + CI workflow)
 - [x] Community contribution guidelines (CONTRIBUTING.md)
 
+## Phase 9: Scroll Sync, Toolbar Rewrite & Marketplace Assets ← NEXT
+Editor–preview scroll synchronization, architectural toolbar fix, and marketing assets for marketplace publishing.
+
+### 9A — Editor–Preview Scroll Synchronization ✅
+- [x] Add `data-source-line` attributes to block-level HTML elements during markdown→HTML conversion
+- [x] Editor→Preview sync: `VisibleAreaListener` on editor sends top visible line to JCEF via JavaScript `scrollToSourceLine()`
+- [x] Preview→Editor sync: JavaScript scroll event reports visible source line back to Kotlin via `JBCefJSQuery`
+- [x] Scroll-lock flag to prevent feedback loops (editor sets flag before programmatic preview scroll, and vice versa)
+- [x] Debounce/throttle scroll events (50ms JS debounce + 200ms flag reset) to avoid excessive updates
+- [x] Only active in split mode (both panels visible)
+- [x] Settings toggle: "Synchronize editor and preview scroll position" (enabled by default)
+- [x] Tests for source-line annotation in HTML converter output (11 new test cases)
+
+### 9B — Toolbar Architecture Rewrite ✅
+- [x] Move toolbar creation into `MarkdownSplitEditor` — override `getComponent()` to wrap the split editor with a toolbar panel at `NORTH`
+- [x] Toolbar created synchronously in constructor — zero-latency, no notification system
+- [x] Remove `EditorToolbarProvider` (the `EditorNotificationProvider` implementation)
+- [x] Remove `ToolbarInitListener` (`FileEditorManagerListener` workaround)
+- [x] Remove hierarchy listener hacks for window move/split/combine
+- [x] Toolbar respects `toolbarEnabled` and `toolbarDisplayMode` settings
+- [x] Toolbar updates on settings change via `MarkdownSettings.ChangeListener`
+- [x] Floating toolbar (selection popup) remains unchanged — it's architecturally sound
+- [x] Verify toolbar survives split/unsplit, tab drag, window move, group operations
+- [x] Tests for toolbar presence and button state
+
+### 9C — Marketplace Screenshots & Animated Demos
+- [ ] Create `docs/screenshots/` directory for all marketing assets
+- [ ] Capture required screenshots (see docs/005-marketplace-assets.md for full list)
+- [ ] Create 1-2 animated GIFs demonstrating key workflows
+- [ ] Update README.md with inline screenshots
+- [ ] Update plugin description in plugin.xml with screenshot references (raw GitHub URLs)
+- [ ] Document screenshot capture instructions for future updates
+
 ## Future Considerations
 - Math/LaTeX support (KaTeX rendering)
 - Syntax decorations (visual indicators for formatting marks)

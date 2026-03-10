@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-03-10
+
+### Added
+- **Bidirectional scroll synchronization** — scrolling the editor automatically scrolls the preview to the matching position, and vice versa. Uses source-line mapping (`data-source-line` attributes) for accurate synchronization with debounced scroll events and feedback-loop prevention. Configurable via Settings > Preview > "Synchronize editor and preview scroll position"
+
+### Fixed
+- **Escaped brackets in TOC links** — TOC entries with headings containing `\[` and `\]` (e.g., keyboard shortcuts like `Ctrl+Shift+]` inside code spans) now render correctly as clickable links in the preview. Expanded backslash escape handling to all CommonMark escapable punctuation characters
+
+### Changed
+- **Toolbar architecture rewrite** — the editor toolbar is now embedded directly in `MarkdownSplitEditor` instead of using `EditorNotificationProvider`. This eliminates the toolbar load delay, and the toolbar no longer disappears during tab drag, window split, or group operations. Removed `EditorToolbarProvider`, `ToolbarInitListener`, and hierarchy listener workarounds
+
 ## [0.14.3] - 2026-03-10
 
 ### Fixed

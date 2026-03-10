@@ -1,9 +1,7 @@
 package com.tribus.markdown.settings
 
 import com.intellij.openapi.options.Configurable
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.ui.DialogPanel
-import com.intellij.ui.EditorNotifications
 import com.intellij.ui.dsl.builder.*
 
 class MarkdownSettingsConfigurable : Configurable {
@@ -111,6 +109,11 @@ class MarkdownSettingsConfigurable : Configurable {
                         .bindText(state::previewCustomCssPath)
                         .comment("Optional path to a .css file for additional style overrides")
                 }
+                row {
+                    checkBox("Synchronize editor and preview scroll position")
+                        .bindSelected(state::scrollSyncEnabled)
+                        .comment("Scrolling the editor or preview keeps both panels aligned")
+                }
             }
 
             group("Toolbar") {
@@ -165,11 +168,6 @@ class MarkdownSettingsConfigurable : Configurable {
     override fun apply() {
         panel?.apply()
         settings.loadState(state)
-
-        // Rebuild editor notification toolbars so display mode changes take effect
-        for (project in ProjectManager.getInstance().openProjects) {
-            EditorNotifications.getInstance(project).updateAllNotifications()
-        }
     }
 
     override fun reset() {

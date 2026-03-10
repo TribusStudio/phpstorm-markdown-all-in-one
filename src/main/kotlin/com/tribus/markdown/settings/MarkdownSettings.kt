@@ -45,6 +45,7 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // Preview
         var previewTheme: String = "auto",
         var previewCustomCssPath: String = "",
+        var scrollSyncEnabled: Boolean = true,
 
         // Toolbar
         var toolbarDisplayMode: String = "icons",

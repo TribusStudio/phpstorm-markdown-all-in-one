@@ -3,15 +3,19 @@ package com.tribus.markdown.preview
 /**
  * Converts markdown text to HTML for preview rendering.
  * Handles common GFM elements without external dependencies.
+ *
+ * When [annotateSourceLines] is true, block-level elements include
+ * `data-source-line` attributes for editor–preview scroll synchronization.
  */
 object MarkdownHtmlConverter {
 
-    fun convert(markdown: String): String {
+    fun convert(markdown: String, annotateSourceLines: Boolean = false): String {
         val lines = markdown.lines()
         val html = StringBuilder()
         var i = 0
         var inCodeBlock = false
         var codeBlockLang = ""
+        var codeBlockStartLine = 0
         val codeBlockContent = StringBuilder()
         var inFrontMatter = false
         var frontMatterDone = false
@@ -46,6 +50,7 @@ object MarkdownHtmlConverter {
             if (!inCodeBlock && line.trimStart().matches(Regex("^(`{3,}|~{3,})(.*)"))) {
                 val match = Regex("^\\s*(`{3,}|~{3,})(.*)").find(line)!!
                 codeBlockLang = match.groupValues[2].trim()
+                codeBlockStartLine = i
                 inCodeBlock = true
                 codeBlockContent.clear()
                 i++
@@ -54,7 +59,7 @@ object MarkdownHtmlConverter {
             if (inCodeBlock) {
                 if (line.trimStart().matches(Regex("^(`{3,}|~{3,})\\s*$"))) {
                     val langAttr = if (codeBlockLang.isNotEmpty()) " class=\"language-$codeBlockLang\"" else ""
-                    html.append("<pre><code$langAttr>${escapeHtml(codeBlockContent.toString().trimEnd())}</code></pre>\n")
+                    html.append("<pre${sl(codeBlockStartLine, annotateSourceLines)}><code$langAttr>${escapeHtml(codeBlockContent.toString().trimEnd())}</code></pre>\n")
                     inCodeBlock = false
                 } else {
                     codeBlockContent.appendLine(line)
@@ -89,7 +94,7 @@ object MarkdownHtmlConverter {
 
             // Horizontal rule
             if (line.trim().matches(Regex("^([-*_])\\s*\\1\\s*\\1[\\s\\-*_]*$"))) {
-                html.append("<hr>\n")
+                html.append("<hr${sl(i, annotateSourceLines)}>\n")
                 i++
                 continue
             }
@@ -100,7 +105,7 @@ object MarkdownHtmlConverter {
                 val level = headingMatch.groupValues[1].length
                 val text = headingMatch.groupValues[2].replace(Regex("\\s+#+\\s*$"), "").trim()
                 val id = slugify(text)
-                html.append("<h$level id=\"$id\">${convertInline(text)}</h$level>\n")
+                html.append("<h$level${sl(i, annotateSourceLines)} id=\"$id\">${convertInline(text)}</h$level>\n")
                 i++
                 continue
             }
@@ -110,13 +115,13 @@ object MarkdownHtmlConverter {
                 val nextLine = lines[i + 1].trim()
                 if (nextLine.matches(Regex("^=+\\s*$"))) {
                     val id = slugify(line.trim())
-                    html.append("<h1 id=\"$id\">${convertInline(line.trim())}</h1>\n")
+                    html.append("<h1${sl(i, annotateSourceLines)} id=\"$id\">${convertInline(line.trim())}</h1>\n")
                     i += 2
                     continue
                 }
                 if (nextLine.matches(Regex("^-+\\s*$")) && !isListItem(line)) {
                     val id = slugify(line.trim())
-                    html.append("<h2 id=\"$id\">${convertInline(line.trim())}</h2>\n")
+                    html.append("<h2${sl(i, annotateSourceLines)} id=\"$id\">${convertInline(line.trim())}</h2>\n")
                     i += 2
                     continue
                 }
@@ -125,18 +130,18 @@ object MarkdownHtmlConverter {
             // Blockquote
             if (line.trimStart().startsWith(">")) {
                 if (!inBlockquote) {
-                    html.append("<blockquote>\n")
+                    html.append("<blockquote${sl(i, annotateSourceLines)}>\n")
                     inBlockquote = true
                 }
                 val content = line.trimStart().removePrefix(">").trimStart()
-                html.append("<p>${convertInline(content)}</p>\n")
+                html.append("<p${sl(i, annotateSourceLines)}>${convertInline(content)}</p>\n")
                 i++
                 continue
             }
 
             // GFM Table
             if (i + 1 < lines.size && isTableSeparator(lines[i + 1])) {
-                val tableHtml = convertTable(lines, i)
+                val tableHtml = convertTable(lines, i, annotateSourceLines)
                 html.append(tableHtml.first)
                 i = tableHtml.second
                 continue
@@ -146,14 +151,14 @@ object MarkdownHtmlConverter {
             val ulMatch = Regex("^(\\s*)([-*+])\\s+(.+)$").find(line)
             if (ulMatch != null) {
                 val indent = ulMatch.groupValues[1].length
-                adjustListNesting(html, listStack, listIndents, indent, "ul")
+                adjustListNesting(html, listStack, listIndents, indent, "ul", i, annotateSourceLines)
                 val content = ulMatch.groupValues[3]
                 val taskMatch = Regex("^\\[([ xX])\\]\\s+(.+)$").find(content)
                 if (taskMatch != null) {
                     val checked = if (taskMatch.groupValues[1].lowercase() == "x") " checked" else ""
-                    html.append("<li><input type=\"checkbox\" disabled$checked> ${convertInline(taskMatch.groupValues[2])}</li>\n")
+                    html.append("<li${sl(i, annotateSourceLines)}><input type=\"checkbox\" disabled$checked> ${convertInline(taskMatch.groupValues[2])}</li>\n")
                 } else {
-                    html.append("<li>${convertInline(content)}</li>\n")
+                    html.append("<li${sl(i, annotateSourceLines)}>${convertInline(content)}</li>\n")
                 }
                 i++
                 continue
@@ -163,8 +168,8 @@ object MarkdownHtmlConverter {
             val olMatch = Regex("^(\\s*)(\\d+)[.)\\]]\\s+(.+)$").find(line)
             if (olMatch != null) {
                 val indent = olMatch.groupValues[1].length
-                adjustListNesting(html, listStack, listIndents, indent, "ol")
-                html.append("<li>${convertInline(olMatch.groupValues[3])}</li>\n")
+                adjustListNesting(html, listStack, listIndents, indent, "ol", i, annotateSourceLines)
+                html.append("<li${sl(i, annotateSourceLines)}>${convertInline(olMatch.groupValues[3])}</li>\n")
                 i++
                 continue
             }
@@ -177,13 +182,13 @@ object MarkdownHtmlConverter {
             }
 
             // Paragraph
-            html.append("<p>${convertInline(line.trim())}</p>\n")
+            html.append("<p${sl(i, annotateSourceLines)}>${convertInline(line.trim())}</p>\n")
             i++
         }
 
         // Close any open blocks
         if (inCodeBlock) {
-            html.append("<pre><code>${escapeHtml(codeBlockContent.toString().trimEnd())}</code></pre>\n")
+            html.append("<pre${sl(codeBlockStartLine, annotateSourceLines)}><code>${escapeHtml(codeBlockContent.toString().trimEnd())}</code></pre>\n")
         }
         if (listStack.isNotEmpty()) {
             closeAllLists(html, listStack, listIndents)
@@ -201,13 +206,13 @@ object MarkdownHtmlConverter {
     fun convertInline(text: String): String {
         var result = escapeHtml(text)
 
-        // Images: ![alt](url)
-        result = result.replace(Regex("!\\[([^\\]]*)\\]\\(([^)]+)\\)")) { m ->
+        // Images: ![alt](url) — allow \] in alt text
+        result = result.replace(Regex("!\\[((?:\\\\.|[^\\]])*)\\]\\(([^)]+)\\)")) { m ->
             "<img src=\"${m.groupValues[2]}\" alt=\"${m.groupValues[1]}\">"
         }
 
-        // Links: [text](url)
-        result = result.replace(Regex("\\[([^\\]]*)\\]\\(([^)]+)\\)")) { m ->
+        // Links: [text](url) — allow \] in link text
+        result = result.replace(Regex("\\[((?:\\\\.|[^\\]])*)\\]\\(([^)]+)\\)")) { m ->
             "<a href=\"${m.groupValues[2]}\">${m.groupValues[1]}</a>"
         }
 
@@ -260,15 +265,16 @@ object MarkdownHtmlConverter {
         // Line break (two trailing spaces)
         result = result.replace(Regex("  $"), "<br>")
 
-        // Backslash escapes (render \| as |, \\ as \, etc.)
-        result = result.replace("\\|", "|")
-        result = result.replace("\\\\", "\\")
+        // Backslash escapes — any ASCII punctuation preceded by \ renders as the literal character
+        result = result.replace(Regex("\\\\([\\\\`*_{}\\[\\]()#+\\-.!|~])")) { m ->
+            m.groupValues[1]
+        }
 
         return result
     }
 
-    private fun convertTable(lines: List<String>, startIndex: Int): Pair<String, Int> {
-        val html = StringBuilder("<table>\n")
+    private fun convertTable(lines: List<String>, startIndex: Int, annotateSourceLines: Boolean = false): Pair<String, Int> {
+        val html = StringBuilder("<table${sl(startIndex, annotateSourceLines)}>\n")
         val headerCells = parseTableCells(lines[startIndex])
         val separatorCells = parseTableCells(lines[startIndex + 1])
         val alignments = separatorCells.map { cell ->
@@ -348,16 +354,20 @@ object MarkdownHtmlConverter {
         listStack: MutableList<String>,
         listIndents: MutableList<Int>,
         indent: Int,
-        listType: String
+        listType: String,
+        sourceLine: Int = -1,
+        annotateSourceLines: Boolean = false
     ) {
         if (listStack.isEmpty()) {
             // Start first list
-            html.append(if (listType == "ol") "<ol>\n" else "<ul>\n")
+            val tag = if (listType == "ol") "ol" else "ul"
+            html.append("<$tag${sl(sourceLine, annotateSourceLines)}>\n")
             listStack.add(listType)
             listIndents.add(indent)
         } else if (indent > listIndents.last()) {
             // Deeper nesting — open a new sub-list
-            html.append(if (listType == "ol") "<ol>\n" else "<ul>\n")
+            val tag = if (listType == "ol") "ol" else "ul"
+            html.append("<$tag${sl(sourceLine, annotateSourceLines)}>\n")
             listStack.add(listType)
             listIndents.add(indent)
         } else if (indent < listIndents.last()) {
@@ -396,7 +406,13 @@ object MarkdownHtmlConverter {
     /**
      * Wrap HTML body with full document structure including CSS theme.
      */
-    fun wrapInDocument(bodyHtml: String, css: String, customCss: String = "", darkMode: Boolean = false): String {
+    fun wrapInDocument(
+        bodyHtml: String,
+        css: String,
+        customCss: String = "",
+        darkMode: Boolean = false,
+        extraJs: String = ""
+    ): String {
         val highlightTheme = if (darkMode) "/preview/highlight/github-dark.min.css" else "/preview/highlight/github.min.css"
         val highlightCss = loadResource(highlightTheme)
         val highlightJs = loadResource("/preview/highlight/highlight.min.js")
@@ -415,6 +431,7 @@ ${if (hasCodeBlocks && highlightCss.isNotEmpty()) "<style>\n$highlightCss\n</sty
 <body class="markdown-body">
 $bodyHtml
 ${if (hasCodeBlocks && highlightJs.isNotEmpty()) "<script>$highlightJs</script>\n<script>hljs.highlightAll();</script>" else ""}
+${if (extraJs.isNotEmpty()) "<script>\n$extraJs\n</script>" else ""}
 </body>
 </html>"""
     }
@@ -425,4 +442,10 @@ ${if (hasCodeBlocks && highlightJs.isNotEmpty()) "<script>$highlightJs</script>\
             ?.readText()
             ?: ""
     }
+
+    /**
+     * Returns a `data-source-line` attribute string for scroll sync, or empty.
+     */
+    private fun sl(line: Int, annotate: Boolean): String =
+        if (annotate) " data-source-line=\"$line\"" else ""
 }

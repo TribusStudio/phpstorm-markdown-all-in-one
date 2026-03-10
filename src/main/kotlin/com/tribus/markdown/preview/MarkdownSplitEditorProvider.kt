@@ -4,7 +4,6 @@ import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorPolicy
 import com.intellij.openapi.fileEditor.FileEditorProvider
 import com.intellij.openapi.fileEditor.TextEditor
-import com.intellij.openapi.fileEditor.TextEditorWithPreview
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -30,22 +29,10 @@ class MarkdownSplitEditorProvider : FileEditorProvider, DumbAware {
         val document = textEditor.editor.document
         val previewEditor = MarkdownPreviewFileEditor(file, document)
 
-        return MarkdownSplitEditor(textEditor, previewEditor)
+        return MarkdownSplitEditor(project, textEditor, previewEditor)
     }
 
     override fun getEditorTypeId(): String = "markdown-aio-split-editor"
 
     override fun getPolicy(): FileEditorPolicy = FileEditorPolicy.HIDE_DEFAULT_EDITOR
-}
-
-/**
- * A split editor that combines a text editor with a markdown preview.
- * Inherits the three-state toggle (Editor | Split | Preview) from TextEditorWithPreview.
- */
-class MarkdownSplitEditor(
-    editor: TextEditor,
-    private val preview: MarkdownPreviewFileEditor
-) : TextEditorWithPreview(editor, preview, "Markdown Editor", Layout.SHOW_EDITOR_AND_PREVIEW) {
-
-    fun getPreviewEditor(): MarkdownPreviewFileEditor = preview
 }

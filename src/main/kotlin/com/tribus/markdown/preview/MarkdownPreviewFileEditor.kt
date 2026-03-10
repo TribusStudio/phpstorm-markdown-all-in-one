@@ -8,6 +8,8 @@ import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
+import com.intellij.ui.jcef.JBCefBrowserBase
+import com.intellij.ui.jcef.JBCefJSQuery
 import com.tribus.markdown.export.HtmlExporter
 import com.tribus.markdown.settings.MarkdownSettings
 import java.io.File
@@ -32,10 +34,28 @@ class MarkdownPreviewFileEditor(
     private var currentTheme: PreviewTheme.Theme = PreviewTheme.Theme.AUTO
     private var settingsListener: MarkdownSettings.ChangeListener? = null
 
+    // Scroll sync
+    private var jsQuery: JBCefJSQuery? = null
+    private var onScrollCallback: ((Int) -> Unit)? = null
+
     private val mainComponent: JComponent by lazy {
         try {
             val b = JBCefBrowser()
             browser = b
+
+            // Set up scroll sync JS query bridge
+            try {
+                val query = JBCefJSQuery.create(b as JBCefBrowserBase)
+                query.addHandler { lineStr ->
+                    val line = lineStr.toIntOrNull()
+                    if (line != null) onScrollCallback?.invoke(line)
+                    null
+                }
+                jsQuery = query
+            } catch (_: Exception) {
+                // JBCefJSQuery not available
+            }
+
             updatePreview()
 
             // Listen for document changes to live-refresh
@@ -73,7 +93,7 @@ class MarkdownPreviewFileEditor(
         val isDark = currentTheme == PreviewTheme.Theme.GITHUB_DARK ||
             currentTheme == PreviewTheme.Theme.VSCODE ||
             (currentTheme == PreviewTheme.Theme.AUTO && PreviewTheme.isIdeDarkTheme())
-        var bodyHtml = MarkdownHtmlConverter.convert(document.text)
+        var bodyHtml = MarkdownHtmlConverter.convert(document.text, annotateSourceLines = true)
 
         // Resolve relative image paths to absolute file:// URLs so they render
         // in the JCEF preview (loadHTML's baseUrl doesn't reliably resolve locals).
@@ -84,8 +104,27 @@ class MarkdownPreviewFileEditor(
             bodyHtml = HtmlExporter.resolveImagePaths(bodyHtml, baseDir, false, warnings)
         }
 
-        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark)
+        val scrollJs = buildScrollSyncJs()
+        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark, scrollJs)
         browser?.loadHTML(fullHtml)
+    }
+
+    /**
+     * Execute JavaScript to scroll the preview to the element matching [line].
+     */
+    fun scrollToSourceLine(line: Int) {
+        browser?.cefBrowser?.executeJavaScript(
+            "if(window.__scrollToSourceLine)window.__scrollToSourceLine($line);",
+            "", 0
+        )
+    }
+
+    /**
+     * Register a callback for preview→editor scroll sync.
+     * Called with the source line number when the user scrolls the preview.
+     */
+    fun setOnScrollCallback(callback: (Int) -> Unit) {
+        onScrollCallback = callback
     }
 
     fun setZoom(level: Double) {
@@ -123,7 +162,67 @@ class MarkdownPreviewFileEditor(
                 // No application context
             }
         }
+        jsQuery = null
         browser?.dispose()
         browser = null
+    }
+
+    /**
+     * Build JavaScript for bidirectional scroll synchronization.
+     * Included in the HTML page via wrapInDocument's extraJs parameter.
+     */
+    private fun buildScrollSyncJs(): String {
+        val query = jsQuery ?: return ""
+        val scrollEnabled = try {
+            MarkdownSettings.getInstance().state.scrollSyncEnabled
+        } catch (_: Exception) { true }
+        if (!scrollEnabled) return ""
+
+        val injection = query.inject("'' + line")
+
+        return """
+(function() {
+    // Editor -> Preview: scroll to the element closest to targetLine
+    window.__scrollToSourceLine = function(targetLine) {
+        var elements = document.querySelectorAll('[data-source-line]');
+        var best = null;
+        for (var i = 0; i < elements.length; i++) {
+            var line = parseInt(elements[i].getAttribute('data-source-line'));
+            if (line <= targetLine) best = elements[i];
+            if (line > targetLine) break;
+        }
+        if (best) {
+            window.__scrollFromEditor = true;
+            best.scrollIntoView({behavior:'auto', block:'start'});
+            setTimeout(function() { window.__scrollFromEditor = false; }, 100);
+        }
+    };
+
+    // Preview -> Editor: report visible source line on user scroll
+    var _lastLine = -1;
+    var _scrollTimer = null;
+    window.__scrollFromEditor = false;
+    window.addEventListener('scroll', function() {
+        if (window.__scrollFromEditor) return;
+        if (_scrollTimer) clearTimeout(_scrollTimer);
+        _scrollTimer = setTimeout(function() {
+            var elements = document.querySelectorAll('[data-source-line]');
+            var viewTop = window.scrollY + 10;
+            var best = null;
+            for (var i = 0; i < elements.length; i++) {
+                if (elements[i].offsetTop <= viewTop) best = elements[i];
+                else break;
+            }
+            if (best) {
+                var line = parseInt(best.getAttribute('data-source-line'));
+                if (!isNaN(line) && line !== _lastLine) {
+                    _lastLine = line;
+                    $injection
+                }
+            }
+        }, 50);
+    }, {passive: true});
+})();
+""".trimIndent()
     }
 }

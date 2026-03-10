@@ -150,6 +150,8 @@ JCEF-based live preview with split editor support — just like the built-in Mar
 - **Split** — editor and preview side by side
 - **Preview** — preview only
 
+**Scroll sync:** In split mode, scrolling the editor automatically scrolls the preview to the matching position, and vice versa. Uses source-line mapping for accurate synchronization. Configurable via Settings > Preview > "Synchronize editor and preview scroll position".
+
 **CSS themes** (Settings > Languages > Markdown All-in-One > Preview):
 
 | Theme             | Description                                              |
@@ -252,6 +254,7 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Table Formatting | Format on save | On |
 | Preview | Render theme | Auto (follow IDE) |
 | Preview | Custom CSS path | (empty) |
+| Preview | Scroll sync | On |
 | Toolbar | Show editor toolbar | On |
 | Toolbar | Button display | icons |
 | Completion | Auto-popup completion | On |

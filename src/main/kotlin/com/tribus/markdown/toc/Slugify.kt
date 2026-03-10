@@ -121,6 +121,11 @@ object Slugify {
         // Remove trailing closing hashes (ATX heading)
         result = result.replace(Regex("\\s+#+\\s*$"), "")
 
+        // Remove backslash escapes: \[ -> [, \] -> ], etc.
+        result = result.replace(Regex("\\\\([\\\\`*_{}\\[\\]()#+\\-.!|~])")) { m ->
+            m.groupValues[1]
+        }
+
         return result.trim()
     }
 
