@@ -260,6 +260,10 @@ object MarkdownHtmlConverter {
         // Line break (two trailing spaces)
         result = result.replace(Regex("  $"), "<br>")
 
+        // Backslash escapes (render \| as |, \\ as \, etc.)
+        result = result.replace("\\|", "|")
+        result = result.replace("\\\\", "\\")
+
         return result
     }
 
@@ -307,8 +311,28 @@ object MarkdownHtmlConverter {
     private fun parseTableCells(line: String): List<String> {
         var trimmed = line.trim()
         if (trimmed.startsWith("|")) trimmed = trimmed.substring(1)
-        if (trimmed.endsWith("|")) trimmed = trimmed.substring(0, trimmed.length - 1)
-        return trimmed.split("|")
+        if (trimmed.endsWith("|") && !trimmed.endsWith("\\|")) {
+            trimmed = trimmed.substring(0, trimmed.length - 1)
+        }
+        // Split on unescaped pipes only
+        val cells = mutableListOf<String>()
+        val current = StringBuilder()
+        var i = 0
+        while (i < trimmed.length) {
+            if (trimmed[i] == '\\' && i + 1 < trimmed.length && trimmed[i + 1] == '|') {
+                current.append("\\|")
+                i += 2
+            } else if (trimmed[i] == '|') {
+                cells.add(current.toString())
+                current.clear()
+                i++
+            } else {
+                current.append(trimmed[i])
+                i++
+            }
+        }
+        cells.add(current.toString())
+        return cells
     }
 
     private fun isTableSeparator(line: String): Boolean {

@@ -37,6 +37,7 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // Table formatting
         var tableFormatterEnabled: Boolean = true,
         var tableFormatOnSave: Boolean = true,
+        var tableMaxWidth: Int = 0,  // 0 = no limit, otherwise column limit (e.g. 80, 120)
 
         // Completion
         var autoPopupCompletionEnabled: Boolean = true,

@@ -90,6 +90,11 @@ class MarkdownSettingsConfigurable : Configurable {
                     checkBox("Format tables on save")
                         .bindSelected(state::tableFormatOnSave)
                 }
+                row("Max table width (columns):") {
+                    intTextField(0..300)
+                        .bindIntText(state::tableMaxWidth)
+                        .comment("0 = no limit. Tables wider than this use compact spacing (e.g. 80, 120)")
+                }
             }
 
             group("Preview") {

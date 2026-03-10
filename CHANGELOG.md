@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.2] - 2026-03-10
+
+### Fixed
+- **Escaped pipes `\|` in tables** — table parser (both formatter and HTML converter) now correctly treats `\|` as a literal pipe character instead of a cell delimiter; preview renders `\|` as `|`
+- **Table separator width** — in compact mode, separator dashes match header cell widths instead of the widest data cell
+
+### Added
+- **Smart table width limiting** — new "Max table width" setting (Settings > Table Formatting). When a table exceeds this column limit, cells use compact spacing (no extra padding) instead of full-width alignment. Set to 0 for no limit (default), or use 80/120 to match your editor margin guides.
+
 ## [0.14.1] - 2026-03-10
 
 ### Fixed
