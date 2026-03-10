@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.3] - 2026-03-10
+
+### Fixed
+- **Relative images now actually render in preview** — JCEF's `loadHTML(html, baseUrl)` does not reliably resolve local file paths; image `src` attributes are now resolved to absolute `file://` URLs before loading, reusing the export engine's path resolution logic
+
 ## [0.14.2] - 2026-03-10
 
 ### Fixed

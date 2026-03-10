@@ -8,7 +8,9 @@ import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
+import com.tribus.markdown.export.HtmlExporter
 import com.tribus.markdown.settings.MarkdownSettings
+import java.io.File
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -71,13 +73,19 @@ class MarkdownPreviewFileEditor(
         val isDark = currentTheme == PreviewTheme.Theme.GITHUB_DARK ||
             currentTheme == PreviewTheme.Theme.VSCODE ||
             (currentTheme == PreviewTheme.Theme.AUTO && PreviewTheme.isIdeDarkTheme())
-        val bodyHtml = MarkdownHtmlConverter.convert(document.text)
-        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark)
+        var bodyHtml = MarkdownHtmlConverter.convert(document.text)
 
-        // Use the file's parent directory as the base URL so relative image
-        // paths (e.g., "assets/photo.png") resolve correctly in the preview.
-        val baseUrl = file.parent?.url ?: ""
-        browser?.loadHTML(fullHtml, baseUrl)
+        // Resolve relative image paths to absolute file:// URLs so they render
+        // in the JCEF preview (loadHTML's baseUrl doesn't reliably resolve locals).
+        val parentPath = file.parent?.path
+        if (parentPath != null) {
+            val baseDir = File(parentPath)
+            val warnings = mutableListOf<String>()
+            bodyHtml = HtmlExporter.resolveImagePaths(bodyHtml, baseDir, false, warnings)
+        }
+
+        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark)
+        browser?.loadHTML(fullHtml)
     }
 
     fun setZoom(level: Double) {
