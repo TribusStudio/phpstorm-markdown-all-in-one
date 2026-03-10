@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.1] - 2026-03-10
+
+### Fixed
+- **Relative images now render in preview** — `loadHTML()` now passes the file's parent directory as base URL so paths like `assets/photo.png` resolve correctly
+- **Code block syntax highlighting** — bundled highlight.js 11.9.0 with GitHub and GitHub Dark themes; fenced code blocks with language tags (e.g., ` ```php `) now render with colored syntax highlighting
+- Highlight theme auto-selects light or dark variant based on the active preview theme
+
 ## [0.14.0] - 2026-03-09
 
 ### Added

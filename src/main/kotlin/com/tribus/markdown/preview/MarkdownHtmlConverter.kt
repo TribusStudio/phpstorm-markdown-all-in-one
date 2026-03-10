@@ -372,7 +372,12 @@ object MarkdownHtmlConverter {
     /**
      * Wrap HTML body with full document structure including CSS theme.
      */
-    fun wrapInDocument(bodyHtml: String, css: String, customCss: String = ""): String {
+    fun wrapInDocument(bodyHtml: String, css: String, customCss: String = "", darkMode: Boolean = false): String {
+        val highlightTheme = if (darkMode) "/preview/highlight/github-dark.min.css" else "/preview/highlight/github.min.css"
+        val highlightCss = loadResource(highlightTheme)
+        val highlightJs = loadResource("/preview/highlight/highlight.min.js")
+        val hasCodeBlocks = bodyHtml.contains("<code class=\"language-")
+
         return """<!DOCTYPE html>
 <html>
 <head>
@@ -381,10 +386,19 @@ object MarkdownHtmlConverter {
 $css
 </style>
 ${if (customCss.isNotEmpty()) "<style>\n$customCss\n</style>" else ""}
+${if (hasCodeBlocks && highlightCss.isNotEmpty()) "<style>\n$highlightCss\n</style>" else ""}
 </head>
 <body class="markdown-body">
 $bodyHtml
+${if (hasCodeBlocks && highlightJs.isNotEmpty()) "<script>$highlightJs</script>\n<script>hljs.highlightAll();</script>" else ""}
 </body>
 </html>"""
+    }
+
+    private fun loadResource(path: String): String {
+        return MarkdownHtmlConverter::class.java.getResourceAsStream(path)
+            ?.bufferedReader()
+            ?.readText()
+            ?: ""
     }
 }

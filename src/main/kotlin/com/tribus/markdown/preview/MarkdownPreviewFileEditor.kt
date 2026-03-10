@@ -68,10 +68,16 @@ class MarkdownPreviewFileEditor(
 
         val css = PreviewTheme.loadThemeCss(currentTheme)
         val customCss = PreviewTheme.loadCustomCss(customCssPath)
+        val isDark = currentTheme == PreviewTheme.Theme.GITHUB_DARK ||
+            currentTheme == PreviewTheme.Theme.VSCODE ||
+            (currentTheme == PreviewTheme.Theme.AUTO && PreviewTheme.isIdeDarkTheme())
         val bodyHtml = MarkdownHtmlConverter.convert(document.text)
-        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss)
+        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark)
 
-        browser?.loadHTML(fullHtml)
+        // Use the file's parent directory as the base URL so relative image
+        // paths (e.g., "assets/photo.png") resolve correctly in the preview.
+        val baseUrl = file.parent?.url ?: ""
+        browser?.loadHTML(fullHtml, baseUrl)
     }
 
     fun setZoom(level: Double) {

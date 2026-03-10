@@ -65,7 +65,7 @@ object PreviewTheme {
             ?: ""
     }
 
-    private fun isIdeDarkTheme(): Boolean {
+    fun isIdeDarkTheme(): Boolean {
         return try {
             val scheme = EditorColorsManager.getInstance().globalScheme
             scheme.defaultBackground.red < 128
