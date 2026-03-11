@@ -1,8 +1,18 @@
 # Markdown All-in-One for PHPStorm
 
-A comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by the best of VSCode's Markdown experience, purpose-built for the IntelliJ Platform.
+I really love what JetBrains has built for Markdown within PHPStorm. For the most part, its a really thorough implementation with a lot of room for others to hook into it. But something was bothering me with it. Various UX details that kept me from being satisfyed with it. I would routinely use VSCode instead for Markdown work because of those oddities.
 
-Big thank you to the creators of 
+Recently, with the advent of Claude Code and LLM development, I got an idea:
+
+> *What if I tried to build my own plugin for PHPStorm?*
+
+And so was born an alternative, comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by the best of VSCode's Markdown experience, purpose-built for the IntelliJ Platform.
+
+> **Big shout** out and *thank you* to the creator, [Yu Zhang](https://marketplace.visualstudio.com/publishers/yzhang), of Markdown All in One [https://github.com/yzhang-gh/vscode-markdown](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one). Great plugin which has lead to the of inspiration for this module -- *even the name*!
+
+I built this to help resolve issues I felt I needed fixed to continue working with Markdown in PHPStorm the way I did it in VSCode and the way it felt intuitively right, for me. I am now sharing this with others to see how they feel about it and whether it scratches the itch others might have had with the default plugin.
+
+Again, its something for me and it makes me happy. I hope it does the same for you!
 
 ## Features
 
@@ -10,18 +20,18 @@ Big thank you to the creators of
 
 Shortcuts automatically take priority over built-in IDE actions when editing markdown files. In non-markdown files, the standard IDE shortcuts work as normal.
 
-| Shortcut                  | Action                    |
-| ------------------------- | ------------------------- |
-| `Cmd/Ctrl+B`              | Toggle **bold**           |
-| `Cmd/Ctrl+I`              | Toggle *italic*           |
-| `Alt+S`                   | Toggle ~~strikethrough~~  |
-| `Cmd/Ctrl+`               | Toggle `code span`        |
-| `Cmd/Ctrl+Shift+` `` ` `` | Toggle code block         |
-| `Ctrl+Shift+]`            | Increase heading level    |
-| `Ctrl+Shift+[`            | Decrease heading level    |
-| `Cmd/Ctrl+]`              | Indent list item          |
-| `Cmd/Ctrl+[`              | Outdent list item         |
-| `Alt+C`                   | Toggle task list checkbox |
+| Shortcut                  | Action                            |
+| ------------------------- | --------------------------------- |
+| `Cmd/Ctrl+B`              | Toggle **bold**                   |
+| `Cmd/Ctrl+I`              | Toggle *italic*                   |
+| `Alt+S`                   | Toggle ~~strikethrough~~          |
+| `Cmd/Ctrl+`               | Toggle `code span`                |
+| `Cmd/Ctrl+Shift+` `` ` `` | Toggle code block                 |
+| `Ctrl+Shift+]`            | Increase heading level            |
+| `Ctrl+Shift+[`            | Decrease heading level            |
+| `Cmd/Ctrl+]`              | Indent list item                  |
+| `Cmd/Ctrl+[`              | Outdent list item                 |
+| `Alt+C`                   | Toggle task list checkbox         |
 | `Ctrl+M`                  | Toggle math (`$...$` / `$$...$$`) |
 
 ### Selection Wrapping
