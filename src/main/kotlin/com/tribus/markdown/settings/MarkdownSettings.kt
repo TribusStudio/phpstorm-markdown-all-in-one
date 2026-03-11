@@ -54,6 +54,9 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // Smart paste
         var smartPasteEnabled: Boolean = true,
 
+        // Math
+        var mathEnabled: Boolean = true,
+
         // Export
         var exportEmbedImages: Boolean = false,
         var exportValidateLinks: Boolean = true,

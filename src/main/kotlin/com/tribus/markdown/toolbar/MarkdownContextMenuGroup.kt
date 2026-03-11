@@ -49,6 +49,10 @@ class MarkdownContextMenuGroup : ActionGroup("Markdown", true) {
         actions.add(actionManager.getAction("com.tribus.markdown.actions.ToggleTaskList"))
         actions.add(Separator.getInstance())
 
+        // Math actions
+        actions.add(actionManager.getAction("com.tribus.markdown.actions.ToggleMath"))
+        actions.add(Separator.getInstance())
+
         // Table actions — show if cursor is in a table
         val inTable = TableParser.findTableAt(docText, caretLine) != null
         if (inTable) {

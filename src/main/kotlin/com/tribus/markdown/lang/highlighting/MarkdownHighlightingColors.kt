@@ -54,4 +54,12 @@ object MarkdownHighlightingColors {
     val IMAGE_MARKER = TextAttributesKey.createTextAttributesKey(
         "MARKDOWN_IMAGE", DefaultLanguageHighlighterColors.MARKUP_ATTRIBUTE
     )
+
+    // Math — displayed in a distinct color to distinguish from regular text
+    val MATH_DELIMITER = TextAttributesKey.createTextAttributesKey(
+        "MARKDOWN_MATH_DELIMITER", DefaultLanguageHighlighterColors.MARKUP_TAG
+    )
+    val MATH_CONTENT = TextAttributesKey.createTextAttributesKey(
+        "MARKDOWN_MATH_CONTENT", DefaultLanguageHighlighterColors.NUMBER
+    )
 }

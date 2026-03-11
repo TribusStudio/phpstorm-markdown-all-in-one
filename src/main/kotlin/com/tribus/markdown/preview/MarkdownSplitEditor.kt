@@ -135,7 +135,13 @@ class MarkdownSplitEditor(
 
         addSeparator(leftPanel)
 
-        // Group 4: Tables & TOC
+        // Group 4: Math
+        addButton(leftPanel, "Math", MarkdownIcons.TOOLBAR_MATH, displayMode,
+            "com.tribus.markdown.actions.ToggleMath", editor)
+
+        addSeparator(leftPanel)
+
+        // Group 5: Tables & TOC
         addButton(leftPanel, "Format Table", MarkdownIcons.TOOLBAR_TABLE, displayMode,
             "com.tribus.markdown.actions.FormatTable", editor)
         addButton(leftPanel, "Update Table of Contents", MarkdownIcons.TOOLBAR_TOC, displayMode,
@@ -187,6 +193,9 @@ class MarkdownSplitEditor(
         popup.addSeparator()
         popup.add(createMenuItem("Add Section Numbers", "com.tribus.markdown.actions.AddSectionNumbers", editor))
         popup.add(createMenuItem("Remove Section Numbers", "com.tribus.markdown.actions.RemoveSectionNumbers", editor))
+        popup.addSeparator()
+        popup.add(createMenuItem("Toggle Math", "com.tribus.markdown.actions.ToggleMath", editor))
+        popup.add(createMenuItem("Toggle Math (Reverse)", "com.tribus.markdown.actions.ToggleMathReverse", editor))
         popup.addSeparator()
         popup.add(createMenuItem("Export to HTML", "com.tribus.markdown.actions.ExportHtml", editor))
         popup.add(createMenuItem("Batch Export to HTML", "com.tribus.markdown.actions.BatchExportHtml", editor))

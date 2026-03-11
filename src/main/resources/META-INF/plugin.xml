@@ -235,6 +235,21 @@
 
             <separator/>
 
+            <!-- Math -->
+            <action id="com.tribus.markdown.actions.ToggleMath"
+                    class="com.tribus.markdown.actions.ToggleMathAction"
+                    text="Toggle Math"
+                    description="Cycle: plain → $inline$ → $$display$$ → plain">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl M"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.ToggleMathReverse"
+                    class="com.tribus.markdown.actions.ToggleMathReverseAction"
+                    text="Toggle Math (Reverse)"
+                    description="Cycle: plain → $$display$$ → $inline$ → plain"/>
+
+            <separator/>
+
             <!-- Export -->
             <action id="com.tribus.markdown.actions.ExportHtml"
                     class="com.tribus.markdown.actions.ExportHtmlAction"

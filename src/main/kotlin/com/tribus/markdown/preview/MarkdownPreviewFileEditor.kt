@@ -246,10 +246,12 @@ class MarkdownPreviewFileEditor(
         // Capture the line to restore after the full-page reload
         val restoreLine = lastVisibleSourceLine
 
+        val mathEnabled = settings?.state?.mathEnabled ?: true
+
         val scrollJs = buildScrollSyncJs()
         val linkJs = buildLinkInterceptJs()
         val combinedJs = listOf(scrollJs, linkJs).filter { it.isNotEmpty() }.joinToString("\n")
-        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark, combinedJs)
+        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark, combinedJs, mathEnabled)
         browser?.loadHTML(fullHtml)
 
         // After loadHTML, the page reloads asynchronously. Schedule a scroll restore

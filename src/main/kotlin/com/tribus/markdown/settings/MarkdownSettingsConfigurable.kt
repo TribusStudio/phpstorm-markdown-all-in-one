@@ -116,6 +116,14 @@ class MarkdownSettingsConfigurable : Configurable {
                 }
             }
 
+            group("Math") {
+                row {
+                    checkBox("Enable math rendering in preview")
+                        .bindSelected(state::mathEnabled)
+                        .comment("Render \$...\$ (inline) and \$\$...\$\$ (display) math using KaTeX in the preview panel")
+                }
+            }
+
             group("Toolbar") {
                 row {
                     checkBox("Show editor toolbar")

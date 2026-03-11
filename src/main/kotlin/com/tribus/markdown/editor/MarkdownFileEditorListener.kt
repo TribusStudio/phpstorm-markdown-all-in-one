@@ -104,6 +104,9 @@ class MarkdownFileEditorListener : EditorFactoryListener {
                 "com.tribus.markdown.actions.FormatTable" to CustomShortcutSet(
                     KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK or InputEvent.SHIFT_DOWN_MASK or InputEvent.ALT_DOWN_MASK), null)
                 ),
+                "com.tribus.markdown.actions.ToggleMath" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), null)
+                ),
             )
         }
     }

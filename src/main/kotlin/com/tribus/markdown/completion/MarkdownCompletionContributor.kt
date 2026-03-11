@@ -32,5 +32,11 @@ class MarkdownCompletionContributor : CompletionContributor() {
             markdownPattern,
             FilePathCompletionProvider()
         )
+
+        extend(
+            CompletionType.BASIC,
+            markdownPattern,
+            MathCompletionProvider()
+        )
     }
 }

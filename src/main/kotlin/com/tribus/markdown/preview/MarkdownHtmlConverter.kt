@@ -417,12 +417,18 @@ object MarkdownHtmlConverter {
         css: String,
         customCss: String = "",
         darkMode: Boolean = false,
-        extraJs: String = ""
+        extraJs: String = "",
+        mathEnabled: Boolean = false
     ): String {
         val highlightTheme = if (darkMode) "/preview/highlight/github-dark.min.css" else "/preview/highlight/github.min.css"
         val highlightCss = loadResource(highlightTheme)
         val highlightJs = loadResource("/preview/highlight/highlight.min.js")
         val hasCodeBlocks = bodyHtml.contains("<code class=\"language-")
+
+        // KaTeX resources (loaded from bundled files)
+        val katexCss = if (mathEnabled) loadResource("/preview/katex/katex.min.css") else ""
+        val katexJs = if (mathEnabled) loadResource("/preview/katex/katex.min.js") else ""
+        val autoRenderJs = if (mathEnabled) loadResource("/preview/katex/auto-render.min.js") else ""
 
         return """<!DOCTYPE html>
 <html>
@@ -433,10 +439,22 @@ $css
 </style>
 ${if (customCss.isNotEmpty()) "<style>\n$customCss\n</style>" else ""}
 ${if (hasCodeBlocks && highlightCss.isNotEmpty()) "<style>\n$highlightCss\n</style>" else ""}
+${if (katexCss.isNotEmpty()) "<style>\n$katexCss\n</style>" else ""}
 </head>
 <body class="markdown-body">
 $bodyHtml
 ${if (hasCodeBlocks && highlightJs.isNotEmpty()) "<script>$highlightJs</script>\n<script>hljs.highlightAll();</script>" else ""}
+${if (katexJs.isNotEmpty()) "<script>$katexJs</script>" else ""}
+${if (autoRenderJs.isNotEmpty()) """<script>$autoRenderJs</script>
+<script>
+renderMathInElement(document.body, {
+  delimiters: [
+    {left: "$$", right: "$$", display: true},
+    {left: "$", right: "$", display: false}
+  ],
+  throwOnError: false
+});
+</script>""" else ""}
 ${if (extraJs.isNotEmpty()) "<script>\n$extraJs\n</script>" else ""}
 </body>
 </html>"""

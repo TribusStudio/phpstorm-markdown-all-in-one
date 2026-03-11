@@ -148,18 +148,21 @@ Editor–preview scroll synchronization and architectural toolbar fix.
 - [x] Verify toolbar survives split/unsplit, tab drag, window move, group operations
 - [x] Tests for toolbar presence and button state
 
-## Phase 10: Math & LaTeX Support ← NEXT
+## Phase 10: Math & LaTeX Support ✅
 Full math editing and rendering to match VSCode parity.
 
-- [ ] Toggle Math action (`Ctrl+M`) — cycles: no math → `$...$` (inline) → `$$...$$` (display)
-- [ ] Toggle Math Reverse action (command palette) — cycles in opposite direction
-- [ ] KaTeX rendering in preview — embed KaTeX JS library in JCEF, render `$...$` and `$$...$$` as formatted equations
-- [ ] Math-aware syntax highlighting — lexer tokens for `$` and `$$` delimiters, distinct text attributes for math content
-- [ ] Math completion provider — LaTeX command autocompletion inside math environments (e.g., `\frac`, `\sum`, `\alpha`, `\int`)
-- [ ] Settings: `mathEnabled` toggle, `katexMacros` for custom macro definitions
-- [ ] Tests for math toggle action, math rendering, and math completions
+- [x] Toggle Math action (`Ctrl+M`) — cycles: no math → `$...$` (inline) → `$$...$$` (display)
+- [x] Toggle Math Reverse action (command palette) — cycles in opposite direction
+- [x] KaTeX rendering in preview — bundled KaTeX JS/CSS library in JCEF, render `$...$` and `$$...$$` as formatted equations via auto-render
+- [x] Math-aware syntax highlighting — annotator patterns for `$` and `$$` delimiters, distinct text attributes for math delimiters and content
+- [x] Math completion provider — LaTeX command autocompletion inside math environments (170+ commands: Greek letters, operators, relations, arrows, symbols, accents, delimiters, environments)
+- [x] Build toolbar button for math functions
+- [x] Include Math functions in right-click menu markdown options
+- [x] Include Math functions in hamburger menu in toolbar
+- [x] Settings: `mathEnabled` toggle (enabled by default)
+- [x] Tests for math toggle action, math rendering, and math completions (20 new test cases)
 
-## Phase 11: Advanced List Editing
+## Phase 11: Advanced List Editing ← NEXT
 List editing enhancements for full VSCode parity.
 
 - [ ] Toggle List action — cycle current line through marker candidates (`-`, `*`, `+`, `1.`, `1)`)

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-03-11
+
+### Added
+- **Math & LaTeX support** — full math editing and rendering using the bundled KaTeX library
+  - Toggle Math action (`Ctrl+M`) — cycles: plain text → `$inline$` → `$$display$$` → plain text
+  - Toggle Math Reverse action — cycles in opposite direction (available via Tools menu and command palette)
+  - KaTeX rendering in preview — `$...$` (inline) and `$$...$$` (display) math expressions render as formatted equations
+  - Math-aware syntax highlighting — `$` and `$$` delimiters and math content highlighted with distinct colors
+  - LaTeX completion — 170+ commands (Greek letters, operators, relations, arrows, symbols, accents, delimiters, environments) auto-complete inside math environments when typing `\`
+  - Math toolbar button, right-click context menu entry, and tools menu entries
+  - Settings toggle: "Enable math rendering in preview" (enabled by default)
+
 ## [0.15.2] - 2026-03-11
 
 ### Added

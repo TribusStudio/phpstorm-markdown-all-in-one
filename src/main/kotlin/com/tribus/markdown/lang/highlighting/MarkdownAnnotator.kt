@@ -31,6 +31,7 @@ class MarkdownAnnotator : Annotator {
         annotateStrikethrough(text, baseOffset, holder)
         annotateLinks(text, baseOffset, holder)
         annotateImages(text, baseOffset, holder)
+        annotateMath(text, baseOffset, holder)
     }
 
     private fun annotateBold(text: String, baseOffset: Int, holder: AnnotationHolder) {
@@ -85,6 +86,45 @@ class MarkdownAnnotator : Annotator {
         }
     }
 
+    private fun annotateMath(text: String, baseOffset: Int, holder: AnnotationHolder) {
+        // Display math: $$...$$
+        for (match in DISPLAY_MATH_PATTERN.findAll(text)) {
+            // Highlight delimiters
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(TextRange(baseOffset + match.range.first, baseOffset + match.range.first + 2))
+                .textAttributes(MarkdownHighlightingColors.MATH_DELIMITER)
+                .create()
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(TextRange(baseOffset + match.range.last - 1, baseOffset + match.range.last + 1))
+                .textAttributes(MarkdownHighlightingColors.MATH_DELIMITER)
+                .create()
+            // Highlight content
+            val contentGroup = match.groups[1] ?: continue
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(TextRange(baseOffset + contentGroup.range.first, baseOffset + contentGroup.range.last + 1))
+                .textAttributes(MarkdownHighlightingColors.MATH_CONTENT)
+                .create()
+        }
+        // Inline math: $...$ (not preceded/followed by $)
+        for (match in INLINE_MATH_PATTERN.findAll(text)) {
+            // Highlight delimiters
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(TextRange(baseOffset + match.range.first, baseOffset + match.range.first + 1))
+                .textAttributes(MarkdownHighlightingColors.MATH_DELIMITER)
+                .create()
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(TextRange(baseOffset + match.range.last, baseOffset + match.range.last + 1))
+                .textAttributes(MarkdownHighlightingColors.MATH_DELIMITER)
+                .create()
+            // Highlight content
+            val contentGroup = match.groups[1] ?: continue
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(TextRange(baseOffset + contentGroup.range.first, baseOffset + contentGroup.range.last + 1))
+                .textAttributes(MarkdownHighlightingColors.MATH_CONTENT)
+                .create()
+        }
+    }
+
     companion object {
         // Bold: **text** or __text__ (non-greedy, must not be empty)
         private val BOLD_PATTERN = Regex("""\*\*(.+?)\*\*|__(.+?)__""")
@@ -98,5 +138,9 @@ class MarkdownAnnotator : Annotator {
         private val LINK_PATTERN = Regex("""\[([^\]]+)]\(([^)]+)\)""")
         // Image: ![alt](url)
         private val IMAGE_PATTERN = Regex("""!\[([^\]]*)]\([^)]+\)""")
+        // Display math: $$...$$ (non-greedy)
+        private val DISPLAY_MATH_PATTERN = Regex("""\$\$(.+?)\$\$""")
+        // Inline math: $...$ (not preceded/followed by another $)
+        private val INLINE_MATH_PATTERN = Regex("""(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)""")
     }
 }

@@ -22,6 +22,7 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 | `Cmd/Ctrl+]`              | Indent list item          |
 | `Cmd/Ctrl+[`              | Outdent list item         |
 | `Alt+C`                   | Toggle task list checkbox |
+| `Ctrl+M`                  | Toggle math (`$...$` / `$$...$$`) |
 
 ### Selection Wrapping
 
@@ -166,6 +167,19 @@ JCEF-based live preview with split editor support — just like the built-in Mar
 
 **Custom CSS:** Set a path to a `.css` file in settings to apply additional style overrides on top of the selected theme.
 
+### Math & LaTeX
+
+Write math expressions using standard LaTeX syntax. They render in the preview using the bundled KaTeX library.
+
+- **Inline math:** `$E = mc^2$` renders inline
+- **Display math:** `$$\sum_{i=1}^n x_i$$` renders as a centered block
+- **Toggle shortcut:** `Ctrl+M` cycles: plain text → `$inline$` → `$$display$$` → plain text
+- **Auto-completion:** Type `\` inside a math environment to get LaTeX command completion (170+ commands including Greek letters, operators, relations, arrows, symbols, and environments)
+- **Syntax highlighting:** Math delimiters (`$`, `$$`) and content are highlighted with distinct colors in the editor
+- **Configurable:** Enable/disable via Settings > Math > "Enable math rendering in preview"
+
+> **Note:** KaTeX fonts are loaded from a CDN (jsDelivr) for the preview. Internet access is needed for math to render correctly in the preview panel.
+
 **Zoom:** The preview panel supports zoom in/out/reset for comfortable reading.
 
 ### Toolbars & Context Menu
@@ -261,6 +275,7 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Toolbar           | Button display                      | icons             |
 | Completion        | Auto-popup completion               | On                |
 | Smart Paste       | Auto-create links from URLs         | On                |
+| Math              | Enable math rendering in preview    | On                |
 | Export            | Embed images as base64              | Off               |
 | Export            | Validate links on export            | On                |
 

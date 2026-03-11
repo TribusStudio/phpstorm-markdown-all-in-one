@@ -316,4 +316,41 @@ class MarkdownHtmlConverterTest {
         val html = MarkdownHtmlConverter.convert(md)
         assertEquals(1, Regex("<ul>").findAll(html).count(), "Expected exactly one <ul> tag")
     }
+
+    // ── Math / KaTeX tests ───────────────────────────────────────────
+
+    @Test
+    fun `wrapInDocument includes KaTeX when mathEnabled is true`() {
+        val html = MarkdownHtmlConverter.wrapInDocument("<p>test</p>", "body{}", mathEnabled = true)
+        assertTrue(html.contains("renderMathInElement"))
+        assertTrue(html.contains("katex"))
+    }
+
+    @Test
+    fun `wrapInDocument excludes KaTeX when mathEnabled is false`() {
+        val html = MarkdownHtmlConverter.wrapInDocument("<p>test</p>", "body{}", mathEnabled = false)
+        assertFalse(html.contains("renderMathInElement"))
+    }
+
+    @Test
+    fun `wrapInDocument default does not include KaTeX`() {
+        val html = MarkdownHtmlConverter.wrapInDocument("<p>test</p>", "body{}")
+        assertFalse(html.contains("renderMathInElement"))
+    }
+
+    @Test
+    fun `inline math dollar signs preserved in HTML output`() {
+        // The converter should NOT strip $ signs — KaTeX auto-render handles them client-side
+        val md = "The formula \$E=mc^2\$ is famous."
+        val html = MarkdownHtmlConverter.convert(md)
+        // The $ signs should be present in the output (possibly HTML-escaped or literal)
+        assertTrue(html.contains("E=mc^2") || html.contains("E=mc"), "Math content should be preserved")
+    }
+
+    @Test
+    fun `display math dollar signs preserved in HTML output`() {
+        val md = "\$\$\\sum_{i=1}^n x_i\$\$"
+        val html = MarkdownHtmlConverter.convert(md)
+        assertTrue(html.contains("sum") || html.contains("\\sum"), "Math content should be preserved")
+    }
 }

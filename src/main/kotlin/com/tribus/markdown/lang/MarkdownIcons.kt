@@ -32,4 +32,6 @@ object MarkdownIcons {
     val TOOLBAR_INDENT: Icon = IconLoader.getIcon("/icons/toolbar-indent.svg", MarkdownIcons::class.java)
     @JvmField
     val TOOLBAR_OUTDENT: Icon = IconLoader.getIcon("/icons/toolbar-outdent.svg", MarkdownIcons::class.java)
+    @JvmField
+    val TOOLBAR_MATH: Icon = IconLoader.getIcon("/icons/toolbar-math.svg", MarkdownIcons::class.java)
 }
