@@ -30,7 +30,7 @@ class MarkdownStructureViewElement(
         val headings = HeadingExtractor.extract(text)
         if (headings.isEmpty()) return emptyArray()
 
-        return buildTree(headings, text).toTypedArray()
+        return buildTree(headings, psiFile, text).toTypedArray()
     }
 
     override fun navigate(requestFocus: Boolean) {
@@ -46,12 +46,12 @@ class MarkdownStructureViewElement(
          * Build a tree of [HeadingTreeElement] from a flat list of headings.
          * Uses a stack to track the hierarchy based on heading levels.
          */
-        fun buildTree(headings: List<HeadingExtractor.Heading>, documentText: String): List<HeadingTreeElement> {
+        fun buildTree(headings: List<HeadingExtractor.Heading>, psiFile: PsiFile?, documentText: String): List<HeadingTreeElement> {
             val roots = mutableListOf<HeadingTreeElement>()
             val stack = mutableListOf<HeadingTreeElement>() // stack of ancestors
 
             for (heading in headings) {
-                val element = HeadingTreeElement(heading, documentText)
+                val element = HeadingTreeElement(heading, psiFile, documentText)
 
                 // Pop stack until we find a parent with a lower heading level
                 while (stack.isNotEmpty() && stack.last().heading.level >= heading.level) {

@@ -15,7 +15,7 @@ class StructureViewTest {
             # C
         """.trimIndent()
         val headings = HeadingExtractor.extract(text)
-        val tree = MarkdownStructureViewElement.buildTree(headings, text)
+        val tree = MarkdownStructureViewElement.buildTree(headings, null, text)
 
         assertEquals(3, tree.size)
         assertEquals("A", tree[0].heading.rawText)
@@ -33,7 +33,7 @@ class StructureViewTest {
             ### Grandchild
         """.trimIndent()
         val headings = HeadingExtractor.extract(text)
-        val tree = MarkdownStructureViewElement.buildTree(headings, text)
+        val tree = MarkdownStructureViewElement.buildTree(headings, null, text)
 
         assertEquals(1, tree.size)
         val parent = tree[0]
@@ -60,7 +60,7 @@ class StructureViewTest {
             ## H2
         """.trimIndent()
         val headings = HeadingExtractor.extract(text)
-        val tree = MarkdownStructureViewElement.buildTree(headings, text)
+        val tree = MarkdownStructureViewElement.buildTree(headings, null, text)
 
         assertEquals(1, tree.size)
         val h1 = tree[0]
@@ -77,7 +77,7 @@ class StructureViewTest {
 
     @Test
     fun `buildTree handles empty headings list`() {
-        val tree = MarkdownStructureViewElement.buildTree(emptyList(), "")
+        val tree = MarkdownStructureViewElement.buildTree(emptyList(), null, "")
         assertTrue(tree.isEmpty())
     }
 
@@ -90,7 +90,7 @@ class StructureViewTest {
             ## Sub 2
         """.trimIndent()
         val headings = HeadingExtractor.extract(text)
-        val tree = MarkdownStructureViewElement.buildTree(headings, text)
+        val tree = MarkdownStructureViewElement.buildTree(headings, null, text)
 
         assertEquals(2, tree.size)
         assertEquals("Section 1", tree[0].heading.rawText)
@@ -103,7 +103,7 @@ class StructureViewTest {
     fun `HeadingTreeElement getTextOffset calculates correctly`() {
         val text = "# First\n## Second\n### Third"
         val headings = HeadingExtractor.extract(text)
-        val tree = MarkdownStructureViewElement.buildTree(headings, text)
+        val tree = MarkdownStructureViewElement.buildTree(headings, null, text)
 
         assertEquals(0, tree[0].getTextOffset())
 
@@ -112,12 +112,12 @@ class StructureViewTest {
     }
 
     @Test
-    fun `HeadingTreeElement presentation includes level prefix`() {
+    fun `HeadingTreeElement presentation shows heading text without hash prefix`() {
         val text = "## My Heading"
         val headings = HeadingExtractor.extract(text)
-        val element = HeadingTreeElement(headings[0], text)
+        val element = HeadingTreeElement(headings[0], null, text)
         val presentation = element.presentation
 
-        assertEquals("## My Heading", presentation.presentableText)
+        assertEquals("My Heading", presentation.presentableText)
     }
 }

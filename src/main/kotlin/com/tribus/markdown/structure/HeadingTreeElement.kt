@@ -6,6 +6,9 @@ import com.intellij.ide.structureView.StructureViewTreeElement
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement
 import com.intellij.ide.util.treeView.smartTree.TreeElement
 import com.intellij.navigation.ItemPresentation
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.psi.PsiFile
 import com.tribus.markdown.toc.HeadingExtractor
 
 /**
@@ -14,6 +17,7 @@ import com.tribus.markdown.toc.HeadingExtractor
  */
 class HeadingTreeElement(
     val heading: HeadingExtractor.Heading,
+    private val psiFile: PsiFile?,
     private val documentText: String
 ) : StructureViewTreeElement, SortableTreeElement {
 
@@ -35,20 +39,22 @@ class HeadingTreeElement(
             4 -> AllIcons.Nodes.Property
             else -> AllIcons.Nodes.PropertyRead
         }
-        val levelPrefix = "#".repeat(heading.level)
-        return PresentationData("$levelPrefix ${heading.rawText}", null, icon, null)
+        return PresentationData(heading.rawText, null, icon, null)
     }
 
     override fun getChildren(): Array<TreeElement> = children.toTypedArray()
 
     override fun navigate(requestFocus: Boolean) {
-        // Navigation is handled via the NavigationGutter / structure view framework
-        // using the offset from documentText
+        val file = psiFile ?: return
+        val virtualFile = file.virtualFile ?: return
+        val offset = getTextOffset()
+        val descriptor = OpenFileDescriptor(file.project, virtualFile, offset)
+        FileEditorManager.getInstance(file.project).openTextEditor(descriptor, requestFocus)
     }
 
-    override fun canNavigate(): Boolean = true
+    override fun canNavigate(): Boolean = psiFile?.virtualFile != null
 
-    override fun canNavigateToSource(): Boolean = true
+    override fun canNavigateToSource(): Boolean = canNavigate()
 
     /**
      * Get the text offset of this heading in the document.
