@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dark theme icon variants** — all 13 toolbar SVG icons now have `_dark.svg` variants with the standard IntelliJ dark icon color (`#AFB1B3`), automatically selected by the platform based on the active theme
 - **Action icons in plugin.xml** — toolbar actions now declare their icons in the plugin descriptor, enabling proper icon display in menus, keymap settings, and the Find Action dialog
 - **Tools popup uses ActionGroup** — the "More" tools menu is now a proper `DefaultActionGroup` popup instead of a raw `JPopupMenu`, gaining consistent styling and keyboard navigation
+- **Distinct code block icon** — the code block action now has its own icon (rounded rectangle with code lines) instead of sharing the `</>` icon with code span
+- **Removed "Button display" setting** — the toolbar display mode setting (icons/labels/icons and labels) was removed since the native `ActionToolbar` handles display automatically
+
+### Fixed
+- **CI build cache staleness** — added `clean` and `--no-build-cache` to the CI workflow to prevent stale Gradle build cache entries from causing `NoSuchMethodError` failures when data class constructors change
 
 ## [0.16.1] - 2026-03-11
 
