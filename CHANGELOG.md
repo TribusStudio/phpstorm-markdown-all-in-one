@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-03-11
+
+### Fixed
+- **Structure View navigation** — clicking a heading in the Structure View now correctly jumps the editor cursor to that heading's line. The `navigate()` method was previously a no-op stub
+- **Structure View labels** — removed redundant `#` hash prefixes from heading labels since the tree nesting already communicates hierarchy
+
+### Added
+- **Architecture guide in CONTRIBUTING.md** — comprehensive walkthrough of the plugin's bootstrap sequence, flat PSI design, two-layer highlighting, shortcut override mechanism, and all major subsystems
+
 ## [0.17.0] - 2026-03-11
 
 ### Added
