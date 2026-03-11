@@ -353,4 +353,44 @@ class MarkdownHtmlConverterTest {
         val html = MarkdownHtmlConverter.convert(md)
         assertTrue(html.contains("sum") || html.contains("\\sum"), "Math content should be preserved")
     }
+
+    // ── Code span priority tests ─────────────────────────────────────
+
+    @Test
+    fun `image syntax inside code span is not rendered as image`() {
+        val html = MarkdownHtmlConverter.convertInline("`![alt](`")
+        assertTrue(html.contains("<code>![alt](</code>"), "Image syntax inside code span should be literal text, got: $html")
+        assertFalse(html.contains("<img"), "Should NOT contain an img tag")
+    }
+
+    @Test
+    fun `link syntax inside code span is not rendered as link`() {
+        val html = MarkdownHtmlConverter.convertInline("`[text](`")
+        assertTrue(html.contains("<code>[text](</code>"), "Link syntax inside code span should be literal text, got: $html")
+        assertFalse(html.contains("<a "), "Should NOT contain an anchor tag")
+    }
+
+    @Test
+    fun `bold syntax inside code span is not rendered as bold`() {
+        val html = MarkdownHtmlConverter.convertInline("`**bold**`")
+        assertTrue(html.contains("<code>**bold**</code>"), "Bold syntax inside code span should be literal, got: $html")
+        assertFalse(html.contains("<strong>"), "Should NOT contain a strong tag")
+    }
+
+    @Test
+    fun `mixed code spans and formatting`() {
+        val html = MarkdownHtmlConverter.convertInline("Use `![alt](` + **Ctrl+Space** for paths")
+        assertTrue(html.contains("<code>![alt](</code>"), "Code span should be preserved, got: $html")
+        assertTrue(html.contains("<strong>Ctrl+Space</strong>"), "Bold outside code span should work")
+        assertFalse(html.contains("<img"), "Should NOT contain img tag")
+    }
+
+    @Test
+    fun `multiple code spans preserve content independently`() {
+        val html = MarkdownHtmlConverter.convertInline("`[text](url)` and `![img](src)`")
+        assertTrue(html.contains("<code>[text](url)</code>"))
+        assertTrue(html.contains("<code>![img](src)</code>"))
+        assertFalse(html.contains("<a "))
+        assertFalse(html.contains("<img"))
+    }
 }

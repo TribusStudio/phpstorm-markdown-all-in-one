@@ -394,6 +394,7 @@ class MarkdownPreviewFileEditor(
     };
 
     // Preview -> Editor: report visible source line on user scroll
+    // Uses linear interpolation between annotated elements for accuracy.
     var _lastLine = -1;
     var _scrollTimer = null;
     window.__scrollFromEditor = false;
@@ -402,18 +403,48 @@ class MarkdownPreviewFileEditor(
         if (_scrollTimer) clearTimeout(_scrollTimer);
         _scrollTimer = setTimeout(function() {
             var elements = document.querySelectorAll('[data-source-line]');
+            if (elements.length === 0) return;
             var viewTop = window.scrollY + 10;
-            var best = null;
+
+            // Find the two elements that bracket the current scroll position
+            var before = null;
+            var after = null;
             for (var i = 0; i < elements.length; i++) {
-                if (elements[i].offsetTop <= viewTop) best = elements[i];
-                else break;
-            }
-            if (best) {
-                var line = parseInt(best.getAttribute('data-source-line'));
-                if (!isNaN(line) && line !== _lastLine) {
-                    _lastLine = line;
-                    $injection
+                if (elements[i].offsetTop <= viewTop) {
+                    before = elements[i];
+                } else {
+                    after = elements[i];
+                    break;
                 }
+            }
+
+            var line;
+            if (before && after) {
+                // Interpolate between the two elements
+                var beforeLine = parseInt(before.getAttribute('data-source-line'));
+                var afterLine = parseInt(after.getAttribute('data-source-line'));
+                var beforeTop = before.offsetTop;
+                var afterTop = after.offsetTop;
+                var range = afterTop - beforeTop;
+                if (range > 0) {
+                    var ratio = (viewTop - beforeTop) / range;
+                    line = Math.round(beforeLine + ratio * (afterLine - beforeLine));
+                } else {
+                    line = beforeLine;
+                }
+            } else if (before) {
+                // Past the last element — use its line
+                line = parseInt(before.getAttribute('data-source-line'));
+            } else if (after) {
+                // Before the first element
+                line = parseInt(after.getAttribute('data-source-line'));
+            } else {
+                return;
+            }
+
+            if (!isNaN(line) && line !== _lastLine) {
+                _lastLine = line;
+                $injection
             }
         }, 50);
     }, {passive: true});

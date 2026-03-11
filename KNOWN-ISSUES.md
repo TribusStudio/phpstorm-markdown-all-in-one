@@ -4,7 +4,7 @@ A list of known problems we are actively tracking and looking to fix.
 
 ## Preview Scroll Synchronization
 
-Bidirectional scrolling from the preview window back to the editor is not as synchronized as editor-to-preview scrolling. This is likely due to how the system polls the scroll position and the placement of source-line mapping attributes on block-level elements. Editor-to-preview scrolling works reliably.
+~~Bidirectional scrolling from the preview window back to the editor is not as synchronized as editor-to-preview scrolling.~~ **Improved in v0.16.1** — preview-to-editor scroll now uses linear interpolation between source-line elements for much better accuracy. Minor discrepancies may still occur on very long blocks without intermediate annotations.
 
 ## Mermaid and Diagram Rendering
 

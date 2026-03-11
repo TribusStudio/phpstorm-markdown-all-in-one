@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.1] - 2026-03-11
+
+### Fixed
+- **Code span priority in preview** — markdown syntax inside backtick code spans (e.g., `` `![alt](` ``) is now rendered as literal text instead of being processed as images/links/bold. Uses placeholder extraction to comply with CommonMark code span priority rules
+- **Preview-to-editor scroll sync accuracy** — scroll position reported from the preview to the editor now uses linear interpolation between bracketing source-line elements, instead of snapping to the nearest earlier element. This significantly improves accuracy for long paragraphs and code blocks
+
 ## [0.16.0] - 2026-03-11
 
 ### Added

@@ -208,9 +208,39 @@ object MarkdownHtmlConverter {
 
     /**
      * Convert inline markdown formatting to HTML.
+     *
+     * Per CommonMark, code spans have the highest priority among inline constructs.
+     * We extract them into placeholders first, process all other formatting on the
+     * remaining text, then restore the code spans. This prevents markup inside
+     * backticks (e.g., `![alt](`) from being interpreted as images/links.
      */
     fun convertInline(text: String): String {
         var result = escapeHtml(text)
+
+        // ── Step 1: Extract code spans into placeholders ─────────────
+        // Code spans take priority over all other inline formatting in CommonMark.
+        val codeSpans = mutableListOf<String>()
+
+        // Multi-backtick delimiters first (`` ` ``, ``` `` ```, etc.)
+        result = result.replace(Regex("(`{2,})(.+?)\\1")) { m ->
+            val content = m.groupValues[2]
+            val trimmed = if (content.startsWith(" ") && content.endsWith(" ") && content.trim().isNotEmpty()) {
+                content.substring(1, content.length - 1)
+            } else {
+                content
+            }
+            val idx = codeSpans.size
+            codeSpans.add("<code>$trimmed</code>")
+            "\u0000CODESPAN$idx\u0000"
+        }
+        // Single-backtick delimiters
+        result = result.replace(Regex("`([^`]+)`")) { m ->
+            val idx = codeSpans.size
+            codeSpans.add("<code>${m.groupValues[1]}</code>")
+            "\u0000CODESPAN$idx\u0000"
+        }
+
+        // ── Step 2: Process all other inline formatting ──────────────
 
         // Images: ![alt](url) — allow \] in alt text
         result = result.replace(Regex("!\\[((?:\\\\.|[^\\]])*)\\]\\(([^)]+)\\)")) { m ->
@@ -220,23 +250,6 @@ object MarkdownHtmlConverter {
         // Links: [text](url) — allow \] in link text
         result = result.replace(Regex("\\[((?:\\\\.|[^\\]])*)\\]\\(([^)]+)\\)")) { m ->
             "<a href=\"${m.groupValues[2]}\">${m.groupValues[1]}</a>"
-        }
-
-        // Inline code — handle multi-backtick delimiters (`` ` ``, ``` `` ```, etc.)
-        // Per CommonMark: a backtick string of length N opens code that closes at the next
-        // backtick string of exactly length N. Content is trimmed of one leading+trailing space
-        // if the content both starts and ends with a space and is not all spaces.
-        result = result.replace(Regex("(`{2,})(.+?)\\1")) { m ->
-            val content = m.groupValues[2]
-            val trimmed = if (content.startsWith(" ") && content.endsWith(" ") && content.trim().isNotEmpty()) {
-                content.substring(1, content.length - 1)
-            } else {
-                content
-            }
-            "<code>$trimmed</code>"
-        }
-        result = result.replace(Regex("`([^`]+)`")) { m ->
-            "<code>${m.groupValues[1]}</code>"
         }
 
         // Bold + Italic: ***text*** or ___text___
@@ -274,6 +287,11 @@ object MarkdownHtmlConverter {
         // Backslash escapes — any ASCII punctuation preceded by \ renders as the literal character
         result = result.replace(Regex("\\\\([\\\\`*_{}\\[\\]()#+\\-.!|~])")) { m ->
             m.groupValues[1]
+        }
+
+        // ── Step 3: Restore code spans ───────────────────────────────
+        for (i in codeSpans.indices) {
+            result = result.replace("\u0000CODESPAN$i\u0000", codeSpans[i])
         }
 
         return result
