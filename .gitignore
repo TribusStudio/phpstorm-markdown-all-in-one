@@ -11,6 +11,9 @@ build/
 *.ipr
 out/
 
+# Kotlin
+.kotlin/
+
 # OS
 .DS_Store
 Thumbs.db
@@ -26,3 +29,8 @@ gradle/wrapper/gradle-wrapper.jar
 
 # Claude
 .claude/settings.local.json
+
+# Test/scratch files
+test.md
+test.html
+/assets/
