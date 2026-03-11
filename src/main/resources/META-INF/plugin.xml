@@ -129,6 +129,7 @@
             <action id="com.tribus.markdown.actions.ToggleBold"
                     class="com.tribus.markdown.actions.ToggleBoldAction"
                     text="Toggle Bold"
+                    icon="/icons/toolbar-bold.svg"
                     description="Toggle bold formatting on selection">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl B"/>
             </action>
@@ -136,6 +137,7 @@
             <action id="com.tribus.markdown.actions.ToggleItalic"
                     class="com.tribus.markdown.actions.ToggleItalicAction"
                     text="Toggle Italic"
+                    icon="/icons/toolbar-italic.svg"
                     description="Toggle italic formatting on selection">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl I"/>
             </action>
@@ -143,6 +145,7 @@
             <action id="com.tribus.markdown.actions.ToggleStrikethrough"
                     class="com.tribus.markdown.actions.ToggleStrikethroughAction"
                     text="Toggle Strikethrough"
+                    icon="/icons/toolbar-strikethrough.svg"
                     description="Toggle strikethrough formatting on selection">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt S"/>
             </action>
@@ -150,6 +153,7 @@
             <action id="com.tribus.markdown.actions.ToggleCodeSpan"
                     class="com.tribus.markdown.actions.ToggleCodeSpanAction"
                     text="Toggle Code Span"
+                    icon="/icons/toolbar-code.svg"
                     description="Toggle inline code formatting on selection">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl BACK_QUOTE"/>
             </action>
@@ -157,6 +161,7 @@
             <action id="com.tribus.markdown.actions.ToggleCodeBlock"
                     class="com.tribus.markdown.actions.ToggleCodeBlockAction"
                     text="Toggle Code Block"
+                    icon="/icons/toolbar-code.svg"
                     description="Toggle fenced code block on selection">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift BACK_QUOTE"/>
             </action>
@@ -167,6 +172,7 @@
             <action id="com.tribus.markdown.actions.HeadingUp"
                     class="com.tribus.markdown.actions.HeadingUpAction"
                     text="Increase Heading Level"
+                    icon="/icons/toolbar-heading-up.svg"
                     description="Increase heading level (# to ##)">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift CLOSE_BRACKET"/>
             </action>
@@ -174,6 +180,7 @@
             <action id="com.tribus.markdown.actions.HeadingDown"
                     class="com.tribus.markdown.actions.HeadingDownAction"
                     text="Decrease Heading Level"
+                    icon="/icons/toolbar-heading-down.svg"
                     description="Decrease heading level (## to #)">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift OPEN_BRACKET"/>
             </action>
@@ -184,6 +191,7 @@
             <action id="com.tribus.markdown.actions.ListIndent"
                     class="com.tribus.markdown.actions.ListIndentAction"
                     text="Indent List Item"
+                    icon="/icons/toolbar-indent.svg"
                     description="Indent list item one level">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl CLOSE_BRACKET"/>
             </action>
@@ -191,6 +199,7 @@
             <action id="com.tribus.markdown.actions.ListOutdent"
                     class="com.tribus.markdown.actions.ListOutdentAction"
                     text="Outdent List Item"
+                    icon="/icons/toolbar-outdent.svg"
                     description="Outdent list item one level">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl OPEN_BRACKET"/>
             </action>
@@ -206,6 +215,7 @@
             <action id="com.tribus.markdown.actions.UpdateToc"
                     class="com.tribus.markdown.actions.UpdateTocAction"
                     text="Update Table of Contents"
+                    icon="/icons/toolbar-toc.svg"
                     description="Update existing table of contents"/>
 
             <action id="com.tribus.markdown.actions.AddSectionNumbers"
@@ -224,6 +234,7 @@
             <action id="com.tribus.markdown.actions.FormatTable"
                     class="com.tribus.markdown.actions.FormatTableAction"
                     text="Format Table"
+                    icon="/icons/toolbar-table.svg"
                     description="Auto-format the GFM table at cursor">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift alt T"/>
             </action>
@@ -239,6 +250,7 @@
             <action id="com.tribus.markdown.actions.ToggleMath"
                     class="com.tribus.markdown.actions.ToggleMathAction"
                     text="Toggle Math"
+                    icon="/icons/toolbar-math.svg"
                     description="Cycle: plain → $inline$ → $$display$$ → plain">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl M"/>
             </action>
@@ -266,6 +278,7 @@
         <action id="com.tribus.markdown.actions.ToggleTaskList"
                 class="com.tribus.markdown.actions.ToggleTaskListAction"
                 text="Toggle Task Checkbox"
+                icon="/icons/toolbar-task.svg"
                 description="Toggle task list checkbox state">
             <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
         </action>

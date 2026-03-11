@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.2] - 2026-03-11
+
+### Changed
+- **Toolbar rewritten using IntelliJ ActionToolbar** — the editor toolbar now uses the platform's native `ActionToolbar` instead of custom `JButton` components. This gives proper icon sizing, DPI scaling, spacing, hover states, and separator rendering that matches the IDE's design language (Bookmarks, VCS, etc.)
+- **Dark theme icon variants** — all 13 toolbar SVG icons now have `_dark.svg` variants with the standard IntelliJ dark icon color (`#AFB1B3`), automatically selected by the platform based on the active theme
+- **Action icons in plugin.xml** — toolbar actions now declare their icons in the plugin descriptor, enabling proper icon display in menus, keymap settings, and the Find Action dialog
+- **Tools popup uses ActionGroup** — the "More" tools menu is now a proper `DefaultActionGroup` popup instead of a raw `JPopupMenu`, gaining consistent styling and keyboard navigation
+
 ## [0.16.1] - 2026-03-11
 
 ### Fixed

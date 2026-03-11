@@ -4,36 +4,21 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.actionSystem.Presentation
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.TextEditorWithPreview
 import com.intellij.openapi.options.ShowSettingsUtil
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.util.ui.JBUI
-import com.tribus.markdown.lang.MarkdownIcons
 import com.tribus.markdown.settings.MarkdownSettings
 import java.awt.BorderLayout
-import java.awt.Color
-import java.awt.Cursor
-import java.awt.Dimension
 import java.awt.Point
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import javax.swing.Box
-import javax.swing.BoxLayout
-import javax.swing.Icon
-import javax.swing.JButton
 import javax.swing.JComponent
-import javax.swing.JMenuItem
 import javax.swing.JPanel
-import javax.swing.JPopupMenu
-import javax.swing.JSeparator
-import javax.swing.SwingConstants
 import javax.swing.SwingUtilities
 import javax.swing.Timer
 
@@ -94,170 +79,96 @@ class MarkdownSplitEditor(
             return toolbar
         }
 
-        val displayMode = settings?.toolbarDisplayMode ?: "icons"
         toolbar.border = JBUI.Borders.customLineBottom(JBUI.CurrentTheme.Editor.BORDER_COLOR)
 
-        // ── Left side: grouped action buttons ──────────────────────
-        val leftPanel = JPanel()
-        leftPanel.layout = BoxLayout(leftPanel, BoxLayout.X_AXIS)
-        leftPanel.isOpaque = false
-        leftPanel.border = JBUI.Borders.empty(1, 2)
+        val actionManager = ActionManager.getInstance()
+
+        // ── Left side: grouped action buttons using ActionToolbar ──
+        val leftGroup = DefaultActionGroup()
 
         // Group 1: Text formatting
-        addButton(leftPanel, "Bold", MarkdownIcons.TOOLBAR_BOLD, displayMode,
-            "com.tribus.markdown.actions.ToggleBold", editor)
-        addButton(leftPanel, "Italic", MarkdownIcons.TOOLBAR_ITALIC, displayMode,
-            "com.tribus.markdown.actions.ToggleItalic", editor)
-        addButton(leftPanel, "Strikethrough", MarkdownIcons.TOOLBAR_STRIKETHROUGH, displayMode,
-            "com.tribus.markdown.actions.ToggleStrikethrough", editor)
-        addButton(leftPanel, "Code", MarkdownIcons.TOOLBAR_CODE, displayMode,
-            "com.tribus.markdown.actions.ToggleCodeSpan", editor)
-        addButton(leftPanel, "Code Block", MarkdownIcons.TOOLBAR_CODE, displayMode,
-            "com.tribus.markdown.actions.ToggleCodeBlock", editor)
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleBold")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleItalic")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleStrikethrough")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleCodeSpan")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleCodeBlock")
 
-        addSeparator(leftPanel)
+        leftGroup.addSeparator()
 
         // Group 2: Structure (headings)
-        addButton(leftPanel, "H+", MarkdownIcons.TOOLBAR_HEADING_UP, displayMode,
-            "com.tribus.markdown.actions.HeadingUp", editor)
-        addButton(leftPanel, "H-", MarkdownIcons.TOOLBAR_HEADING_DOWN, displayMode,
-            "com.tribus.markdown.actions.HeadingDown", editor)
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.HeadingUp")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.HeadingDown")
 
-        addSeparator(leftPanel)
+        leftGroup.addSeparator()
 
         // Group 3: Lists
-        addButton(leftPanel, "Indent", MarkdownIcons.TOOLBAR_INDENT, displayMode,
-            "com.tribus.markdown.actions.ListIndent", editor)
-        addButton(leftPanel, "Outdent", MarkdownIcons.TOOLBAR_OUTDENT, displayMode,
-            "com.tribus.markdown.actions.ListOutdent", editor)
-        addButton(leftPanel, "Task", MarkdownIcons.TOOLBAR_TASK, displayMode,
-            "com.tribus.markdown.actions.ToggleTaskList", editor)
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ListIndent")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ListOutdent")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleTaskList")
 
-        addSeparator(leftPanel)
+        leftGroup.addSeparator()
 
         // Group 4: Math
-        addButton(leftPanel, "Math", MarkdownIcons.TOOLBAR_MATH, displayMode,
-            "com.tribus.markdown.actions.ToggleMath", editor)
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleMath")
 
-        addSeparator(leftPanel)
+        leftGroup.addSeparator()
 
         // Group 5: Tables & TOC
-        addButton(leftPanel, "Format Table", MarkdownIcons.TOOLBAR_TABLE, displayMode,
-            "com.tribus.markdown.actions.FormatTable", editor)
-        addButton(leftPanel, "Update Table of Contents", MarkdownIcons.TOOLBAR_TOC, displayMode,
-            "com.tribus.markdown.actions.UpdateToc", editor)
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.FormatTable")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.UpdateToc")
 
-        toolbar.add(leftPanel, BorderLayout.WEST)
+        val leftToolbar = actionManager.createActionToolbar(
+            ActionPlaces.EDITOR_TOOLBAR, leftGroup, true
+        )
+        leftToolbar.targetComponent = editor.contentComponent
+        toolbar.add(leftToolbar.component, BorderLayout.WEST)
 
-        // ── Right side: tools menu + settings gear ─────────────────
-        val rightPanel = JPanel()
-        rightPanel.layout = BoxLayout(rightPanel, BoxLayout.X_AXIS)
-        rightPanel.isOpaque = false
-        rightPanel.border = JBUI.Borders.empty(1, 2)
+        // ── Right side: tools popup + settings gear ────────────────
+        val rightGroup = DefaultActionGroup()
 
-        val toolsButton = createHoverButton(AllIcons.Actions.More, null, "icons")
-        toolsButton.toolTipText = "Markdown Tools"
-        toolsButton.addActionListener { showToolsMenu(toolsButton, editor) }
-        rightPanel.add(toolsButton)
+        // Tools popup menu
+        val toolsPopupGroup = DefaultActionGroup("Markdown Tools", true)
+        toolsPopupGroup.templatePresentation.icon = AllIcons.Actions.More
+        toolsPopupGroup.templatePresentation.description = "Markdown Tools"
 
-        rightPanel.add(Box.createRigidArea(Dimension(2, 0)))
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.UpdateToc")
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.CreateToc")
+        toolsPopupGroup.addSeparator()
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.FormatTable")
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.FormatAllTables")
+        toolsPopupGroup.addSeparator()
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.AddSectionNumbers")
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.RemoveSectionNumbers")
+        toolsPopupGroup.addSeparator()
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.ToggleMath")
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.ToggleMathReverse")
+        toolsPopupGroup.addSeparator()
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.ExportHtml")
+        addRegisteredAction(toolsPopupGroup, actionManager, "com.tribus.markdown.actions.BatchExportHtml")
 
-        val settingsButton = createHoverButton(AllIcons.General.GearPlain, null, "icons")
-        settingsButton.toolTipText = "Markdown All-in-One Settings"
-        settingsButton.addActionListener {
-            ShowSettingsUtil.getInstance().showSettingsDialog(project, "Markdown All-in-One")
-        }
-        rightPanel.add(settingsButton)
+        rightGroup.add(toolsPopupGroup)
 
-        toolbar.add(rightPanel, BorderLayout.EAST)
+        // Settings gear
+        rightGroup.add(object : DumbAwareAction("Settings", "Markdown All-in-One Settings", AllIcons.General.GearPlain) {
+            override fun actionPerformed(e: AnActionEvent) {
+                ShowSettingsUtil.getInstance().showSettingsDialog(project, "Markdown All-in-One")
+            }
+        })
+
+        val rightToolbar = actionManager.createActionToolbar(
+            ActionPlaces.EDITOR_TOOLBAR, rightGroup, true
+        )
+        rightToolbar.targetComponent = editor.contentComponent
+        toolbar.add(rightToolbar.component, BorderLayout.EAST)
 
         return toolbar
     }
 
-    private fun addSeparator(panel: JPanel) {
-        panel.add(Box.createRigidArea(Dimension(4, 0)))
-        val sep = JSeparator(SwingConstants.VERTICAL)
-        sep.maximumSize = Dimension(1, 22)
-        panel.add(sep)
-        panel.add(Box.createRigidArea(Dimension(4, 0)))
-    }
-
-    private fun showToolsMenu(anchor: JComponent, editor: Editor) {
-        val popup = JPopupMenu()
-
-        popup.add(createMenuItem("Update TOC", "com.tribus.markdown.actions.UpdateToc", editor))
-        popup.add(createMenuItem("Create TOC", "com.tribus.markdown.actions.CreateToc", editor))
-        popup.addSeparator()
-        popup.add(createMenuItem("Format Table at Cursor", "com.tribus.markdown.actions.FormatTable", editor))
-        popup.add(createMenuItem("Format All Tables", "com.tribus.markdown.actions.FormatAllTables", editor))
-        popup.addSeparator()
-        popup.add(createMenuItem("Add Section Numbers", "com.tribus.markdown.actions.AddSectionNumbers", editor))
-        popup.add(createMenuItem("Remove Section Numbers", "com.tribus.markdown.actions.RemoveSectionNumbers", editor))
-        popup.addSeparator()
-        popup.add(createMenuItem("Toggle Math", "com.tribus.markdown.actions.ToggleMath", editor))
-        popup.add(createMenuItem("Toggle Math (Reverse)", "com.tribus.markdown.actions.ToggleMathReverse", editor))
-        popup.addSeparator()
-        popup.add(createMenuItem("Export to HTML", "com.tribus.markdown.actions.ExportHtml", editor))
-        popup.add(createMenuItem("Batch Export to HTML", "com.tribus.markdown.actions.BatchExportHtml", editor))
-
-        popup.show(anchor, 0, anchor.height)
-    }
-
-    private fun createMenuItem(label: String, actionId: String, editor: Editor): JMenuItem {
-        val item = JMenuItem(label)
-        val actionManager = ActionManager.getInstance()
+    private fun addRegisteredAction(group: DefaultActionGroup, actionManager: ActionManager, actionId: String) {
         val action = actionManager.getAction(actionId)
-        item.isEnabled = action != null
-
-        item.addActionListener {
-            action ?: return@addActionListener
-            val dataContext = SimpleDataContext.builder()
-                .add(CommonDataKeys.EDITOR, editor)
-                .add(CommonDataKeys.PROJECT, editor.project)
-                .build()
-            val event = AnActionEvent(
-                null,
-                dataContext,
-                ActionPlaces.EDITOR_TOOLBAR,
-                Presentation(),
-                actionManager,
-                0
-            )
-            action.actionPerformed(event)
+        if (action != null) {
+            group.add(action)
         }
-        return item
-    }
-
-    private fun addButton(
-        panel: JPanel,
-        label: String,
-        icon: Icon,
-        displayMode: String,
-        actionId: String,
-        editor: Editor
-    ) {
-        val button = createHoverButton(icon, label, displayMode)
-        button.toolTipText = label
-
-        button.addActionListener {
-            val actionManager = ActionManager.getInstance()
-            val action = actionManager.getAction(actionId) ?: return@addActionListener
-            val dataContext = SimpleDataContext.builder()
-                .add(CommonDataKeys.EDITOR, editor)
-                .add(CommonDataKeys.PROJECT, editor.project)
-                .build()
-            val event = AnActionEvent(
-                null,
-                dataContext,
-                ActionPlaces.EDITOR_TOOLBAR,
-                Presentation(),
-                actionManager,
-                0
-            )
-            action.actionPerformed(event)
-        }
-
-        panel.add(button)
     }
 
     // ── Scroll Sync ──────────────────────────────────────────────────────
@@ -320,45 +231,4 @@ class MarkdownSplitEditor(
         super.dispose()
     }
 
-    companion object {
-        private val HOVER_BG = Color(128, 128, 128, 40)
-
-        fun createHoverButton(icon: Icon, label: String?, displayMode: String): JButton {
-            val button = when (displayMode) {
-                "labels" -> JButton(label)
-                "icons and labels" -> JButton(label, icon)
-                else -> JButton(icon)
-            }
-
-            button.isFocusable = false
-            button.isBorderPainted = false
-            button.isContentAreaFilled = false
-            button.isOpaque = false
-            button.margin = JBUI.insetsLeft(0)
-            button.border = JBUI.Borders.empty(2, 3)
-
-            val size = if (displayMode == "icons") Dimension(24, 24) else null
-            if (size != null) {
-                button.preferredSize = size
-                button.minimumSize = size
-                button.maximumSize = size
-            }
-
-            button.addMouseListener(object : MouseAdapter() {
-                override fun mouseEntered(e: MouseEvent) {
-                    if (button.isEnabled) {
-                        button.isContentAreaFilled = true
-                        button.background = HOVER_BG
-                        button.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                    }
-                }
-                override fun mouseExited(e: MouseEvent) {
-                    button.isContentAreaFilled = false
-                    button.cursor = Cursor.getDefaultCursor()
-                }
-            })
-
-            return button
-        }
-    }
 }
