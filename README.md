@@ -272,7 +272,6 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Preview           | Custom CSS path                     | (empty)           |
 | Preview           | Scroll sync                         | On                |
 | Toolbar           | Show editor toolbar                 | On                |
-| Toolbar           | Button display                      | icons             |
 | Completion        | Auto-popup completion               | On                |
 | Smart Paste       | Auto-create links from URLs         | On                |
 | Math              | Enable math rendering in preview    | On                |

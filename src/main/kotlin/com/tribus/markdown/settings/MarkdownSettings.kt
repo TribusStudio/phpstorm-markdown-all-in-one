@@ -48,7 +48,6 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         var scrollSyncEnabled: Boolean = true,
 
         // Toolbar
-        var toolbarDisplayMode: String = "icons",
         var toolbarEnabled: Boolean = true,
 
         // Smart paste

@@ -130,13 +130,6 @@ class MarkdownSettingsConfigurable : Configurable {
                         .bindSelected(state::toolbarEnabled)
                         .comment("Display the formatting toolbar at the top of markdown editors")
                 }
-                row("Button display:") {
-                    comboBox(listOf("icons", "labels", "icons and labels"))
-                        .bindItem(
-                            { state.toolbarDisplayMode },
-                            { state.toolbarDisplayMode = it ?: "icons" }
-                        )
-                }
             }
 
             group("Completion") {
