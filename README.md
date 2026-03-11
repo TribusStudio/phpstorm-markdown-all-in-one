@@ -32,16 +32,13 @@ Again, its something for me and it makes me happy. I hope it does the same for y
         - [Auto-Completion](#auto-completion)
         - [Smart Paste](#smart-paste)
         - [HTML Export](#html-export)
+        - [Structure View & Code Folding](#structure-view--code-folding)
         - [Smart List Editing](#smart-list-editing)
         - [Settings](#settings)
     - [Installation](#installation)
         - [Auto-Update (Recommended)](#auto-update-recommended)
         - [From GitHub Release](#from-github-release)
         - [From Source](#from-source)
-    - [Development](#development)
-        - [Prerequisites](#prerequisites)
-        - [Quick Start](#quick-start)
-        - [All Commands](#all-commands)
     - [Contributing](#contributing)
     - [License](#license)
 <!-- /TOC -->
@@ -312,6 +309,20 @@ Export markdown files to styled, standalone HTML documents.
 | Base64 image embed | Optionally embed local images as base64 for self-contained HTML |
 | Link validation | Warns about broken anchor links, missing file references, undefined labels |
 | Document title | HTML `<title>` extracted from first heading, falls back to filename |
+
+### Structure View & Code Folding
+
+**Structure View:** Open the Structure tool window (`Cmd+7` / `Alt+7`) to see a hierarchical outline of all headings in the document. Headings are nested according to their levels, with icons distinguishing H1-H2, H3-H4, and H5-H6.
+
+**Go To Symbol:** Use `Ctrl+Shift+Alt+N` to search headings across all markdown files in the project.
+
+**Code Folding:** Collapsible regions for:
+- **Heading sections** — fold from after the heading line to the next heading of the same or higher level
+- **Fenced code blocks** — fold with the language name in the placeholder (e.g., ```` ```kotlin... ````)
+- **YAML front matter** — fold between `---` markers
+- **Blockquotes** — fold multi-line blockquote blocks
+
+**Breadcrumbs:** The editor breadcrumb bar shows the heading hierarchy path at the current cursor position.
 
 ### Smart List Editing
 - **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)

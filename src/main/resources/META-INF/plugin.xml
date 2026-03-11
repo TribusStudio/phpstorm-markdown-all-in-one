@@ -21,6 +21,7 @@
         <li><b>Context menu</b> — Right-click context-aware actions, floating selection toolbar</li>
         <li><b>HTML export</b> — Export single files or batch folders to styled, self-contained HTML</li>
         <li><b>Selection wrapping</b> — Type *, ~, _, `, |, or - with text selected to wrap contextually</li>
+        <li><b>Structure view &amp; folding</b> — Heading hierarchy in Structure view, Go To Symbol, code folding for headings/code/front matter, breadcrumbs</li>
         <li><b>File templates</b> — New > Markdown File with 6 templates (README, Document, Meeting Notes, etc.)</li>
     </ul>
 
@@ -105,6 +106,22 @@
         <!-- Split editor with preview (editor | preview | split mode) -->
         <fileEditorProvider
                 implementation="com.tribus.markdown.preview.MarkdownSplitEditorProvider"/>
+
+        <!-- Structure View -->
+        <lang.psiStructureViewFactory language="MarkdownAIO"
+                                       implementationClass="com.tribus.markdown.structure.MarkdownStructureViewFactory"/>
+
+        <!-- Code Folding -->
+        <lang.foldingBuilder language="MarkdownAIO"
+                              implementationClass="com.tribus.markdown.structure.MarkdownFoldingBuilder"/>
+
+        <!-- Breadcrumbs -->
+        <breadcrumbsInfoProvider
+                implementation="com.tribus.markdown.structure.MarkdownBreadcrumbsProvider"/>
+
+        <!-- Go To Symbol -->
+        <gotoSymbolContributor
+                implementation="com.tribus.markdown.structure.MarkdownGoToSymbolContributor"/>
 
         <!-- File templates for New > Markdown File -->
         <internalFileTemplate name="Blank Markdown"/>

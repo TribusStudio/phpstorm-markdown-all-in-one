@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-03-11
+
+### Added
+- **Structure View** — heading hierarchy in the Structure tool window (`Cmd+7` / `Alt+7`) with level-based icons and nesting. Powered by `PsiStructureViewFactory` using the existing `HeadingExtractor`
+- **Go To Symbol** — all markdown headings are searchable via `Ctrl+Shift+Alt+N` across the entire project
+- **Code Folding** — collapsible regions for heading sections (folds content under each heading), fenced code blocks (with language in placeholder), YAML front matter, and multi-line blockquotes
+- **Breadcrumbs** — editor breadcrumb bar shows the heading hierarchy path at the current cursor position
+
 ## [0.16.3] - 2026-03-11
 
 ### Fixed

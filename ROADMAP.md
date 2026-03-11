@@ -225,15 +225,14 @@ Advanced table editing to match JetBrains bundled plugin parity.
 - [ ] Keybindings for common operations (insert row, insert column)
 - [ ] Tests for all table modification operations
 
-## Phase 16: Structure View & Code Folding
+## Phase 16: Structure View & Code Folding ✅
 IDE integration features for navigation and document management.
 
-- [ ] Structure view — heading hierarchy in Structure tool window (`StructureViewBuilder` + `StructureViewCompositeModel`)
-- [ ] Go To Symbol support — headings searchable via `Ctrl+Shift+Alt+N`
-- [ ] Code folding — collapsible regions for headings, code fences, front matter, HTML blocks, and long blockquotes
-- [ ] Folding settings — configurable default fold state per element type
-- [ ] Breadcrumb support — show heading path in editor breadcrumb bar
-- [ ] Tests for structure view elements and folding regions
+- [x] Structure view — heading hierarchy in Structure tool window (`PsiStructureViewFactory` + `StructureViewModelBase`)
+- [x] Go To Symbol support — headings searchable via `Ctrl+Shift+Alt+N` (`ChooseByNameContributorEx`)
+- [x] Code folding — collapsible regions for headings, code fences, front matter, and long blockquotes (`FoldingBuilderEx`)
+- [x] Breadcrumb support — show heading path in editor breadcrumb bar (`BreadcrumbsInfoProvider`)
+- [x] Tests for structure view tree building, folding patterns, and breadcrumb path resolution
 
 ## Phase 17: IncrementalDOM Preview & Performance
 Replace full HTML replacement with efficient DOM patching for large document performance.
