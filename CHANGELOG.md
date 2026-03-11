@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.3] - 2026-03-11
+
 ### Fixed
 - **TOC markers inside code blocks ignored** — `<!-- TOC -->` and `<!-- /TOC -->` markers inside fenced code blocks (backtick and tilde) are now skipped by the TOC generator, preventing false TOC detection when documenting TOC syntax in markdown
 
