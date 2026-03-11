@@ -40,7 +40,7 @@ jobs:
           gradle-version: '9.2.1'
 
       - name: Build, Test & Package
-        run: gradle clean build test buildPlugin
+        run: gradle clean build test buildPlugin --no-build-cache
 
       - name: Sign plugin
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
