@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.2] - 2026-03-11
+
+### Added
+- **External link handling** — clicking links in the preview now opens them in the system browser instead of navigating the preview pane away from the document. Anchor links (`#heading`) scroll smoothly within the preview. A `CefRequestHandler` blocks external navigation as a safety net, and a `JBCefJSQuery` bridge intercepts clicks at the JavaScript level for reliable handling
+
+### Changed
+- **Navigation bar** — a hidden nav bar (Back, Forward, Return to Preview, Open in Browser) is wired into the preview panel, ready to appear if the JCEF browser ever navigates away from the preview content
+
 ## [0.15.1] - 2026-03-10
 
 ### Fixed

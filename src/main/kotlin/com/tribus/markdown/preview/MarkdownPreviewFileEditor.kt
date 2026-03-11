@@ -1,5 +1,6 @@
 package com.tribus.markdown.preview
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
@@ -10,12 +11,23 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
+import com.intellij.util.ui.JBUI
 import com.tribus.markdown.export.HtmlExporter
 import com.tribus.markdown.settings.MarkdownSettings
+import org.cef.browser.CefBrowser
+import org.cef.browser.CefFrame
+import org.cef.handler.CefRequestHandlerAdapter
+import org.cef.network.CefRequest
+import java.awt.BorderLayout
+import java.awt.Desktop
+import java.awt.FlowLayout
 import java.io.File
 import java.beans.PropertyChangeListener
+import java.net.URI
+import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
+import javax.swing.JPanel
 import javax.swing.SwingConstants
 
 /**
@@ -36,7 +48,13 @@ class MarkdownPreviewFileEditor(
 
     // Scroll sync
     private var jsQuery: JBCefJSQuery? = null
+    private var linkClickQuery: JBCefJSQuery? = null
     private var onScrollCallback: ((Int) -> Unit)? = null
+
+    // Navigation bar for when the user navigates away from preview
+    private var navBar: JPanel? = null
+    @Volatile
+    private var isShowingPreview = true
 
     private val mainComponent: JComponent by lazy {
         try {
@@ -56,6 +74,47 @@ class MarkdownPreviewFileEditor(
                 // JBCefJSQuery not available
             }
 
+            // Set up link click interception bridge
+            try {
+                val linkQuery = JBCefJSQuery.create(b as JBCefBrowserBase)
+                linkQuery.addHandler { url ->
+                    handleLinkClick(url)
+                    null
+                }
+                linkClickQuery = linkQuery
+            } catch (_: Exception) {
+                // JBCefJSQuery not available
+            }
+
+            // Intercept navigation requests — block external URLs, open in system browser
+            try {
+                b.jbCefClient.addRequestHandler(object : CefRequestHandlerAdapter() {
+                    override fun onBeforeBrowse(
+                        browser: CefBrowser?,
+                        frame: CefFrame?,
+                        request: CefRequest?,
+                        userGesture: Boolean,
+                        isRedirect: Boolean
+                    ): Boolean {
+                        val url = request?.url ?: return false
+                        // Allow data: URLs and about:blank (used by loadHTML)
+                        if (url.startsWith("data:") || url.startsWith("about:")) return false
+                        // Allow file: URLs (local resources)
+                        if (url.startsWith("file:")) return false
+                        // Block external URLs — they're handled via JS interception + system browser
+                        if (url.startsWith("http://") || url.startsWith("https://")) {
+                            if (userGesture) {
+                                openInSystemBrowser(url)
+                            }
+                            return true // block navigation
+                        }
+                        return false
+                    }
+                }, b.cefBrowser)
+            } catch (_: Exception) {
+                // CefRequestHandler not available
+            }
+
             updatePreview()
 
             // Listen for document changes to live-refresh
@@ -73,12 +132,85 @@ class MarkdownPreviewFileEditor(
                 // No application context (tests)
             }
 
-            b.component
+            // Wrap browser with navigation bar
+            val wrapper = JPanel(BorderLayout())
+            val nav = createNavBar()
+            navBar = nav
+            wrapper.add(nav, BorderLayout.NORTH)
+            wrapper.add(b.component, BorderLayout.CENTER)
+            wrapper
         } catch (_: Exception) {
             // JCEF not available (headless, older IDE, etc.)
             val label = JLabel("Preview not available (JCEF not supported)", SwingConstants.CENTER)
             fallbackComponent = label
             label
+        }
+    }
+
+    private fun createNavBar(): JPanel {
+        val bar = JPanel(FlowLayout(FlowLayout.LEFT, 4, 2))
+        bar.border = JBUI.Borders.customLineBottom(JBUI.CurrentTheme.Editor.BORDER_COLOR)
+
+        val backBtn = JButton(AllIcons.Actions.Back)
+        backBtn.toolTipText = "Back"
+        backBtn.isFocusable = false
+        backBtn.addActionListener { browser?.cefBrowser?.goBack() }
+
+        val forwardBtn = JButton(AllIcons.Actions.Forward)
+        forwardBtn.toolTipText = "Forward"
+        forwardBtn.isFocusable = false
+        forwardBtn.addActionListener { browser?.cefBrowser?.goForward() }
+
+        val returnBtn = JButton("Return to Preview")
+        returnBtn.toolTipText = "Return to the markdown preview"
+        returnBtn.isFocusable = false
+        returnBtn.addActionListener {
+            isShowingPreview = true
+            bar.isVisible = false
+            updatePreview()
+        }
+
+        val openExternalBtn = JButton(AllIcons.Ide.External_link_arrow)
+        openExternalBtn.toolTipText = "Open in browser"
+        openExternalBtn.isFocusable = false
+        openExternalBtn.addActionListener {
+            val url = browser?.cefBrowser?.url
+            if (url != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+                openInSystemBrowser(url)
+            }
+        }
+
+        bar.add(backBtn)
+        bar.add(forwardBtn)
+        bar.add(returnBtn)
+        bar.add(openExternalBtn)
+        bar.isVisible = false // hidden by default
+        return bar
+    }
+
+    private fun handleLinkClick(url: String) {
+        when {
+            url.startsWith("#") -> {
+                // Anchor link — scroll within preview
+                val anchor = url.removePrefix("#")
+                browser?.cefBrowser?.executeJavaScript(
+                    "var el = document.getElementById('$anchor'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'});",
+                    "", 0
+                )
+            }
+            url.startsWith("http://") || url.startsWith("https://") -> {
+                openInSystemBrowser(url)
+            }
+        }
+    }
+
+    private fun openInSystemBrowser(url: String) {
+        try {
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().browse(URI(url))
+            }
+        } catch (_: Exception) {
+            // Failed to open browser
         }
     }
 
@@ -115,7 +247,9 @@ class MarkdownPreviewFileEditor(
         val restoreLine = lastVisibleSourceLine
 
         val scrollJs = buildScrollSyncJs()
-        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark, scrollJs)
+        val linkJs = buildLinkInterceptJs()
+        val combinedJs = listOf(scrollJs, linkJs).filter { it.isNotEmpty() }.joinToString("\n")
+        val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark, combinedJs)
         browser?.loadHTML(fullHtml)
 
         // After loadHTML, the page reloads asynchronously. Schedule a scroll restore
@@ -184,8 +318,46 @@ class MarkdownPreviewFileEditor(
             }
         }
         jsQuery = null
+        linkClickQuery = null
         browser?.dispose()
         browser = null
+    }
+
+    /**
+     * Build JavaScript that intercepts link clicks.
+     * External links are routed through JBCefJSQuery to open in the system browser.
+     * Anchor links are handled with smooth scrolling within the page.
+     */
+    private fun buildLinkInterceptJs(): String {
+        val query = linkClickQuery ?: return ""
+        val injection = query.inject("href")
+
+        return """
+(function() {
+    document.addEventListener('click', function(e) {
+        var link = e.target.closest('a');
+        if (!link) return;
+        var href = link.getAttribute('href');
+        if (!href) return;
+
+        // Anchor links — scroll within page
+        if (href.startsWith('#')) {
+            e.preventDefault();
+            var anchor = href.substring(1);
+            var el = document.getElementById(anchor);
+            if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+            return;
+        }
+
+        // External links — send to Kotlin side to open in system browser
+        if (href.startsWith('http://') || href.startsWith('https://')) {
+            e.preventDefault();
+            $injection
+            return;
+        }
+    }, true);
+})();
+""".trimIndent()
     }
 
     /**
