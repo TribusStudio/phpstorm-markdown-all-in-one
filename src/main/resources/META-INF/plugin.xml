@@ -161,7 +161,7 @@
             <action id="com.tribus.markdown.actions.ToggleCodeBlock"
                     class="com.tribus.markdown.actions.ToggleCodeBlockAction"
                     text="Toggle Code Block"
-                    icon="/icons/toolbar-code.svg"
+                    icon="/icons/toolbar-codeblock.svg"
                     description="Toggle fenced code block on selection">
                 <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift BACK_QUOTE"/>
             </action>

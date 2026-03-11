@@ -17,6 +17,8 @@ object MarkdownIcons {
     @JvmField
     val TOOLBAR_CODE: Icon = IconLoader.getIcon("/icons/toolbar-code.svg", MarkdownIcons::class.java)
     @JvmField
+    val TOOLBAR_CODEBLOCK: Icon = IconLoader.getIcon("/icons/toolbar-codeblock.svg", MarkdownIcons::class.java)
+    @JvmField
     val TOOLBAR_HEADING_UP: Icon = IconLoader.getIcon("/icons/toolbar-heading-up.svg", MarkdownIcons::class.java)
     @JvmField
     val TOOLBAR_HEADING_DOWN: Icon = IconLoader.getIcon("/icons/toolbar-heading-down.svg", MarkdownIcons::class.java)
