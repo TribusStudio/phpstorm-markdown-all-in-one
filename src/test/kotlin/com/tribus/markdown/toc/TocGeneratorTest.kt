@@ -467,4 +467,81 @@ class TocGeneratorTest {
         val toc = TocGenerator.generateFromHeadings(headings)
         assert(toc.contains("\\[0\\]"))
     }
+
+    // ── Code fence awareness tests ───────────────────────────────────
+
+    @Test
+    fun `TOC markers inside fenced code blocks are ignored`() {
+        val md = """
+            # Real Heading
+            ```markdown
+            <!-- TOC -->
+            - fake toc content
+            <!-- /TOC -->
+            ```
+            ## Another Heading
+        """.trimIndent()
+        val blocks = TocGenerator.findAllTocBlocks(md)
+        assertEquals(0, blocks.size, "TOC markers inside code fence should be ignored")
+    }
+
+    @Test
+    fun `TOC markers outside code blocks are found normally`() {
+        val md = """
+            # Heading
+            ```
+            some code
+            ```
+            <!-- TOC -->
+            <!-- /TOC -->
+        """.trimIndent()
+        val blocks = TocGenerator.findAllTocBlocks(md)
+        assertEquals(1, blocks.size)
+    }
+
+    @Test
+    fun `TOC markers inside tilde code blocks are ignored`() {
+        val md = """
+            # Heading
+            ~~~
+            <!-- TOC -->
+            <!-- /TOC -->
+            ~~~
+        """.trimIndent()
+        val blocks = TocGenerator.findAllTocBlocks(md)
+        assertEquals(0, blocks.size)
+    }
+
+    @Test
+    fun `content range markers inside code blocks are ignored`() {
+        val md = """
+            # Heading
+            ```
+            <!-- toc range name="api" start -->
+            ## Fake
+            <!-- toc range end -->
+            ```
+        """.trimIndent()
+        val ranges = TocGenerator.findAllContentRanges(md)
+        assertEquals(0, ranges.size)
+    }
+
+    @Test
+    fun `updateAllTocs ignores TOC markers in code blocks`() {
+        val md = """
+            # Title
+            <!-- TOC -->
+            <!-- /TOC -->
+            ```markdown
+            <!-- TOC -->
+            - this should not be touched
+            <!-- /TOC -->
+            ```
+        """.trimIndent()
+        val result = TocGenerator.updateAllTocs(md, MarkdownSettings.State())
+        // Should only update the real TOC (first one), not the one in the code block
+        assertNotNull(result)
+        assertTrue(result!!.contains("- [Title](#title)"))
+        assertTrue(result.contains("- this should not be touched"), "Code block content must not be modified")
+    }
 }

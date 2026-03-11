@@ -16,6 +16,37 @@ Again, its something for me and it makes me happy. I hope it does the same for y
 
 ## Features
 
+<!-- TOC -->
+- [Markdown All-in-One for PHPStorm](#markdown-all-in-one-for-phpstorm)
+    - [Features](#features)
+        - [Keyboard Shortcuts](#keyboard-shortcuts)
+        - [Selection Wrapping](#selection-wrapping)
+        - [New File Templates](#new-file-templates)
+        - [Generate Menu (Cmd+N / Alt+Insert)](#generate-menu-cmdn--altinsert)
+        - [Table of Contents](#table-of-contents)
+        - [Table Formatting](#table-formatting)
+        - [Live Preview](#live-preview)
+        - [Math & LaTeX](#math--latex)
+        - [Toolbars & Context Menu](#toolbars--context-menu)
+        - [Syntax Highlighting](#syntax-highlighting)
+        - [Auto-Completion](#auto-completion)
+        - [Smart Paste](#smart-paste)
+        - [HTML Export](#html-export)
+        - [Smart List Editing](#smart-list-editing)
+        - [Settings](#settings)
+    - [Installation](#installation)
+        - [Auto-Update (Recommended)](#auto-update-recommended)
+        - [From GitHub Release](#from-github-release)
+        - [From Source](#from-source)
+    - [Development](#development)
+        - [Prerequisites](#prerequisites)
+        - [Quick Start](#quick-start)
+        - [All Commands](#all-commands)
+    - [Contributing](#contributing)
+    - [License](#license)
+<!-- /TOC -->
+
+
 ### Keyboard Shortcuts
 
 Shortcuts automatically take priority over built-in IDE actions when editing markdown files. In non-markdown files, the standard IDE shortcuts work as normal.
@@ -113,7 +144,34 @@ Generate and maintain a Table of Contents from your document's headings.
 **Multiple TOCs:** You can have multiple TOCs in one document, each with independent settings:
 
 ```markdown
-<!-- TOC name="overview" level="1..2" -->
+<!-- TOC -->
+- [Markdown All-in-One for PHPStorm](#markdown-all-in-one-for-phpstorm)
+    - [Features](#features)
+        - [Keyboard Shortcuts](#keyboard-shortcuts)
+        - [Selection Wrapping](#selection-wrapping)
+        - [New File Templates](#new-file-templates)
+        - [Generate Menu (Cmd+N / Alt+Insert)](#generate-menu-cmdn--altinsert)
+        - [Table of Contents](#table-of-contents)
+        - [Table Formatting](#table-formatting)
+        - [Live Preview](#live-preview)
+        - [Math & LaTeX](#math--latex)
+        - [Toolbars & Context Menu](#toolbars--context-menu)
+        - [Syntax Highlighting](#syntax-highlighting)
+        - [Auto-Completion](#auto-completion)
+        - [Smart Paste](#smart-paste)
+        - [HTML Export](#html-export)
+        - [Smart List Editing](#smart-list-editing)
+        - [Settings](#settings)
+    - [Installation](#installation)
+        - [Auto-Update (Recommended)](#auto-update-recommended)
+        - [From GitHub Release](#from-github-release)
+        - [From Source](#from-source)
+    - [Development](#development)
+        - [Prerequisites](#prerequisites)
+        - [Quick Start](#quick-start)
+        - [All Commands](#all-commands)
+    - [Contributing](#contributing)
+    - [License](#license)
 <!-- /TOC -->
 
 <!-- TOC name="api" type="ordered" level="2..4" -->
@@ -313,44 +371,9 @@ cd phpstorm-markdown-all-in-one
 ```
 Install the resulting `.zip` from `build/distributions/` via Settings > Plugins > Install from disk.
 
-## Development
-
-All builds run inside a Docker devcontainer — no JDK or Gradle required on your machine.
-
-### Prerequisites
-- Docker
-
-### Quick Start
-```bash
-./dev up        # Start the dev container
-./dev setup     # Generate Gradle wrapper, download dependencies
-./dev build     # Build the plugin
-./dev test      # Run tests
-```
-
-### All Commands
-```bash
-# Container management
-./dev up          # Start container
-./dev down        # Stop container
-./dev status      # Show status and versions
-./dev shell       # Open shell in container
-./dev destroy     # Remove container + cache
-
-# Build & test
-./dev build       # Build the plugin
-./dev test        # Run all tests
-./dev package     # Build distributable .zip
-./dev verify      # Verify IDE compatibility
-./dev clean       # Clean build artifacts
-./dev gradle ...  # Run any Gradle task
-```
-
-See [docs/004-devcontainer-setup.md](docs/004-devcontainer-setup.md) for full details.
-
 ## Contributing
 
-Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, build commands, and guidelines.
 
 ## License
 

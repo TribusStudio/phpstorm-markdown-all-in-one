@@ -112,16 +112,45 @@ object TocGenerator {
         return if (parts.isEmpty()) "<!-- TOC -->" else "<!-- TOC ${parts.joinToString(" ")} -->"
     }
 
+    // Matches fenced code block opening/closing (same pattern as HeadingExtractor)
+    private val FENCE_PATTERN = Regex("^\\s{0,3}(`{3,}|~{3,})")
+
     /**
-     * Find all TOC blocks in the document.
+     * Find all TOC blocks in the document, skipping markers inside fenced code blocks.
      */
     fun findAllTocBlocks(documentText: String): List<TocBlock> {
         val lines = documentText.lines()
         val blocks = mutableListOf<TocBlock>()
         var currentOffset = 0
         var pendingStart: Triple<Int, Int, String>? = null // (line, offset, rawLine)
+        var inCodeFence = false
+        var fenceChar = ' '
+        var fenceLength = 0
 
         for ((index, line) in lines.withIndex()) {
+            // Track fenced code blocks so we skip TOC markers inside them
+            if (inCodeFence) {
+                val closeMatch = FENCE_PATTERN.find(line)
+                if (closeMatch != null) {
+                    val matchChar = closeMatch.groupValues[1][0]
+                    val matchLength = closeMatch.groupValues[1].length
+                    if (matchChar == fenceChar && matchLength >= fenceLength) {
+                        inCodeFence = false
+                    }
+                }
+                currentOffset += line.length + 1
+                continue
+            }
+
+            val fenceMatch = FENCE_PATTERN.find(line)
+            if (fenceMatch != null) {
+                inCodeFence = true
+                fenceChar = fenceMatch.groupValues[1][0]
+                fenceLength = fenceMatch.groupValues[1].length
+                currentOffset += line.length + 1
+                continue
+            }
+
             val trimmed = line.trim()
             if (TOC_START_PATTERN.matches(trimmed) && pendingStart == null) {
                 pendingStart = Triple(index, currentOffset, line)
@@ -144,15 +173,39 @@ object TocGenerator {
     }
 
     /**
-     * Find all content ranges in the document.
+     * Find all content ranges in the document, skipping markers inside fenced code blocks.
      */
     fun findAllContentRanges(documentText: String): List<ContentRange> {
         val lines = documentText.lines()
         val ranges = mutableListOf<ContentRange>()
         var pendingName: String? = null
         var pendingStartLine = -1
+        var inCodeFence = false
+        var fenceChar = ' '
+        var fenceLength = 0
 
         for ((index, line) in lines.withIndex()) {
+            // Track fenced code blocks
+            if (inCodeFence) {
+                val closeMatch = FENCE_PATTERN.find(line)
+                if (closeMatch != null) {
+                    val matchChar = closeMatch.groupValues[1][0]
+                    val matchLength = closeMatch.groupValues[1].length
+                    if (matchChar == fenceChar && matchLength >= fenceLength) {
+                        inCodeFence = false
+                    }
+                }
+                continue
+            }
+
+            val fenceMatch = FENCE_PATTERN.find(line)
+            if (fenceMatch != null) {
+                inCodeFence = true
+                fenceChar = fenceMatch.groupValues[1][0]
+                fenceLength = fenceMatch.groupValues[1].length
+                continue
+            }
+
             val startMatch = TOC_RANGE_START_PATTERN.find(line.trim())
             if (startMatch != null && pendingName == null) {
                 pendingName = startMatch.groupValues[1]
