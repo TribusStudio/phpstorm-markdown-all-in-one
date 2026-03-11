@@ -122,8 +122,9 @@ Final polish, documentation, and marketplace publishing.
 - [x] Plugin signing configuration (env vars in build.gradle.kts + CI workflow)
 - [x] Community contribution guidelines (CONTRIBUTING.md)
 
-## Phase 9: Scroll Sync, Toolbar Rewrite & Marketplace Assets ← NEXT
-Editor–preview scroll synchronization, architectural toolbar fix, and marketing assets for marketplace publishing.
+## Phase 9: Scroll Sync & Toolbar Rewrite ✅
+Editor–preview scroll synchronization and architectural toolbar fix.
+
 
 ### 9A — Editor–Preview Scroll Synchronization ✅
 - [x] Add `data-source-line` attributes to block-level HTML elements during markdown→HTML conversion
@@ -147,15 +148,7 @@ Editor–preview scroll synchronization, architectural toolbar fix, and marketin
 - [x] Verify toolbar survives split/unsplit, tab drag, window move, group operations
 - [x] Tests for toolbar presence and button state
 
-### 9C — Marketplace Screenshots & Animated Demos
-- [ ] Create `docs/screenshots/` directory for all marketing assets
-- [ ] Capture required screenshots (see docs/005-marketplace-assets.md for full list)
-- [ ] Create 1-2 animated GIFs demonstrating key workflows
-- [ ] Update README.md with inline screenshots
-- [ ] Update plugin description in plugin.xml with screenshot references (raw GitHub URLs)
-- [ ] Document screenshot capture instructions for future updates
-
-## Phase 10: Math & LaTeX Support
+## Phase 10: Math & LaTeX Support ← NEXT
 Full math editing and rendering to match VSCode parity.
 
 - [ ] Toggle Math action (`Ctrl+M`) — cycles: no math → `$...$` (inline) → `$$...$$` (display)
@@ -283,6 +276,18 @@ Per-project markdown configuration for multi-project workflows.
 - [ ] Registry keys for experimental features (boundary scroll, etc.)
 - [ ] Settings import/export for team sharing
 - [ ] Tests for project-level settings isolation
+
+## Phase 21: Marketplace Screenshots & Release
+Final marketing assets and JetBrains Marketplace submission. Only after the plugin is battle-tested and peer-reviewed.
+
+- [ ] Create `docs/screenshots/` directory for all marketing assets
+- [ ] Capture required screenshots (see docs/005-marketplace-assets.md for full list)
+- [ ] Create 1-2 animated GIFs demonstrating key workflows
+- [ ] Update README.md with inline screenshots
+- [ ] Update plugin description in plugin.xml with screenshot references (raw GitHub URLs)
+- [ ] Document screenshot capture instructions for future updates
+- [ ] Final peer review and community feedback round
+- [ ] JetBrains Marketplace submission
 
 ## Future Considerations
 - Custom markdown-it extensions integration
