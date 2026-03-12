@@ -8,6 +8,8 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.ScrollType
+import com.intellij.openapi.fileEditor.FileEditorState
+import com.intellij.openapi.fileEditor.FileEditorStateLevel
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.TextEditorWithPreview
 import com.intellij.openapi.vfs.VirtualFile
@@ -159,7 +161,27 @@ class ToolbarTextEditor(
 
     override fun getPreferredFocusedComponent(): JComponent? = delegate.preferredFocusedComponent
 
+    // ── Explicit overrides for Java default methods ──────────────────────
+    // Kotlin's `by` delegation only generates overrides for abstract methods.
+    // FileEditor has several Java default methods that must be forwarded
+    // explicitly, otherwise the wrapper inherits the defaults (which return
+    // null / no-op) instead of delegating to the real editor.
+
     override fun getFile(): VirtualFile = delegate.file
+
+    override fun getStructureViewBuilder() = delegate.structureViewBuilder
+
+    override fun getState(level: FileEditorStateLevel): FileEditorState = delegate.getState(level)
+
+    override fun setState(state: FileEditorState, exactState: Boolean) = delegate.setState(state, exactState)
+
+    override fun getBackgroundHighlighter() = delegate.backgroundHighlighter
+
+    override fun getCurrentLocation() = delegate.currentLocation
+
+    override fun selectNotify() = delegate.selectNotify()
+
+    override fun deselectNotify() = delegate.deselectNotify()
 
     // ── Toolbar ──────────────────────────────────────────────────────────
 

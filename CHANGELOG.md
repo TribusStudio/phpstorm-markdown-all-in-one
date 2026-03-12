@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.4] - 2026-03-12
+
+### Fixed
+- **Structure View restored** — the `ToolbarTextEditor` wrapper now explicitly overrides all `FileEditor` Java default methods (`getStructureViewBuilder`, `getState`, `setState`, `getBackgroundHighlighter`, `getCurrentLocation`, `selectNotify`, `deselectNotify`). Kotlin's `by` delegation only covers abstract methods — Java default methods were silently inherited, causing `getStructureViewBuilder()` to return `null` instead of forwarding to the real editor. This broke the Structure View, code folding, and other editor features that depend on these methods
+
 ## [0.17.3] - 2026-03-12
 
 ### Fixed
