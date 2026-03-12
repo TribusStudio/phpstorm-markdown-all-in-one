@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.3] - 2026-03-12
+
+### Fixed
+- **ToolbarTextEditor `getFile()` override** — added explicit `getFile()` override to the `ToolbarTextEditor` wrapper. Kotlin's `by` delegation doesn't cover Java default interface methods, causing a `PluginException` at editor creation (#9)
+
 ## [0.17.2] - 2026-03-12
 
 ### Fixed

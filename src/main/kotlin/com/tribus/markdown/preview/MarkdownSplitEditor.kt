@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.ScrollType
 import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileEditor.TextEditorWithPreview
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
@@ -157,6 +158,8 @@ class ToolbarTextEditor(
     override fun getComponent(): JComponent = wrappedComponent
 
     override fun getPreferredFocusedComponent(): JComponent? = delegate.preferredFocusedComponent
+
+    override fun getFile(): VirtualFile = delegate.file
 
     // ── Toolbar ──────────────────────────────────────────────────────────
 
