@@ -24,17 +24,28 @@ import javax.swing.Timer
 
 /**
  * Split editor combining a text editor with a markdown preview.
- * Embeds the formatting toolbar directly — no EditorNotificationProvider —
- * so the toolbar appears instantly when the editor opens.
- * Also wires up bidirectional scroll synchronization between editor and preview.
+ *
+ * The formatting toolbar is embedded inside the editor pane (not spanning
+ * the full split width). This ensures the toolbar is always associated with
+ * the editor context — actions resolve correctly regardless of which pane
+ * has focus, and the toolbar naturally hides in preview-only mode.
+ *
+ * The toolbar is injected by wrapping the TextEditor with [ToolbarTextEditor],
+ * which overrides [getComponent] to return toolbar + editor. When
+ * TextEditorWithPreview builds its splitter, it picks up the wrapped component.
  */
 class MarkdownSplitEditor(
     private val project: Project,
     editor: TextEditor,
     private val preview: MarkdownPreviewFileEditor
-) : TextEditorWithPreview(editor, preview, "Markdown Editor", Layout.SHOW_EDITOR_AND_PREVIEW) {
+) : TextEditorWithPreview(
+    ToolbarTextEditor(editor, project),
+    preview,
+    "Markdown Editor",
+    Layout.SHOW_EDITOR_AND_PREVIEW
+) {
 
-    private var toolbarPanel: JPanel? = null
+    private val wrappedEditor = textEditor as ToolbarTextEditor
     private var settingsListener: MarkdownSettings.ChangeListener? = null
 
     // Scroll sync state
@@ -42,32 +53,110 @@ class MarkdownSplitEditor(
     @Volatile private var scrollingFromPreview = false
     private var scrollTimer: Timer? = null
 
-    private val wrapperPanel: JPanel by lazy {
-        val wrapper = JPanel(BorderLayout())
-
-        val settings = try { MarkdownSettings.getInstance().state } catch (_: Exception) { null }
-        val tp = createToolbar((textEditor as TextEditor).editor, settings)
-        toolbarPanel = tp
-        wrapper.add(tp, BorderLayout.NORTH)
-        wrapper.add(super.getComponent(), BorderLayout.CENTER)
-
+    init {
         // Listen for settings changes to toggle toolbar visibility
         settingsListener = MarkdownSettings.ChangeListener { state ->
-            toolbarPanel?.isVisible = state.toolbarEnabled
+            wrappedEditor.toolbarPanel.isVisible = state.toolbarEnabled
         }
         try {
             MarkdownSettings.getInstance().addChangeListener(settingsListener!!)
         } catch (_: Exception) {}
 
         // Wire up scroll sync
-        setupScrollSync((textEditor as TextEditor).editor)
-
-        wrapper
+        setupScrollSync(wrappedEditor.editor)
     }
 
-    override fun getComponent(): JComponent = wrapperPanel
-
     fun getPreviewEditor(): MarkdownPreviewFileEditor = preview
+
+    // ── Scroll Sync ──────────────────────────────────────────────────────
+
+    private fun setupScrollSync(editor: Editor) {
+        // Editor → Preview: listen for visible area changes
+        editor.scrollingModel.addVisibleAreaListener { e ->
+            if (scrollingFromPreview) return@addVisibleAreaListener
+
+            val topLine = editor.xyToLogicalPosition(Point(0, e.newRectangle.y)).line
+
+            // Always track the current visible line so preview updates can restore position
+            preview.lastVisibleSourceLine = topLine
+
+            val scrollEnabled = try {
+                MarkdownSettings.getInstance().state.scrollSyncEnabled
+            } catch (_: Exception) { true }
+            if (!scrollEnabled) return@addVisibleAreaListener
+
+            scrollingFromEditor = true
+            preview.scrollToSourceLine(topLine)
+
+            // Reset flag after the preview scroll settles
+            scrollTimer?.stop()
+            scrollTimer = Timer(200) { scrollingFromEditor = false }
+            scrollTimer?.isRepeats = false
+            scrollTimer?.start()
+        }
+
+        // Preview → Editor: receive source line from JS callback
+        preview.setOnScrollCallback { line ->
+            if (scrollingFromEditor) return@setOnScrollCallback
+
+            scrollingFromPreview = true
+            SwingUtilities.invokeLater {
+                if (!editor.isDisposed) {
+                    editor.scrollingModel.scrollTo(
+                        LogicalPosition(line, 0),
+                        ScrollType.MAKE_VISIBLE
+                    )
+                }
+                // Reset flag after the editor scroll settles
+                Timer(200) { scrollingFromPreview = false }.apply {
+                    isRepeats = false
+                    start()
+                }
+            }
+        }
+    }
+
+    // ── Lifecycle ────────────────────────────────────────────────────────
+
+    override fun dispose() {
+        settingsListener?.let { listener ->
+            try {
+                MarkdownSettings.getInstance().removeChangeListener(listener)
+            } catch (_: Exception) {}
+        }
+        scrollTimer?.stop()
+        super.dispose()
+    }
+}
+
+/**
+ * Wraps a [TextEditor] to inject the formatting toolbar above the editor component.
+ *
+ * Delegates all [TextEditor] methods to the original editor. Only [getComponent]
+ * is overridden to return a panel with the toolbar at the top and the editor below.
+ * This way, [TextEditorWithPreview]'s internal splitter places the toolbar inside
+ * the editor pane — not spanning the full split width.
+ */
+class ToolbarTextEditor(
+    private val delegate: TextEditor,
+    private val project: Project
+) : TextEditor by delegate {
+
+    val toolbarPanel: JPanel
+
+    private val wrappedComponent: JPanel = JPanel(BorderLayout())
+
+    init {
+        val settings = try { MarkdownSettings.getInstance().state } catch (_: Exception) { null }
+        toolbarPanel = createToolbar(delegate.editor, settings)
+
+        wrappedComponent.add(toolbarPanel, BorderLayout.NORTH)
+        wrappedComponent.add(delegate.component, BorderLayout.CENTER)
+    }
+
+    override fun getComponent(): JComponent = wrappedComponent
+
+    override fun getPreferredFocusedComponent(): JComponent? = delegate.preferredFocusedComponent
 
     // ── Toolbar ──────────────────────────────────────────────────────────
 
@@ -170,65 +259,4 @@ class MarkdownSplitEditor(
             group.add(action)
         }
     }
-
-    // ── Scroll Sync ──────────────────────────────────────────────────────
-
-    private fun setupScrollSync(editor: Editor) {
-        // Editor → Preview: listen for visible area changes
-        editor.scrollingModel.addVisibleAreaListener { e ->
-            if (scrollingFromPreview) return@addVisibleAreaListener
-
-            val topLine = editor.xyToLogicalPosition(Point(0, e.newRectangle.y)).line
-
-            // Always track the current visible line so preview updates can restore position
-            preview.lastVisibleSourceLine = topLine
-
-            val scrollEnabled = try {
-                MarkdownSettings.getInstance().state.scrollSyncEnabled
-            } catch (_: Exception) { true }
-            if (!scrollEnabled) return@addVisibleAreaListener
-
-            scrollingFromEditor = true
-            preview.scrollToSourceLine(topLine)
-
-            // Reset flag after the preview scroll settles
-            scrollTimer?.stop()
-            scrollTimer = Timer(200) { scrollingFromEditor = false }
-            scrollTimer?.isRepeats = false
-            scrollTimer?.start()
-        }
-
-        // Preview → Editor: receive source line from JS callback
-        preview.setOnScrollCallback { line ->
-            if (scrollingFromEditor) return@setOnScrollCallback
-
-            scrollingFromPreview = true
-            SwingUtilities.invokeLater {
-                if (!editor.isDisposed) {
-                    editor.scrollingModel.scrollTo(
-                        LogicalPosition(line, 0),
-                        ScrollType.MAKE_VISIBLE
-                    )
-                }
-                // Reset flag after the editor scroll settles
-                Timer(200) { scrollingFromPreview = false }.apply {
-                    isRepeats = false
-                    start()
-                }
-            }
-        }
-    }
-
-    // ── Lifecycle ────────────────────────────────────────────────────────
-
-    override fun dispose() {
-        settingsListener?.let { listener ->
-            try {
-                MarkdownSettings.getInstance().removeChangeListener(listener)
-            } catch (_: Exception) {}
-        }
-        scrollTimer?.stop()
-        super.dispose()
-    }
-
 }

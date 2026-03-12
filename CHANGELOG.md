@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.2] - 2026-03-12
+
+### Fixed
+- **Toolbar scoped to editor pane** — the formatting toolbar now lives inside the editor pane instead of spanning the full split editor width. Fixes toolbar buttons (hamburger menu, settings gear) not working when the preview pane has focus (#8). In preview-only mode the toolbar hides naturally with the editor
+
 ## [0.17.1] - 2026-03-11
 
 ### Fixed
