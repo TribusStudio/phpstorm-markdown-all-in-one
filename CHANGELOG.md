@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.2] - 2026-03-30
+
+### Fixed
+- **Math icon centering** — replaced the `<text>` sigma with a `<path>` sigma, properly centered in the 16x16 viewBox. Eliminates font-dependent rendering inconsistencies across platforms
+
 ## [0.18.1] - 2026-03-30
 
 ### Added
