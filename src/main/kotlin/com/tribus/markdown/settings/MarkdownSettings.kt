@@ -1,10 +1,12 @@
 package com.tribus.markdown.settings
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
+import com.intellij.openapi.project.ProjectManager
 import java.util.concurrent.CopyOnWriteArrayList
 
 @Service
@@ -79,6 +81,7 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
     override fun loadState(state: State) {
         this.state = state
         notifyListeners()
+        restartHighlighting()
     }
 
     fun addChangeListener(listener: ChangeListener) {
@@ -92,6 +95,14 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
     private fun notifyListeners() {
         for (listener in listeners) {
             listener.settingsChanged(state)
+        }
+    }
+
+    private fun restartHighlighting() {
+        for (project in ProjectManager.getInstance().openProjects) {
+            if (!project.isDisposed) {
+                DaemonCodeAnalyzer.getInstance(project).restart()
+            }
         }
     }
 

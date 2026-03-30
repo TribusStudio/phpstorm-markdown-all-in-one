@@ -189,12 +189,27 @@ class MarkdownAnnotator : Annotator {
     }
 
     private fun annotateCodeSpanBackground(element: PsiElement, holder: AnnotationHolder) {
+        val text = element.text
+        val start = element.textRange.startOffset
+        val end = element.textRange.endOffset
+
+        // Apply background only to content between backticks, not the backticks themselves
+        val backtickLen = if (text.startsWith("``")) {
+            // Find the closing backtick sequence length
+            val opening = text.takeWhile { it == '`' }.length
+            opening
+        } else 1
+
+        val contentStart = start + backtickLen
+        val contentEnd = end - backtickLen
+        if (contentEnd <= contentStart) return
+
         val isDark = EditorColorsManager.getInstance().isDarkEditor
         val bg = if (isDark) MarkdownHighlightingColors.Defaults.CODE_SPAN_BG_DARK
                  else MarkdownHighlightingColors.Defaults.CODE_SPAN_BG_LIGHT
         val attrs = TextAttributes(null, bg, null, null, Font.PLAIN)
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-            .range(element.textRange)
+            .range(TextRange(contentStart, contentEnd))
             .enforcedTextAttributes(attrs)
             .create()
     }

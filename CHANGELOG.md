@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-03-30
+
+### Fixed
+- **Decoration settings now refresh immediately** — toggling decoration settings on/off now restarts `DaemonCodeAnalyzer` so annotations re-run without needing to reopen the file
+- **Code span background no longer covers backticks** — the background tint is now applied only to the content between backticks, eliminating the discoloration artifact at the backtick boundary
+
 ## [0.19.0] - 2026-03-30
 
 ### Added
