@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-03-30
+
+### Added
+- **Toggle List action** — cycle the current line's marker through configurable candidates (`-`, `*`, `+`, `1.`, `1)`). When the last candidate is reached, the marker is removed. Available via Markdown > Toggle List Marker in the Tools menu
+- **Move line up/down** (`Alt+Up/Down`) — moves the current line or selection and auto-renumbers any affected ordered lists
+- **Copy line up/down** (`Shift+Alt+Up/Down`) — duplicates the current line or selection and auto-renumbers ordered lists
+- **Exit list continuation** (`Ctrl+Enter`) — inserts a plain newline without a list marker, breaking out of a list mid-stream
+- **Soft break** (`Shift+Enter`) — inserts two trailing spaces followed by a newline, rendering as `<br>` in HTML without starting a new list item
+- **Tab/Shift+Tab list indent/outdent** — Tab and Shift+Tab are now context-aware: indent/outdent list items when on a list line, navigate table cells when in a table
+- **Ordered list marker style setting** — choose between "ordered" (1. 2. 3.) and "one" (always 1.) for ordered list continuation on Enter
+- **Toggle list candidates setting** — configurable comma-separated list of markers to cycle through with Toggle List
+- **Ordered list auto-renumbering after indent/outdent** — when auto-renumber is enabled, indent/outdent now renumbers affected ordered list items automatically
+
 ## [0.17.4] - 2026-03-12
 
 ### Fixed

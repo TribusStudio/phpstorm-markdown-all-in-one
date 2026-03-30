@@ -279,6 +279,14 @@
 
             <separator/>
 
+            <!-- List actions -->
+            <action id="com.tribus.markdown.actions.ToggleList"
+                    class="com.tribus.markdown.actions.ToggleListAction"
+                    text="Toggle List Marker"
+                    description="Cycle list marker through candidates (-, *, +, 1., 1))"/>
+
+            <separator/>
+
             <!-- Export -->
             <action id="com.tribus.markdown.actions.ExportHtml"
                     class="com.tribus.markdown.actions.ExportHtmlAction"
@@ -290,6 +298,52 @@
                     text="Batch Export to HTML"
                     description="Export all markdown files in a folder to HTML"/>
         </group>
+
+        <!-- Move line up/down with auto-renumber -->
+        <action id="com.tribus.markdown.actions.MoveLineUp"
+                class="com.tribus.markdown.actions.MoveLineUpAction"
+                text="Move Line Up"
+                description="Move the current line up and renumber ordered lists">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt UP"/>
+        </action>
+
+        <action id="com.tribus.markdown.actions.MoveLineDown"
+                class="com.tribus.markdown.actions.MoveLineDownAction"
+                text="Move Line Down"
+                description="Move the current line down and renumber ordered lists">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt DOWN"/>
+        </action>
+
+        <!-- Copy line up/down with auto-renumber -->
+        <action id="com.tribus.markdown.actions.CopyLineUp"
+                class="com.tribus.markdown.actions.CopyLineUpAction"
+                text="Copy Line Up"
+                description="Copy the current line up and renumber ordered lists">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt UP"/>
+        </action>
+
+        <action id="com.tribus.markdown.actions.CopyLineDown"
+                class="com.tribus.markdown.actions.CopyLineDownAction"
+                text="Copy Line Down"
+                description="Copy the current line down and renumber ordered lists">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift alt DOWN"/>
+        </action>
+
+        <!-- Exit list continuation (plain newline) -->
+        <action id="com.tribus.markdown.actions.ListExit"
+                class="com.tribus.markdown.actions.ListExitAction"
+                text="Exit List"
+                description="Insert a plain newline without list continuation">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl ENTER"/>
+        </action>
+
+        <!-- Soft break (trailing spaces + newline) -->
+        <action id="com.tribus.markdown.actions.SoftBreak"
+                class="com.tribus.markdown.actions.SoftBreakAction"
+                text="Soft Break"
+                description="Insert a soft line break (trailing spaces + newline)">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ENTER"/>
+        </action>
 
         <!-- Task list toggle (standalone for keybinding) -->
         <action id="com.tribus.markdown.actions.ToggleTaskList"

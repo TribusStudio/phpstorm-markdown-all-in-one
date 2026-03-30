@@ -107,6 +107,24 @@ class MarkdownFileEditorListener : EditorFactoryListener {
                 "com.tribus.markdown.actions.ToggleMath" to CustomShortcutSet(
                     KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), null)
                 ),
+                "com.tribus.markdown.actions.MoveLineUp" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.ALT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.MoveLineDown" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.ALT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.CopyLineUp" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_DOWN_MASK or InputEvent.ALT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.CopyLineDown" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_DOWN_MASK or InputEvent.ALT_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.ListExit" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), null)
+                ),
+                "com.tribus.markdown.actions.SoftBreak" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK), null)
+                ),
             )
         }
     }

@@ -4,30 +4,60 @@ import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.intellij.openapi.util.TextRange
+import com.tribus.markdown.actions.ListIndentAction
 import com.tribus.markdown.lang.MarkdownLanguage
 
 /**
- * Handles Tab key inside GFM tables to navigate to the next cell.
- * Falls through to the original handler when not inside a table.
+ * Handles Tab key in markdown files:
+ * 1. Inside a GFM table: navigates to the next cell
+ * 2. On a list line: indents the list item
+ * 3. Otherwise: falls through to the original handler
  */
 class TableTabHandler(private val originalHandler: EditorActionHandler) : EditorActionHandler() {
 
     override fun doExecute(editor: Editor, caret: Caret?, dataContext: DataContext) {
-        if (!handleTableNavigation(editor, false)) {
-            originalHandler.execute(editor, caret, dataContext)
-        }
+        // Table navigation takes priority
+        if (handleTableNavigation(editor, false)) return
+
+        // List indentation
+        if (handleListIndent(editor)) return
+
+        originalHandler.execute(editor, caret, dataContext)
     }
 
     override fun isEnabledForCaret(editor: Editor, caret: Caret, dataContext: DataContext): Boolean {
-        return isInMarkdownTable(editor) || originalHandler.isEnabled(editor, caret, dataContext)
+        return isInMarkdownFile(editor) || originalHandler.isEnabled(editor, caret, dataContext)
     }
 
     companion object {
-        fun isInMarkdownTable(editor: Editor): Boolean {
+        private val LIST_MARKER_PATTERN = Regex("""^\s*([-+*]|[0-9]+[.)]) +""")
+
+        fun isInMarkdownFile(editor: Editor): Boolean {
             val file = com.intellij.openapi.fileEditor.FileDocumentManager.getInstance().getFile(editor.document)
-            if (file == null || !com.tribus.markdown.util.MarkdownFileUtil.isMarkdownFile(file)) return false
+            return file != null && com.tribus.markdown.util.MarkdownFileUtil.isMarkdownFile(file)
+        }
+
+        fun isInMarkdownTable(editor: Editor): Boolean {
+            if (!isInMarkdownFile(editor)) return false
             val caretLine = editor.caretModel.logicalPosition.line
             return TableParser.findTableAt(editor.document.text, caretLine) != null
+        }
+
+        fun handleListIndent(editor: Editor): Boolean {
+            if (!isInMarkdownFile(editor)) return false
+            val document = editor.document
+            val caretLine = editor.caretModel.logicalPosition.line
+            val lineStart = document.getLineStartOffset(caretLine)
+            val lineEnd = document.getLineEndOffset(caretLine)
+            val lineText = document.getText(TextRange(lineStart, lineEnd))
+
+            if (!LIST_MARKER_PATTERN.containsMatchIn(lineText)) return false
+
+            val indentSize = ListIndentAction.determineIndentSize(lineText)
+            val indent = " ".repeat(indentSize)
+            document.insertString(lineStart, indent)
+            return true
         }
 
         fun handleTableNavigation(editor: Editor, reverse: Boolean): Boolean {

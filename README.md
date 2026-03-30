@@ -328,6 +328,13 @@ Export markdown files to styled, standalone HTML documents.
 - **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
 - **Empty list handling** — Enter on an empty list item outdents it (if indented) or removes the marker (if top-level)
 - **Indent/Outdent** — `Cmd+]` / `Cmd+[` to indent/outdent list items (supports multi-line selection)
+- **Tab/Shift+Tab** — context-aware: indents/outdents list items, navigates table cells
+- **Toggle List** — cycle the current line through marker candidates (`-`, `*`, `+`, `1.`, `1)`) via the Tools menu
+- **Move line** — `Alt+Up/Down` moves the current line up or down, auto-renumbering ordered lists
+- **Copy line** — `Shift+Alt+Up/Down` duplicates the line up or down, auto-renumbering ordered lists
+- **Ctrl+Enter** — exit list continuation (insert a plain newline without a marker)
+- **Shift+Enter** — soft break within a list item (inserts trailing spaces + newline for `<br>`)
+- **Ordered list style** — configurable: "ordered" (1. 2. 3.) or "one" (always 1.)
 - **Smart Backspace** — outdents indented markers, removes top-level markers, strips task checkboxes
 
 ### Settings
@@ -340,6 +347,8 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Formatting        | Italic indicator (`*` / `_`)        | `*`               |
 | List Editing      | Auto-renumber ordered lists         | On                |
 | List Editing      | Indentation size (adaptive/inherit) | adaptive          |
+| List Editing      | Ordered list marker style           | ordered           |
+| List Editing      | Toggle list candidates              | `-, *, +, 1., 1)` |
 | Table of Contents | Heading levels                      | `1..6`            |
 | Table of Contents | Update on save                      | On                |
 | Table of Contents | Ordered list                        | Off               |

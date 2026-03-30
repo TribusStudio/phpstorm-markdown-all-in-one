@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiFile
 import com.tribus.markdown.lang.MarkdownLanguage
+import com.tribus.markdown.settings.MarkdownSettings
 
 /**
  * Smart Enter key handling for markdown lists and blockquotes:
@@ -75,7 +76,10 @@ class MarkdownEnterHandler : EnterHandlerDelegate {
             val trailingSpace = orderedMatch.groupValues[4]
             val checkbox = orderedMatch.groupValues[5].replace("[x]", "[ ]")
 
-            val nextMarker = (prevMarker.toIntOrNull() ?: 0) + 1
+            val markerStyle = try {
+                MarkdownSettings.getInstance().state.orderedListMarkerStyle
+            } catch (_: Exception) { "ordered" }
+            val nextMarker = if (markerStyle == "one") 1 else (prevMarker.toIntOrNull() ?: 0) + 1
             val textIndent = (prevMarker + delimiter + trailingSpace).length
             // Align trailing spaces so text stays at same indent level
             val fixedTrailing = " ".repeat(maxOf(1, textIndent - ("$nextMarker$delimiter").length))

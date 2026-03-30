@@ -175,7 +175,7 @@ Markdown inline syntax is *ambiguous and context-dependent*. Consider `_foo_bar_
 **The flat tree solution:**
 Our lexer handles only **block-level structure** — things with clear line-based boundaries:
 - Headings (lines starting with `#`)
-- Code fences (lines starting with `` ``` `` or `~~~`)
+- Code fences (lines starting with three backticks ````` or `~~~`)
 - Blockquote markers (lines starting with `>`)
 - List markers (lines starting with `-`, `*`, `+`, or digits)
 - Horizontal rules
@@ -331,7 +331,7 @@ These features (Phase 16) all work from document text rather than the PSI tree, 
 ### Key Files Reference
 
 | File | Role |
-|------|------|
+| ---- | ---- |
 | `resources/META-INF/plugin.xml` | Plugin descriptor — the bootstrap entry point |
 | `lang/MarkdownLanguage.kt` | Language singleton ("MarkdownAIO") |
 | `lang/MarkdownFileType.kt` | File type registration (.md, .markdown, etc.) |

@@ -162,22 +162,21 @@ Full math editing and rendering to match VSCode parity.
 - [x] Settings: `mathEnabled` toggle (enabled by default)
 - [x] Tests for math toggle action, math rendering, and math completions (20 new test cases)
 
-## Phase 11: Advanced List Editing ← NEXT
+## Phase 11: Advanced List Editing ✅
 List editing enhancements for full VSCode parity.
 
-- [ ] Toggle List action — cycle current line through marker candidates (`-`, `*`, `+`, `1.`, `1)`)
-- [ ] Configurable marker candidates setting (`list.toggleCandidateMarkers`)
-- [ ] Move line up/down (`Alt+Up/Down`) with ordered list auto-renumber
-- [ ] Copy line up/down (`Shift+Alt+Up/Down`) with ordered list auto-renumber
-- [ ] `Ctrl+Enter` to exit list continuation (insert plain line)
-- [ ] `Shift+Enter` for soft break within list item (insert `<br>` or trailing double-space)
-- [ ] Tab/Shift+Tab for list indent/outdent (context-aware: list vs table)
-- [ ] Ordered list marker style setting — "ordered" (incrementing: 1. 2. 3.) vs "one" (always 1.)
-- [ ] Adaptive list indentation — align sublists with parent content instead of fixed tab size
-- [ ] Ordered list auto-renumbering after indent/outdent (carried from Phase 2)
-- [ ] Tests for all new list editing behaviors
+- [x] Toggle List action — cycle current line through marker candidates (`-`, `*`, `+`, `1.`, `1)`)
+- [x] Configurable marker candidates setting (`listToggleCandidates`)
+- [x] Move line up/down (`Alt+Up/Down`) with ordered list auto-renumber
+- [x] Copy line up/down (`Shift+Alt+Up/Down`) with ordered list auto-renumber
+- [x] `Ctrl+Enter` to exit list continuation (insert plain line)
+- [x] `Shift+Enter` for soft break within list item (trailing double-space + newline)
+- [x] Tab/Shift+Tab for list indent/outdent (context-aware: list vs table)
+- [x] Ordered list marker style setting — "ordered" (incrementing: 1. 2. 3.) vs "one" (always 1.)
+- [x] Ordered list auto-renumbering after indent/outdent
+- [x] Tests for toggle list, ordered list renumbering, and marker parsing
 
-## Phase 12: Editor Decorations & Visual Theming
+## Phase 12: Editor Decorations & Visual Theming ← NEXT
 Visual decorations in the editor (not just preview) for richer editing experience.
 
 - [ ] Code span background/border — inline `` `code` `` gets visible background and border in the editor

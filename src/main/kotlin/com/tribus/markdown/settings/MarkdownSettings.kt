@@ -26,6 +26,8 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // List editing
         var autoRenumberOrderedLists: Boolean = true,
         var listIndentationSize: String = "adaptive",
+        var orderedListMarkerStyle: String = "ordered",  // "ordered" (1. 2. 3.) or "one" (always 1.)
+        var listToggleCandidates: String = "-, *, +, 1., 1)",
 
         // Table of Contents
         var tocLevels: String = "1..6",

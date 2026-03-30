@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.util.TextRange
+import com.tribus.markdown.settings.MarkdownSettings
 import com.tribus.markdown.util.MarkdownFileUtil
 
 /**
@@ -43,6 +44,16 @@ class ListOutdentAction : AnAction(), MarkdownAction {
 
                 val outdentSize = determineOutdentSize(lineText, leadingSpaces)
                 document.deleteString(lineStart, lineStart + outdentSize)
+            }
+
+            // Auto-renumber ordered lists in the affected area
+            val autoRenumber = try {
+                MarkdownSettings.getInstance().state.autoRenumberOrderedLists
+            } catch (_: Exception) { true }
+            if (autoRenumber) {
+                val affectStart = maxOf(0, startLine - 1)
+                val affectEnd = minOf(document.lineCount - 1, endLine + 1)
+                MoveLineAction.renumberOrderedLists(document, affectStart, affectEnd)
             }
         }
     }

@@ -46,6 +46,19 @@ class MarkdownSettingsConfigurable : Configurable {
                         )
                         .comment("\"adaptive\" uses 2 or 4 spaces based on list marker width")
                 }
+                row("Ordered list marker style:") {
+                    comboBox(listOf("ordered", "one"))
+                        .bindItem(
+                            { state.orderedListMarkerStyle },
+                            { state.orderedListMarkerStyle = it ?: "ordered" }
+                        )
+                        .comment("\"ordered\" increments (1. 2. 3.), \"one\" always uses 1.")
+                }
+                row("Toggle list candidates:") {
+                    textField()
+                        .bindText(state::listToggleCandidates)
+                        .comment("Comma-separated markers to cycle through, e.g. \"-, *, +, 1., 1)\"")
+                }
             }
 
             group("Table of Contents") {
