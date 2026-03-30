@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.2] - 2026-03-30
+
+### Fixed
+- **Code span background covers full span** — the background tint now covers the entire code span including backticks for a uniform visual (matching GitHub/VS Code rendering). The previous approach of excluding backticks created a three-tone boundary artifact. Also fixed `enforcedTextAttributes` to only set `backgroundColor` without overriding font style
+
 ## [0.19.1] - 2026-03-30
 
 ### Fixed
