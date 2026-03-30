@@ -33,6 +33,7 @@ Again, its something for me and it makes me happy. I hope it does the same for y
         - [Smart Paste](#smart-paste)
         - [HTML Export](#html-export)
         - [Structure View & Code Folding](#structure-view--code-folding)
+        - [Editor Decorations](#editor-decorations)
         - [Smart List Editing](#smart-list-editing)
         - [Settings](#settings)
     - [Installation](#installation)
@@ -118,7 +119,7 @@ Generate and maintain a Table of Contents from your document's headings.
 | Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud |
 | Update on save | `true` | Auto-update TOC when saving |
 
-**Omit headings** from the TOC using comment markers:
+**Omit headings** from the TOC `using comment` markers:
 
 ```markdown
 ## Visible Heading

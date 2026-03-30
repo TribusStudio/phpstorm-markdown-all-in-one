@@ -21,7 +21,6 @@ object MarkdownHtmlConverter {
         var frontMatterDone = false
         val listStack = mutableListOf<String>() // stack of "ol" or "ul"
         val listIndents = mutableListOf<Int>() // stack of indentation levels
-        var inBlockquote = false
 
         while (i < lines.size) {
             val line = lines[i]
@@ -73,11 +72,6 @@ object MarkdownHtmlConverter {
                 closeAllLists(html, listStack, listIndents)
             }
 
-            // Close blockquote
-            if (inBlockquote && !line.trimStart().startsWith(">")) {
-                html.append("</blockquote>\n")
-                inBlockquote = false
-            }
 
             // Blank line
             if (line.isBlank()) {
@@ -89,10 +83,6 @@ object MarkdownHtmlConverter {
                         closeAllLists(html, listStack, listIndents)
                     }
                     // else: keep list open, blank line is just loose-list spacing
-                }
-                if (inBlockquote) {
-                    html.append("</blockquote>\n")
-                    inBlockquote = false
                 }
                 i++
                 continue
@@ -133,15 +123,38 @@ object MarkdownHtmlConverter {
                 }
             }
 
-            // Blockquote
+            // Blockquote — collect all contiguous `>` lines, strip the prefix,
+            // and recursively convert the inner content so code blocks, lists,
+            // headings, etc. inside blockquotes render correctly.
             if (line.trimStart().startsWith(">")) {
-                if (!inBlockquote) {
-                    html.append("<blockquote${sl(i, annotateSourceLines)}>\n")
-                    inBlockquote = true
+                val blockquoteStartLine = i
+                val innerLines = mutableListOf<Pair<String, Int>>() // (stripped line, source line number)
+                while (i < lines.size) {
+                    val bqLine = lines[i]
+                    if (bqLine.trimStart().startsWith(">")) {
+                        val stripped = bqLine.trimStart().removePrefix(">").let {
+                            if (it.startsWith(" ")) it.substring(1) else it
+                        }
+                        innerLines.add(stripped to i)
+                        i++
+                    } else if (bqLine.isBlank()) {
+                        // Blank line might continue the blockquote if the next line has >
+                        val nextContent = lines.getOrNull(i + 1)
+                        if (nextContent != null && nextContent.trimStart().startsWith(">")) {
+                            innerLines.add("" to i)
+                            i++
+                        } else {
+                            break
+                        }
+                    } else {
+                        break
+                    }
                 }
-                val content = line.trimStart().removePrefix(">").trimStart()
-                html.append("<p${sl(i, annotateSourceLines)}>${convertInline(content)}</p>\n")
-                i++
+                val innerMarkdown = innerLines.joinToString("\n") { it.first }
+                val innerHtml = convert(innerMarkdown, false)
+                html.append("<blockquote${sl(blockquoteStartLine, annotateSourceLines)}>\n")
+                html.append(innerHtml)
+                html.append("</blockquote>\n")
                 continue
             }
 
@@ -199,10 +212,6 @@ object MarkdownHtmlConverter {
         if (listStack.isNotEmpty()) {
             closeAllLists(html, listStack, listIndents)
         }
-        if (inBlockquote) {
-            html.append("</blockquote>\n")
-        }
-
         return html.toString()
     }
 

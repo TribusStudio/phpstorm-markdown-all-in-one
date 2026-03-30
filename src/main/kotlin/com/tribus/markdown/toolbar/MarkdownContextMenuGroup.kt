@@ -43,7 +43,9 @@ class MarkdownContextMenuGroup : ActionGroup("Markdown", true) {
         actions.add(actionManager.getAction("com.tribus.markdown.actions.HeadingDown"))
         actions.add(Separator.getInstance())
 
-        // List actions
+        // Blockquote & list actions
+        actions.add(actionManager.getAction("com.tribus.markdown.actions.ToggleBlockquote"))
+        actions.add(actionManager.getAction("com.tribus.markdown.actions.ToggleList"))
         actions.add(actionManager.getAction("com.tribus.markdown.actions.ListIndent"))
         actions.add(actionManager.getAction("com.tribus.markdown.actions.ListOutdent"))
         actions.add(actionManager.getAction("com.tribus.markdown.actions.ToggleTaskList"))

@@ -283,6 +283,17 @@
 
             <separator/>
 
+            <!-- Blockquote -->
+            <action id="com.tribus.markdown.actions.ToggleBlockquote"
+                    class="com.tribus.markdown.actions.ToggleBlockquoteAction"
+                    text="Toggle Blockquote"
+                    icon="/icons/toolbar-blockquote.svg"
+                    description="Toggle blockquote prefix on selected lines">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift PERIOD"/>
+            </action>
+
+            <separator/>
+
             <!-- List actions -->
             <action id="com.tribus.markdown.actions.ToggleList"
                     class="com.tribus.markdown.actions.ToggleListAction"

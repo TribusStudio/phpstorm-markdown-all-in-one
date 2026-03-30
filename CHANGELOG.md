@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.3] - 2026-03-30
+
+### Fixed
+- **Blockquote code block rendering** — fenced code blocks inside blockquotes (`> ````) now render correctly in the preview. The blockquote handler was rewritten to strip `>` prefixes and recursively convert the inner content, so headings, lists, code blocks, and other block-level elements inside blockquotes all render properly
+
+### Added
+- **Toggle Blockquote action** (`Ctrl+Shift+.`) — toggles `> ` prefix on the current line or selection. Available in the editor toolbar, right-click context menu, and Tools > Markdown menu
+- **Blockquote icon** — toolbar icon (vertical bar + text lines) with dark theme variant
+
 ## [0.19.2] - 2026-03-30
 
 ### Fixed

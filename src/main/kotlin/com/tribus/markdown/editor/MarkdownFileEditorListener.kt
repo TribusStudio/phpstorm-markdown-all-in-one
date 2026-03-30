@@ -107,6 +107,9 @@ class MarkdownFileEditorListener : EditorFactoryListener {
                 "com.tribus.markdown.actions.ToggleMath" to CustomShortcutSet(
                     KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), null)
                 ),
+                "com.tribus.markdown.actions.ToggleBlockquote" to CustomShortcutSet(
+                    KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, InputEvent.CTRL_DOWN_MASK or InputEvent.SHIFT_DOWN_MASK), null)
+                ),
                 "com.tribus.markdown.actions.MoveLineUp" to CustomShortcutSet(
                     KeyboardShortcut(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.ALT_DOWN_MASK), null)
                 ),

@@ -215,7 +215,8 @@ class ToolbarTextEditor(
 
         leftGroup.addSeparator()
 
-        // Group 3: Lists
+        // Group 3: Blockquote & Lists
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleBlockquote")
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleList")
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ListIndent")
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ListOutdent")
