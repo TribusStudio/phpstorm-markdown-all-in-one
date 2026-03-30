@@ -123,6 +123,10 @@
         <gotoSymbolContributor
                 implementation="com.tribus.markdown.structure.MarkdownGoToSymbolContributor"/>
 
+        <!-- Color Settings Page (Settings > Editor > Color Scheme > Markdown) -->
+        <colorSettingsPage
+                implementation="com.tribus.markdown.lang.highlighting.MarkdownColorSettingsPage"/>
+
         <!-- File templates for New > Markdown File -->
         <internalFileTemplate name="Blank Markdown"/>
         <internalFileTemplate name="README"/>

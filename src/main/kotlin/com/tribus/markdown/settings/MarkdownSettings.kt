@@ -58,6 +58,14 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // Math
         var mathEnabled: Boolean = true,
 
+        // Editor decorations
+        var decorationCodeSpanBackground: Boolean = true,
+        var decorationStrikethrough: Boolean = true,
+        var decorationFormattingMarkerDimming: Boolean = true,
+        var decorationTrailingSpace: Boolean = true,
+        var decorationHardLineBreak: Boolean = true,
+        var decorationFileSizeLimit: Int = 500000,
+
         // Export
         var exportEmbedImages: Boolean = false,
         var exportValidateLinks: Boolean = true,

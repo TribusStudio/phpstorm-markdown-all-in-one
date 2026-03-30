@@ -3,6 +3,10 @@ package com.tribus.markdown.lang.highlighting
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.editor.markup.EffectType
+import com.intellij.openapi.editor.markup.TextAttributes
+import java.awt.Color
+import java.awt.Font
 
 object MarkdownHighlightingColors {
 
@@ -62,4 +66,42 @@ object MarkdownHighlightingColors {
     val MATH_CONTENT = TextAttributesKey.createTextAttributesKey(
         "MARKDOWN_MATH_CONTENT", DefaultLanguageHighlighterColors.NUMBER
     )
+
+    // ── Phase 12: Editor Decorations ─────────────────────────────────
+
+    // Code span background — subtle background tint for inline `code`
+    val CODE_SPAN_DECORATED: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+        "MARKDOWN_CODE_SPAN_DECORATED", CODE_SPAN
+    )
+
+    // Strikethrough — actual strikethrough effect on ~~text~~
+    val STRIKETHROUGH_EFFECT: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+        "MARKDOWN_STRIKETHROUGH_EFFECT", STRIKETHROUGH
+    )
+
+    // Formatting mark dimming — muted foreground for **, ~~, ` markers
+    val FORMATTING_MARKER: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+        "MARKDOWN_FORMATTING_MARKER", DefaultLanguageHighlighterColors.BRACES
+    )
+
+    // Trailing whitespace — visible indicator for trailing spaces
+    val TRAILING_SPACE: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+        "MARKDOWN_TRAILING_SPACE", DefaultLanguageHighlighterColors.BRACES
+    )
+
+    // Hard line break — trailing double-space that renders as <br>
+    val HARD_LINE_BREAK: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+        "MARKDOWN_HARD_LINE_BREAK", DefaultLanguageHighlighterColors.BRACES
+    )
+
+    // Default TextAttributes with enforced visual effects (used as base defaults)
+    object Defaults {
+        val STRIKETHROUGH_EFFECT_ATTRS = TextAttributes(null, null, null, EffectType.STRIKEOUT, Font.PLAIN)
+        val CODE_SPAN_BG_LIGHT = Color(0xF0, 0xF0, 0xF0)
+        val CODE_SPAN_BG_DARK = Color(0x38, 0x3B, 0x3D)
+        val TRAILING_SPACE_BG_LIGHT = Color(0xFF, 0xEB, 0xEB, 80)
+        val TRAILING_SPACE_BG_DARK = Color(0xFF, 0x60, 0x60, 40)
+        val HARD_BREAK_BG_LIGHT = Color(0xDB, 0xED, 0xFF, 100)
+        val HARD_BREAK_BG_DARK = Color(0x40, 0x80, 0xC0, 60)
+    }
 }

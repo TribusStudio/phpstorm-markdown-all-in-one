@@ -160,6 +160,39 @@ class MarkdownSettingsConfigurable : Configurable {
                 }
             }
 
+            group("Editor Decorations") {
+                row {
+                    checkBox("Code span background")
+                        .bindSelected(state::decorationCodeSpanBackground)
+                        .comment("Show a subtle background tint on inline code spans")
+                }
+                row {
+                    checkBox("Strikethrough rendering")
+                        .bindSelected(state::decorationStrikethrough)
+                        .comment("Show line-through effect on ~~strikethrough~~ text")
+                }
+                row {
+                    checkBox("Formatting marker dimming")
+                        .bindSelected(state::decorationFormattingMarkerDimming)
+                        .comment("Render **, ~~, *, _ markers in a muted color")
+                }
+                row {
+                    checkBox("Trailing space indicator")
+                        .bindSelected(state::decorationTrailingSpace)
+                        .comment("Highlight trailing whitespace with a background color")
+                }
+                row {
+                    checkBox("Hard line break indicator")
+                        .bindSelected(state::decorationHardLineBreak)
+                        .comment("Highlight trailing double-space (hard <br>) with a distinct background")
+                }
+                row("File size limit (chars):") {
+                    intTextField(0..10_000_000)
+                        .bindIntText(state::decorationFileSizeLimit)
+                        .comment("Skip decorations on files larger than this (0 = no limit)")
+                }
+            }
+
             group("Export") {
                 row {
                     checkBox("Embed images as base64 in exported HTML")

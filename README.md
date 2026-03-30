@@ -324,6 +324,19 @@ Export markdown files to styled, standalone HTML documents.
 
 **Breadcrumbs:** The editor breadcrumb bar shows the heading hierarchy path at the current cursor position.
 
+### Editor Decorations
+
+Visual enhancements in the editor (not just the preview) for a richer editing experience. All decorations are individually toggleable in Settings.
+
+- **Code span background** — inline `` `code` `` gets a subtle background tint (theme-aware: light gray in light themes, dark gray in dark themes)
+- **Strikethrough rendering** — `~~text~~` shows an actual line-through text effect in the editor
+- **Formatting marker dimming** — `**`, `~~`, `*`, `_` markers are rendered in a muted color so the content stands out
+- **Trailing space indicator** — trailing whitespace is highlighted with a soft background color
+- **Hard line break indicator** — trailing double-space (which renders as `<br>`) gets a distinct blue-tinted background
+- **File size limit** — decorations are automatically skipped on large files (configurable threshold, default 500K chars)
+
+**Color customization:** All markdown colors are customizable in **Settings > Editor > Color Scheme > Markdown**.
+
 ### Smart List Editing
 - **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
 - **Empty list handling** — Enter on an empty list item outdents it (if indented) or removes the marker (if top-level)
@@ -363,6 +376,12 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Completion        | Auto-popup completion               | On                |
 | Smart Paste       | Auto-create links from URLs         | On                |
 | Math              | Enable math rendering in preview    | On                |
+| Decorations       | Code span background                | On                |
+| Decorations       | Strikethrough rendering             | On                |
+| Decorations       | Formatting marker dimming           | On                |
+| Decorations       | Trailing space indicator            | On                |
+| Decorations       | Hard line break indicator           | On                |
+| Decorations       | File size limit (chars)             | 500000            |
 | Export            | Embed images as base64              | Off               |
 | Export            | Validate links on export            | On                |
 

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-03-30
+
+### Added
+- **Code span background** — inline `` `code` `` gets a subtle background tint in the editor, theme-aware (light gray / dark gray)
+- **Strikethrough rendering** — `~~text~~` shows an actual STRIKEOUT text effect in the editor, not just a color change
+- **Formatting marker dimming** — `**`, `~~`, `*`, `_` markers rendered in a muted foreground color so content stands out
+- **Trailing space indicator** — trailing whitespace highlighted with a soft background color
+- **Hard line break indicator** — trailing double-space (renders as `<br>`) highlighted with a distinct blue-tinted background
+- **Per-decoration toggle settings** — each decoration type can be individually enabled/disabled in Settings > Editor Decorations
+- **Color Settings Page** — all markdown colors customizable in Settings > Editor > Color Scheme > Markdown (22 configurable attributes)
+- **Decoration file size limit** — decorations automatically skipped on files larger than configurable threshold (default 500K chars)
+
 ## [0.18.2] - 2026-03-30
 
 ### Fixed

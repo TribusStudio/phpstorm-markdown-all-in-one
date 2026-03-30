@@ -177,21 +177,21 @@ List editing enhancements for full VSCode parity.
 - [x] Toolbar icons — unordered list and ordered list icons with dark variants; Toggle List button added to editor toolbar
 - [x] Tests for toggle list, ordered list renumbering, and marker parsing
 
-## Phase 12: Editor Decorations & Visual Theming ← NEXT
+## Phase 12: Editor Decorations & Visual Theming ✅
 Visual decorations in the editor (not just preview) for richer editing experience.
 
-- [ ] Code span background/border — inline `` `code` `` gets visible background and border in the editor
-- [ ] Strikethrough rendering — `~~text~~` shown with line-through text decoration in editor
-- [ ] Formatting mark dimming — `**`, `~~`, `` ` `` markers rendered in muted/faded foreground color
-- [ ] Trailing space shading — trailing whitespace highlighted with background color
-- [ ] Hard line break indicator — visual marker for trailing double-space line breaks
-- [ ] Link visual distinction — separate styling for link text vs URL portion
-- [ ] Per-decoration toggle settings (enable/disable each decoration type individually)
-- [ ] Color scheme keys in plugin descriptor for theme integration
-- [ ] Decoration file size limit setting — skip decorations on large files for performance
-- [ ] Tests for decoration rendering
+- [x] Code span background — inline `code` gets visible background tint in the editor (light/dark aware)
+- [x] Strikethrough rendering — `~~text~~` shown with actual STRIKEOUT text effect in editor
+- [x] Formatting mark dimming — `**`, `~~`, `*`, `_` markers rendered in muted foreground color
+- [x] Trailing space shading — trailing whitespace highlighted with background color
+- [x] Hard line break indicator — trailing double-space highlighted with distinct blue-tinted background
+- [x] Link visual distinction — separate styling for link text vs URL portion (existing from Phase 1)
+- [x] Per-decoration toggle settings (enable/disable each decoration type individually)
+- [x] Color Settings Page — Settings > Editor > Color Scheme > Markdown for full theme customization
+- [x] Decoration file size limit setting — skip decorations on files larger than configurable threshold
+- [x] Tests for decoration colors, patterns, and TextAttributesKey definitions
 
-## Phase 13: Export & Preview Polish
+## Phase 13: Export & Preview Polish ← NEXT
 Minor export improvements and preview conveniences.
 
 - [ ] Auto-export on save — `exportOnSave` setting to automatically generate HTML when saving `.md` files
