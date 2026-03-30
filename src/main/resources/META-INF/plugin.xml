@@ -283,6 +283,7 @@
             <action id="com.tribus.markdown.actions.ToggleList"
                     class="com.tribus.markdown.actions.ToggleListAction"
                     text="Toggle List Marker"
+                    icon="/icons/toolbar-list-unordered.svg"
                     description="Cycle list marker through candidates (-, *, +, 1., 1))"/>
 
             <separator/>

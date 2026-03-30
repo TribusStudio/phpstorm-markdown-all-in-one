@@ -174,6 +174,7 @@ List editing enhancements for full VSCode parity.
 - [x] Tab/Shift+Tab for list indent/outdent (context-aware: list vs table)
 - [x] Ordered list marker style setting — "ordered" (incrementing: 1. 2. 3.) vs "one" (always 1.)
 - [x] Ordered list auto-renumbering after indent/outdent
+- [x] Toolbar icons — unordered list and ordered list icons with dark variants; Toggle List button added to editor toolbar
 - [x] Tests for toggle list, ordered list renumbering, and marker parsing
 
 ## Phase 12: Editor Decorations & Visual Theming ← NEXT

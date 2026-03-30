@@ -216,6 +216,7 @@ class ToolbarTextEditor(
         leftGroup.addSeparator()
 
         // Group 3: Lists
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleList")
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ListIndent")
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ListOutdent")
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.ToggleTaskList")

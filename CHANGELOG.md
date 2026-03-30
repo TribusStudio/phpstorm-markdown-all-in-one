@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.1] - 2026-03-30
+
+### Added
+- **List toolbar icons** — unordered list (bullet dots) and ordered list (1. 2. 3.) SVG icons with dark theme variants
+- **Toggle List button in toolbar** — the editor toolbar's Lists group now includes a Toggle List button to cycle list markers without a keyboard shortcut
+
 ## [0.18.0] - 2026-03-30
 
 ### Added
