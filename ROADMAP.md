@@ -245,7 +245,21 @@ Replace full HTML replacement with efficient DOM patching for large document per
 - [ ] Performance benchmarks: measure preview update latency for 100/500/1000/5000-line documents
 - [ ] Tests for incremental update correctness
 
-## Phase 18: Extension Point Architecture
+## Phase 18: Preview Navigation & Link Handling
+Browser-style navigation within the JCEF preview, with configurable link behavior.
+
+- [ ] Preview link behavior setting — choose between "Open in editor" (current: opens linked `.md` files in PHPStorm editor) and "Browser-style" (navigates within the JCEF preview like a web browser)
+- [ ] Browser-style navigation — render linked `.md` files directly in the JCEF preview panel with full HTML conversion
+- [ ] Document history stack — track visited documents for back/forward navigation within the preview
+- [ ] Back/Forward toolbar buttons — visible navigation bar when in browser-style mode (existing `createNavBar()` infrastructure)
+- [ ] "Return to source" button — return from browsed document to the file open in the editor
+- [ ] Breadcrumb trail — show navigation path of visited documents in the preview toolbar
+- [ ] Anchor fragment support — when navigating to `file.md#heading`, scroll to the heading after loading
+- [ ] Relative path resolution — resolve `../`, `./`, and nested paths correctly in both modes
+- [ ] Non-markdown file handling — open non-`.md` links (images, PDFs, etc.) in appropriate IDE viewer or system app
+- [ ] Tests for link resolution, history stack, and navigation mode switching
+
+## Phase 19: Extension Point Architecture
 Open the plugin for third-party extensions.
 
 - [ ] Define `previewExtensionProvider` EP — inject JS/CSS into JCEF preview (for math, diagrams, custom renderers)
@@ -257,7 +271,7 @@ Open the plugin for third-party extensions.
 - [ ] Migrate built-in math/diagram support to use own extension points (dogfooding)
 - [ ] Tests for extension point loading and lifecycle
 
-## Phase 19: Language Injection in Code Fences
+## Phase 20: Language Injection in Code Fences
 Full IDE language support inside fenced code blocks (JetBrains' marquee feature).
 
 - [ ] `MultiHostInjector` implementation for code fence content ranges
@@ -268,7 +282,7 @@ Full IDE language support inside fenced code blocks (JetBrains' marquee feature)
 - [ ] Proper PSI range mapping between fence content and injected language fragments
 - [ ] Tests for injection activation, highlighting, and completion in common languages (Kotlin, Java, SQL, JSON, HTML)
 
-## Phase 20: Project-Level Settings & Advanced Configuration
+## Phase 21: Project-Level Settings & Advanced Configuration
 Per-project markdown configuration for multi-project workflows.
 
 - [ ] Migrate settings from application-level to project-level (`Service.Level.PROJECT`)
@@ -279,7 +293,7 @@ Per-project markdown configuration for multi-project workflows.
 - [ ] Settings import/export for team sharing
 - [ ] Tests for project-level settings isolation
 
-## Phase 21: Marketplace Screenshots & Release
+## Phase 22: Marketplace Screenshots & Release
 Final marketing assets and JetBrains Marketplace submission. Only after the plugin is battle-tested and peer-reviewed.
 
 - [ ] Create `docs/screenshots/` directory for all marketing assets
