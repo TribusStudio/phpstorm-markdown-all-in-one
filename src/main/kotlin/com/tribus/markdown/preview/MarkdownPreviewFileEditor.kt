@@ -21,9 +21,15 @@ import org.cef.network.CefRequest
 import java.awt.BorderLayout
 import java.awt.Desktop
 import java.awt.FlowLayout
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.vfs.LocalFileSystem
 import java.io.File
 import java.beans.PropertyChangeListener
 import java.net.URI
+import java.net.URLDecoder
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -201,6 +207,32 @@ class MarkdownPreviewFileEditor(
             url.startsWith("http://") || url.startsWith("https://") -> {
                 openInSystemBrowser(url)
             }
+            else -> {
+                // Relative file link — resolve against current file's directory and open
+                openRelativeFile(url)
+            }
+        }
+    }
+
+    private fun openRelativeFile(relativePath: String) {
+        val parentDir = file.parent?.path ?: return
+        // Strip anchor fragment if present (e.g., "file.md#heading")
+        val pathPart = relativePath.split("#").first()
+        val decoded = try { URLDecoder.decode(pathPart, "UTF-8") } catch (_: Exception) { pathPart }
+        val targetFile = File(parentDir, decoded).canonicalFile
+
+        ApplicationManager.getApplication().invokeLater {
+            val virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(targetFile)
+            if (virtualFile != null && virtualFile.exists()) {
+                // Find the project that contains this file
+                val project = ProjectManager.getInstance().openProjects.firstOrNull { p ->
+                    !p.isDisposed
+                } ?: return@invokeLater
+
+                // Open the file in the editor — our split editor provider will handle .md files
+                val descriptor = OpenFileDescriptor(project, virtualFile)
+                FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
+            }
         }
     }
 
@@ -353,6 +385,13 @@ class MarkdownPreviewFileEditor(
 
         // External links — send to Kotlin side to open in system browser
         if (href.startsWith('http://') || href.startsWith('https://')) {
+            e.preventDefault();
+            $injection
+            return;
+        }
+
+        // Relative file links — send to Kotlin side to open in the IDE
+        if (!href.startsWith('data:') && !href.startsWith('javascript:')) {
             e.preventDefault();
             $injection
             return;

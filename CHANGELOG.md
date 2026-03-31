@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.4] - 2026-03-31
+
+### Fixed
+- **Relative file links in preview** — clicking a relative link like `01-reconnaissance.md` in the preview now opens the target file in PHPStorm's editor (with split preview) instead of showing `ERR_FILE_NOT_FOUND`. Links with anchor fragments (e.g., `file.md#heading`) are supported. External URLs continue to open in the system browser
+
 ## [0.19.3] - 2026-03-30
 
 ### Fixed
