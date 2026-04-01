@@ -4,7 +4,7 @@ I really love what JetBrains has built for Markdown within PHPStorm. For the mos
 
 Recently, with the advent of Claude Code and LLM development, I got an idea:
 
-> *What if I tried to build my own plugin for PHPStorm?*
+> *What if I tried to build my own plugin for `PHPStorm`?*
 
 And so was born an alternative, comprehensive Markdown editing plugin for JetBrains PHPStorm — inspired by the best of VSCode's Markdown experience, purpose-built for the IntelliJ Platform.
 
@@ -46,28 +46,28 @@ Again, its something for me and it makes me happy. I hope it does the same for y
 
 Shortcuts automatically take priority over built-in IDE actions when editing markdown files. In non-markdown files, the standard IDE shortcuts work as normal.
 
-| Shortcut                  | Action                            |
-| ------------------------- | --------------------------------- |
-| `Cmd/Ctrl+B`              | Toggle **bold**                   |
-| `Cmd/Ctrl+I`              | Toggle *italic*                   |
-| `Alt+S`                   | Toggle ~~strikethrough~~          |
-| `Cmd/Ctrl+`` ` ``         | Toggle `code span`                |
-| `Cmd/Ctrl+Shift+`` ` ``   | Toggle code block                 |
-| `Ctrl+K`                  | Insert link (dialog)              |
-| `Ctrl+Shift+K`            | Insert image (dialog)             |
-| `Ctrl+Shift+]`            | Increase heading level            |
-| `Ctrl+Shift+[`            | Decrease heading level            |
-| `Ctrl+Shift+.`            | Toggle blockquote                 |
-| `Cmd/Ctrl+]`              | Indent list item                  |
-| `Cmd/Ctrl+[`              | Outdent list item                 |
-| `Alt+C`                   | Toggle task list checkbox         |
-| `Alt+Up/Down`             | Move line up/down                 |
-| `Shift+Alt+Up/Down`       | Copy line up/down                 |
-| `Ctrl+Enter`              | Exit list continuation            |
-| `Shift+Enter`             | Soft break (`<br>`)               |
-| `Ctrl+M`                  | Toggle math (`$...$` / `$$...$$`) |
-| `Ctrl+Shift+Alt+T`        | Format table at cursor            |
-| `Tab` / `Shift+Tab`       | Table cell navigation or list indent/outdent |
+| Shortcut                | Action                                       |
+| ----------------------- | -------------------------------------------- |
+| `Cmd/Ctrl+B`            | Toggle **bold**                              |
+| `Cmd/Ctrl+I`            | Toggle *italic*                              |
+| `Alt+S`                 | Toggle ~~strikethrough~~                     |
+| `Cmd/Ctrl+`` ` ``       | Toggle `code span`                           |
+| `Cmd/Ctrl+Shift+`` ` `` | Toggle code block                            |
+| `Ctrl+K`                | Insert link (dialog)                         |
+| `Ctrl+Shift+K`          | Insert image (dialog)                        |
+| `Ctrl+Shift+]`          | Increase heading level                       |
+| `Ctrl+Shift+[`          | Decrease heading level                       |
+| `Ctrl+Shift+.`          | Toggle blockquote                            |
+| `Cmd/Ctrl+]`            | Indent list item                             |
+| `Cmd/Ctrl+[`            | Outdent list item                            |
+| `Alt+C`                 | Toggle task list checkbox                    |
+| `Alt+Up/Down`           | Move line up/down                            |
+| `Shift+Alt+Up/Down`     | Copy line up/down                            |
+| `Ctrl+Enter`            | Exit list continuation                       |
+| `Shift+Enter`           | Soft break (`<br>`)                          |
+| `Ctrl+M`                | Toggle math (`$...$` / `$$...$$`)            |
+| `Ctrl+Shift+Alt+T`      | Format table at cursor                       |
+| `Tab` / `Shift+Tab`     | Table cell navigation or list indent/outdent |
 
 ### Toolbars & Menus
 
@@ -244,13 +244,13 @@ JCEF-based live preview with split editor support.
 
 Context-aware completions while editing:
 
-| Trigger | Completion |
-| ------- | ---------- |
-| `[text](#` + `Ctrl+Space` | Heading anchor slugs |
-| `[text][` + `Ctrl+Space` | Reference link labels |
-| `[text](` + `Ctrl+Space` | File/image paths (relative to current file) |
-| `![alt](` + `Ctrl+Space` | File/image paths |
-| `\` inside `$...$` | LaTeX commands (170+ symbols, environments) |
+| Trigger                   | Completion                                  |
+| ------------------------- | ------------------------------------------- |
+| `[text](#` + `Ctrl+Space` | Heading anchor slugs                        |
+| `[text][` + `Ctrl+Space`  | Reference link labels                       |
+| `[text](` + `Ctrl+Space`  | File/image paths (relative to current file) |
+| `![alt](` + `Ctrl+Space`  | File/image paths                            |
+| `\` inside `$...$`        | LaTeX commands (170+ symbols, environments) |
 
 ### Math & LaTeX
 

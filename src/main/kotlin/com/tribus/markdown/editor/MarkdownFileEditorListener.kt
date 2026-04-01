@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
-import com.intellij.openapi.diagnostic.Logger
 import com.tribus.markdown.toolbar.FloatingToolbar
 import com.tribus.markdown.util.MarkdownFileUtil
 import java.awt.Toolkit
@@ -29,20 +28,12 @@ import javax.swing.KeyStroke
  */
 class MarkdownFileEditorListener : EditorFactoryListener {
 
-    init {
-        LOG.info("MarkdownFileEditorListener instantiated")
-    }
-
     override fun editorCreated(event: EditorFactoryEvent) {
         val editor = event.editor
         val document = editor.document
-        val file = FileDocumentManager.getInstance().getFile(document)
-        LOG.info("editorCreated: file=${file?.name ?: "null"}, extension=${file?.extension ?: "null"}")
+        val file = FileDocumentManager.getInstance().getFile(document) ?: return
 
-        if (file == null) return
-        val isMarkdown = MarkdownFileUtil.isMarkdownFile(file)
-        LOG.info("editorCreated: isMarkdownFile=$isMarkdown for ${file.name}")
-        if (!isMarkdown) return
+        if (!MarkdownFileUtil.isMarkdownFile(file)) return
 
         val actionManager = ActionManager.getInstance()
         val keymap = KeymapManager.getInstance()?.activeKeymap
@@ -67,12 +58,9 @@ class MarkdownFileEditorListener : EditorFactoryListener {
         val floatingToolbar = FloatingToolbar(editor)
         editor.selectionModel.addSelectionListener(floatingToolbar)
         editor.caretModel.addCaretListener(floatingToolbar)
-        LOG.info("Registered FloatingToolbar for file: ${file.name}")
     }
 
     companion object {
-        private val LOG = Logger.getInstance(MarkdownFileEditorListener::class.java)
-
         // Cmd on macOS, Ctrl on Windows/Linux — lazy to avoid HeadlessException in tests
         private val MENU_MOD by lazy {
             try {

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.7] - 2026-04-01
+
+### Fixed
+- **Floating toolbar and keyboard shortcuts restored** — the `applicationListeners` XML registration for `EditorFactoryListener` was silently not firing in PhpStorm 2026.1. Switched to the `<editorFactoryListener>` extension point which registers directly with `EditorFactory`. This fixes both the floating selection toolbar and component-level keyboard shortcut registration (Ctrl+B for bold, etc.)
+
 ## [0.21.3] - 2026-04-01
 
 ### Fixed
