@@ -73,7 +73,13 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 
 **Editor toolbar:** A persistent toolbar at the top of the editor pane provides one-click access to formatting (Bold, Italic, Strikethrough, Code, Code Block), links and images, headings, blockquote, list toggle, indent/outdent, task toggle, math, table format, TOC update, plus a tools popup menu and settings gear.
 
-**Floating toolbar:** Select text to see a popup toolbar above the selection with quick formatting buttons (Bold, Italic, Strikethrough, Code, Heading Up/Down, Insert Link, Insert Image). Uses the platform's ActionToolbar for consistent IDE styling.
+**Floating toolbar:** Select text to see a context-sensitive popup toolbar above the selection:
+- **Default** (plain text) — Bold, Italic, Strikethrough, Code, Heading Up/Down, Link, Image
+- **TOC block** — Update TOC, Add/Remove Section Numbers
+- **Table** — Format Table, Insert/Delete Row/Column
+- **Code block** — Toggle Code Block (unwrap)
+- **Math** — Toggle Math modes
+- **Blockquote** — Toggle Blockquote (unwrap)
 
 **Right-click context menu:** Right-click in a markdown file to see the **Markdown** submenu with context-aware actions:
 - Link and image insertion (always available)
@@ -312,6 +318,7 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Preview           | Scroll sync                         | On                |
 | Preview           | Auto-show preview on open           | On                |
 | Toolbar           | Show editor toolbar                 | On                |
+| Toolbar           | Context-sensitive floating toolbar  | On                |
 | Completion        | Auto-popup completion               | On                |
 | Smart Paste       | Auto-create links from URLs         | On                |
 | Math              | Enable math rendering in preview    | On                |

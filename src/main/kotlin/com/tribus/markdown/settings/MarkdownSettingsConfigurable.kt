@@ -148,6 +148,11 @@ class MarkdownSettingsConfigurable : Configurable {
                         .bindSelected(state::toolbarEnabled)
                         .comment("Display the formatting toolbar at the top of markdown editors")
                 }
+                row {
+                    checkBox("Context-sensitive floating toolbar")
+                        .bindSelected(state::contextSensitiveToolbar)
+                        .comment("Show different actions based on selection context (TOC, table, code block, math, blockquote)")
+                }
             }
 
             group("Completion") {

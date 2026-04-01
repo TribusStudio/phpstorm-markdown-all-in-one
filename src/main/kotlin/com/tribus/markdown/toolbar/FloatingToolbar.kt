@@ -11,17 +11,17 @@ import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.util.ui.JBUI
+import com.tribus.markdown.settings.MarkdownSettings
 import java.awt.Point
 import javax.swing.SwingUtilities
 import javax.swing.Timer
 
 /**
  * A floating toolbar that appears above text selections in the markdown editor.
+ * Shows context-sensitive actions based on what the selection contains.
  *
- * Uses JBPopup with a 200ms debounce — fast enough to feel responsive,
- * slow enough to skip transient selection states. The popup uses
- * setCancelOnClickOutside(false) so it coexists with IntelliJ's
- * intention lightbulb; dismissed explicitly when the selection clears.
+ * Uses JBPopup with a 200ms debounce. Registered via the editorFactoryListener
+ * extension point. Dismissed when the selection clears.
  */
 class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretListener {
 
@@ -36,8 +36,6 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
             return
         }
 
-        // 200ms debounce — fast enough to feel responsive, slow enough to
-        // skip transient states (mid-drag, shift+arrow expansion)
         showTimer = Timer(200) {
             SwingUtilities.invokeLater {
                 if (editor.selectionModel.hasSelection() && !editor.isDisposed) {
@@ -63,20 +61,14 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
         val contentComponent = editor.contentComponent
         if (!contentComponent.isShowing) return
 
+        val contextSensitive = try {
+            MarkdownSettings.getInstance().state.contextSensitiveToolbar
+        } catch (_: Exception) { true }
+
+        val context = if (contextSensitive) SelectionContext.detect(editor) else SelectionContext.Context.DEFAULT
+        val group = buildActionGroup(context)
+
         val actionManager = ActionManager.getInstance()
-        val group = DefaultActionGroup()
-
-        addAction(group, actionManager, "com.tribus.markdown.actions.ToggleBold")
-        addAction(group, actionManager, "com.tribus.markdown.actions.ToggleItalic")
-        addAction(group, actionManager, "com.tribus.markdown.actions.ToggleStrikethrough")
-        addAction(group, actionManager, "com.tribus.markdown.actions.ToggleCodeSpan")
-        group.addSeparator()
-        addAction(group, actionManager, "com.tribus.markdown.actions.HeadingUp")
-        addAction(group, actionManager, "com.tribus.markdown.actions.HeadingDown")
-        group.addSeparator()
-        addAction(group, actionManager, "com.tribus.markdown.actions.InsertLink")
-        addAction(group, actionManager, "com.tribus.markdown.actions.InsertImage")
-
         val toolbar = actionManager.createActionToolbar("MarkdownFloatingToolbar", group, true)
         toolbar.targetComponent = contentComponent
         val toolbarComponent = toolbar.component
@@ -95,7 +87,6 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
             .setCancelKeyEnabled(false)
             .createPopup()
 
-        // Position above the selection start
         val selectionStart = editor.selectionModel.selectionStart
         val visualPos = editor.offsetToVisualPosition(selectionStart)
         val editorPoint = editor.visualPositionToXY(visualPos)
@@ -119,7 +110,60 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
         popup = null
     }
 
-    private fun addAction(group: DefaultActionGroup, actionManager: ActionManager, actionId: String) {
+    private fun buildActionGroup(context: SelectionContext.Context): DefaultActionGroup {
+        val am = ActionManager.getInstance()
+        val group = DefaultActionGroup()
+
+        when (context) {
+            SelectionContext.Context.TOC -> {
+                add(group, am, "com.tribus.markdown.actions.UpdateToc")
+                add(group, am, "com.tribus.markdown.actions.AddSectionNumbers")
+                add(group, am, "com.tribus.markdown.actions.RemoveSectionNumbers")
+            }
+
+            SelectionContext.Context.TABLE -> {
+                add(group, am, "com.tribus.markdown.actions.FormatTable")
+                group.addSeparator()
+                add(group, am, "com.tribus.markdown.table.InsertRowAbove")
+                add(group, am, "com.tribus.markdown.table.InsertRowBelow")
+                add(group, am, "com.tribus.markdown.table.DeleteRow")
+                group.addSeparator()
+                add(group, am, "com.tribus.markdown.table.InsertColumnBefore")
+                add(group, am, "com.tribus.markdown.table.InsertColumnAfter")
+                add(group, am, "com.tribus.markdown.table.DeleteColumn")
+            }
+
+            SelectionContext.Context.CODE_BLOCK -> {
+                add(group, am, "com.tribus.markdown.actions.ToggleCodeBlock")
+            }
+
+            SelectionContext.Context.MATH -> {
+                add(group, am, "com.tribus.markdown.actions.ToggleMath")
+                add(group, am, "com.tribus.markdown.actions.ToggleMathReverse")
+            }
+
+            SelectionContext.Context.BLOCKQUOTE -> {
+                add(group, am, "com.tribus.markdown.actions.ToggleBlockquote")
+            }
+
+            SelectionContext.Context.DEFAULT -> {
+                add(group, am, "com.tribus.markdown.actions.ToggleBold")
+                add(group, am, "com.tribus.markdown.actions.ToggleItalic")
+                add(group, am, "com.tribus.markdown.actions.ToggleStrikethrough")
+                add(group, am, "com.tribus.markdown.actions.ToggleCodeSpan")
+                group.addSeparator()
+                add(group, am, "com.tribus.markdown.actions.HeadingUp")
+                add(group, am, "com.tribus.markdown.actions.HeadingDown")
+                group.addSeparator()
+                add(group, am, "com.tribus.markdown.actions.InsertLink")
+                add(group, am, "com.tribus.markdown.actions.InsertImage")
+            }
+        }
+
+        return group
+    }
+
+    private fun add(group: DefaultActionGroup, actionManager: ActionManager, actionId: String) {
         actionManager.getAction(actionId)?.let { group.add(it) }
     }
 

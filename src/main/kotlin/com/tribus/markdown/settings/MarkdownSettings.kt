@@ -53,6 +53,7 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
 
         // Toolbar
         var toolbarEnabled: Boolean = true,
+        var contextSensitiveToolbar: Boolean = true,
 
         // Smart paste
         var smartPasteEnabled: Boolean = true,

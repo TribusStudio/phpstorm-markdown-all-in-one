@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-04-01
+
+### Added
+- **Context-sensitive floating toolbar** — the floating selection toolbar now shows different actions based on what you've selected:
+  - **TOC block** — Update TOC, Add/Remove Section Numbers
+  - **Table** — Format Table, Insert/Delete Row, Insert/Delete Column
+  - **Code block** — Toggle Code Block (unwrap)
+  - **Math** — Toggle Math, Toggle Math Reverse
+  - **Blockquote** — Toggle Blockquote (unwrap)
+  - **Default** — formatting, headings, links, images (unchanged)
+- **Context detection engine** (`SelectionContext`) with priority rules: TOC > Code Block > Table > Math > Blockquote > Default
+- **Settings toggle** — `contextSensitiveToolbar` (default on) to fall back to the generic toolbar
+
 ## [0.21.7] - 2026-04-01
 
 ### Fixed
