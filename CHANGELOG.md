@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.2] - 2026-04-01
+
+### Fixed
+- **Floating toolbar reliability** — replaced `JBPopup` approach with direct `JLayeredPane` overlay. The popup system was conflicting with IntelliJ's intention/lightbulb system, causing the toolbar to be dismissed or never shown. The toolbar is now added directly to the editor's layered pane as an overlay component, bypassing the popup layer entirely
+
 ## [0.21.1] - 2026-04-01
 
 ### Fixed

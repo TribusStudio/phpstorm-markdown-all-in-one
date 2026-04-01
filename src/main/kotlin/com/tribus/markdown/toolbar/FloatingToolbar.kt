@@ -1,41 +1,33 @@
 package com.tribus.markdown.toolbar
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.ActionToolbar
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.Presentation
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.SelectionEvent
 import com.intellij.openapi.editor.event.SelectionListener
-import com.intellij.openapi.ui.popup.JBPopup
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.ui.awt.RelativePoint
 import java.awt.Point
+import javax.swing.JComponent
+import javax.swing.JLayeredPane
 import javax.swing.SwingUtilities
 import javax.swing.Timer
 
 /**
  * A floating toolbar that appears above text selections in the markdown editor.
- * Shows formatting buttons using the platform's ActionToolbar for consistent
- * styling and behavior.
  *
- * Uses a debounce timer to avoid flicker from rapid selection changes
- * (e.g., double-click word select, shift+arrow expansion).
+ * Instead of using JBPopup (which conflicts with IntelliJ's intention/lightbulb
+ * system), this adds the toolbar directly to the editor's parent JLayeredPane
+ * as an overlay. This avoids popup conflicts and provides reliable positioning.
+ *
+ * Uses a debounce timer to avoid flicker from rapid selection changes.
  */
 class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretListener {
 
-    private var popup: JBPopup? = null
+    private var toolbarComponent: JComponent? = null
     private var showTimer: Timer? = null
 
     override fun selectionChanged(e: SelectionEvent) {
-        // Debounce: wait 200ms after last selection change before showing
         showTimer?.stop()
 
         if (!editor.selectionModel.hasSelection() || editor.selectionModel.selectedText.isNullOrBlank()) {
@@ -43,7 +35,7 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
             return
         }
 
-        showTimer = Timer(200) {
+        showTimer = Timer(300) {
             SwingUtilities.invokeLater {
                 if (editor.selectionModel.hasSelection() && !editor.isDisposed) {
                     showToolbar()
@@ -56,7 +48,6 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
     }
 
     override fun caretPositionChanged(e: CaretEvent) {
-        // Dismiss when caret moves without selection (user clicked elsewhere)
         if (!editor.selectionModel.hasSelection()) {
             hideToolbar()
         }
@@ -67,10 +58,11 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
 
         if (!editor.selectionModel.hasSelection() || editor.isDisposed) return
 
+        val layeredPane = findLayeredPane() ?: return
+
         val actionManager = ActionManager.getInstance()
         val group = DefaultActionGroup()
 
-        // Formatting actions
         addAction(group, actionManager, "com.tribus.markdown.actions.ToggleBold")
         addAction(group, actionManager, "com.tribus.markdown.actions.ToggleItalic")
         addAction(group, actionManager, "com.tribus.markdown.actions.ToggleStrikethrough")
@@ -84,44 +76,58 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
 
         val toolbar = actionManager.createActionToolbar("MarkdownFloatingToolbar", group, true)
         toolbar.targetComponent = editor.contentComponent
-        val toolbarComponent = toolbar.component
+        val component = toolbar.component
 
-        popup = JBPopupFactory.getInstance()
-            .createComponentPopupBuilder(toolbarComponent, null)
-            .setRequestFocus(false)
-            .setFocusable(false)
-            .setResizable(false)
-            .setMovable(false)
-            .setShowBorder(true)
-            .setCancelOnClickOutside(false)  // We dismiss via selectionChanged when selection clears
-            .setCancelOnOtherWindowOpen(true)
-            .setCancelOnWindowDeactivation(true)
-            .setCancelKeyEnabled(true)
-            .createPopup()
+        // Measure the toolbar's preferred size
+        val prefSize = component.preferredSize
 
-        // Position above the selection start
+        // Position above the selection start, converted to layered pane coordinates
         val selectionStart = editor.selectionModel.selectionStart
         val visualPos = editor.offsetToVisualPosition(selectionStart)
-        val point = editor.visualPositionToXY(visualPos)
+        val editorPoint = editor.visualPositionToXY(visualPos)
 
-        val screenPoint = Point(point.x, point.y - 40)
-        if (screenPoint.y < 0) {
-            // Not enough room above — show below
-            screenPoint.y = point.y + editor.lineHeight + 5
-        }
+        val editorComponent = editor.contentComponent
+        val pointInLayered = SwingUtilities.convertPoint(editorComponent, editorPoint, layeredPane)
 
-        try {
-            popup?.show(RelativePoint(editor.contentComponent, screenPoint))
-        } catch (_: Exception) {
-            // Component not showing or hierarchy issue — silently skip
-            popup = null
+        var x = pointInLayered.x
+        var y = pointInLayered.y - prefSize.height - 4
+
+        // Keep within bounds
+        if (y < 0) {
+            y = pointInLayered.y + editor.lineHeight + 4
         }
+        if (x + prefSize.width > layeredPane.width) {
+            x = layeredPane.width - prefSize.width
+        }
+        x = x.coerceAtLeast(0)
+
+        component.setBounds(x, y, prefSize.width, prefSize.height)
+        layeredPane.add(component, JLayeredPane.POPUP_LAYER)
+        layeredPane.revalidate()
+        layeredPane.repaint()
+
+        toolbarComponent = component
     }
 
     fun hideToolbar() {
         showTimer?.stop()
-        popup?.cancel()
-        popup = null
+        val component = toolbarComponent ?: return
+        val parent = component.parent
+        if (parent != null) {
+            parent.remove(component)
+            parent.revalidate()
+            parent.repaint()
+        }
+        toolbarComponent = null
+    }
+
+    private fun findLayeredPane(): JLayeredPane? {
+        var comp: java.awt.Component? = editor.contentComponent
+        while (comp != null) {
+            if (comp is JLayeredPane) return comp
+            comp = comp.parent
+        }
+        return null
     }
 
     private fun addAction(group: DefaultActionGroup, actionManager: ActionManager, actionId: String) {
