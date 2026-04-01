@@ -1,5 +1,6 @@
 package com.tribus.markdown.toolbar
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Editor
@@ -31,7 +32,11 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
     override fun selectionChanged(e: SelectionEvent) {
         showTimer?.stop()
 
-        if (!editor.selectionModel.hasSelection() || editor.selectionModel.selectedText.isNullOrBlank()) {
+        val hasSelection = editor.selectionModel.hasSelection()
+        val selectedText = editor.selectionModel.selectedText
+        LOG.info("selectionChanged: hasSelection=$hasSelection, textLength=${selectedText?.length}, isBlank=${selectedText.isNullOrBlank()}")
+
+        if (!hasSelection || selectedText.isNullOrBlank()) {
             hideToolbar()
             return
         }
@@ -59,9 +64,16 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
     private fun showToolbar() {
         hideToolbar()
 
-        if (!editor.selectionModel.hasSelection() || editor.isDisposed) return
+        if (!editor.selectionModel.hasSelection() || editor.isDisposed) {
+            LOG.info("showToolbar: aborted — hasSelection=${editor.selectionModel.hasSelection()}, isDisposed=${editor.isDisposed}")
+            return
+        }
         val contentComponent = editor.contentComponent
-        if (!contentComponent.isShowing) return
+        if (!contentComponent.isShowing) {
+            LOG.info("showToolbar: aborted — contentComponent not showing")
+            return
+        }
+        LOG.info("showToolbar: creating popup")
 
         val actionManager = ActionManager.getInstance()
         val group = DefaultActionGroup()
@@ -106,9 +118,12 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
         }
 
         try {
+            LOG.info("showToolbar: showing popup at ($${screenPoint.x}, $${screenPoint.y})")
             newPopup.show(RelativePoint(contentComponent, screenPoint))
             popup = newPopup
-        } catch (_: Exception) {
+            LOG.info("showToolbar: popup shown successfully, isVisible=${newPopup.content.isVisible}")
+        } catch (ex: Exception) {
+            LOG.warn("showToolbar: popup show failed", ex)
             newPopup.cancel()
         }
     }
@@ -125,5 +140,9 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
 
     fun dispose() {
         hideToolbar()
+    }
+
+    companion object {
+        private val LOG = Logger.getInstance(FloatingToolbar::class.java)
     }
 }
