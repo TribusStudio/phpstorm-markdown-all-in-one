@@ -314,6 +314,21 @@ Fixes and additions identified during real-world usage.
 - [x] Link and image toolbar icons (chain link + landscape) with dark variants
 - [x] Link and image buttons in editor toolbar, floating toolbar, and right-click context menu
 
+## Phase 24: Context-Sensitive Floating Toolbar
+Show different toolbar actions based on the selection context instead of a generic formatting palette.
+
+- [ ] Context detection engine — analyze selection and surrounding text to determine context (plain text, TOC block, table, code block, math, blockquote)
+- [ ] **Default context** (plain text) — Bold, Italic, Strikethrough, Code, Heading Up/Down, Link, Image (current behavior)
+- [ ] **TOC context** — selection overlaps `<!-- TOC -->...<!-- /TOC -->` markers → Update TOC, Add Section Numbers, Remove Section Numbers
+- [ ] **Table context** — selection inside table rows → Format Table, Insert Row/Column, Delete Row/Column, Set Alignment
+- [ ] **Code block context** — selection inside fenced code block → Toggle Code Block (unwrap), language indicator
+- [ ] **Math context** — selection inside `$...$` or `$$...$$` → Toggle Math, Toggle Math Reverse
+- [ ] **Blockquote context** — selection inside `> ` lines → Toggle Blockquote (unwrap)
+- [ ] Context priority rules — handle overlapping contexts (e.g., code block inside blockquote)
+- [ ] Extensibility — registry for future plugin-contributed contexts
+- [ ] Settings toggle — enable/disable context-sensitive mode (fall back to default toolbar)
+- [ ] Tests for context detection and toolbar action selection
+
 ## Future Considerations
 - Custom markdown-it extensions integration
 - Multi-language support (i18n beyond English)
