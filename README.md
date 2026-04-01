@@ -20,21 +20,19 @@ Again, its something for me and it makes me happy. I hope it does the same for y
 - [Markdown All-in-One for PHPStorm](#markdown-all-in-one-for-phpstorm)
     - [Features](#features)
         - [Keyboard Shortcuts](#keyboard-shortcuts)
-        - [Selection Wrapping](#selection-wrapping)
-        - [New File Templates](#new-file-templates)
-        - [Generate Menu (Cmd+N / Alt+Insert)](#generate-menu-cmdn--altinsert)
-        - [Table of Contents](#table-of-contents)
-        - [Table Formatting](#table-formatting)
-        - [Live Preview](#live-preview)
-        - [Math & LaTeX](#math--latex)
-        - [Toolbars & Context Menu](#toolbars--context-menu)
-        - [Syntax Highlighting](#syntax-highlighting)
-        - [Auto-Completion](#auto-completion)
-        - [Smart Paste](#smart-paste)
-        - [HTML Export](#html-export)
-        - [Structure View & Code Folding](#structure-view--code-folding)
-        - [Editor Decorations](#editor-decorations)
+        - [Toolbars & Menus](#toolbars--menus)
+        - [Text Formatting & Selection Wrapping](#text-formatting--selection-wrapping)
+        - [Links & Images](#links--images)
         - [Smart List Editing](#smart-list-editing)
+        - [Table Formatting & Operations](#table-formatting--operations)
+        - [Table of Contents](#table-of-contents)
+        - [Live Preview](#live-preview)
+        - [Syntax Highlighting & Editor Decorations](#syntax-highlighting--editor-decorations)
+        - [Structure View, Folding & Navigation](#structure-view-folding--navigation)
+        - [Auto-Completion](#auto-completion)
+        - [Math & LaTeX](#math--latex)
+        - [HTML Export](#html-export)
+        - [New File Templates & Generate Menu](#new-file-templates--generate-menu)
         - [Settings](#settings)
     - [Installation](#installation)
         - [Auto-Update (Recommended)](#auto-update-recommended)
@@ -43,7 +41,6 @@ Again, its something for me and it makes me happy. I hope it does the same for y
     - [Contributing](#contributing)
     - [License](#license)
 <!-- /TOC -->
-
 
 ### Keyboard Shortcuts
 
@@ -54,20 +51,49 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 | `Cmd/Ctrl+B`              | Toggle **bold**                   |
 | `Cmd/Ctrl+I`              | Toggle *italic*                   |
 | `Alt+S`                   | Toggle ~~strikethrough~~          |
-| `Cmd/Ctrl+`               | Toggle `code span`                |
-| `Cmd/Ctrl+Shift+` `` ` `` | Toggle code block                 |
+| `Cmd/Ctrl+`` ` ``         | Toggle `code span`                |
+| `Cmd/Ctrl+Shift+`` ` ``   | Toggle code block                 |
+| `Ctrl+K`                  | Insert link (dialog)              |
+| `Ctrl+Shift+K`            | Insert image (dialog)             |
 | `Ctrl+Shift+]`            | Increase heading level            |
 | `Ctrl+Shift+[`            | Decrease heading level            |
+| `Ctrl+Shift+.`            | Toggle blockquote                 |
 | `Cmd/Ctrl+]`              | Indent list item                  |
 | `Cmd/Ctrl+[`              | Outdent list item                 |
 | `Alt+C`                   | Toggle task list checkbox         |
+| `Alt+Up/Down`             | Move line up/down                 |
+| `Shift+Alt+Up/Down`       | Copy line up/down                 |
+| `Ctrl+Enter`              | Exit list continuation            |
+| `Shift+Enter`             | Soft break (`<br>`)               |
 | `Ctrl+M`                  | Toggle math (`$...$` / `$$...$$`) |
-| `Ctrl+K`                  | Insert link (dialog)              |
-| `Ctrl+Shift+K`            | Insert image (dialog)             |
+| `Ctrl+Shift+Alt+T`        | Format table at cursor            |
+| `Tab` / `Shift+Tab`       | Table cell navigation or list indent/outdent |
 
-### Selection Wrapping
+### Toolbars & Menus
 
-Select text and type any of these characters to wrap the selection:
+**Editor toolbar:** A persistent toolbar at the top of the editor pane provides one-click access to formatting (Bold, Italic, Strikethrough, Code, Code Block), links and images, headings, blockquote, list toggle, indent/outdent, task toggle, math, table format, TOC update, plus a tools popup menu and settings gear.
+
+**Floating toolbar:** Select text to see a popup toolbar above the selection with quick formatting buttons (Bold, Italic, Strikethrough, Code, Heading Up/Down, Insert Link, Insert Image). Uses the platform's ActionToolbar for consistent IDE styling.
+
+**Right-click context menu:** Right-click in a markdown file to see the **Markdown** submenu with context-aware actions:
+- Link and image insertion (always available)
+- Formatting actions when text is selected
+- Blockquote toggle and list operations
+- Table row/column operations when cursor is in a table
+- TOC creation and update
+
+**Tools > Markdown menu:** All actions are also accessible from the main menu under Tools > Markdown, including export, section numbering, and table operations.
+
+**Generate menu** (`Cmd+N` / `Alt+Insert`): Quick insertion of tables, code blocks, images, footnotes, link references, front matter, and TOC.
+
+### Text Formatting & Selection Wrapping
+
+Toggle formatting on the current selection or word at cursor:
+- **Bold** (`Cmd/Ctrl+B`), **Italic** (`Cmd/Ctrl+I`), **Strikethrough** (`Alt+S`), **Code Span** (`` Cmd/Ctrl+` ``), **Code Block** (`` Cmd/Ctrl+Shift+` ``)
+- **Heading level** — increase (`Ctrl+Shift+]`) or decrease (`Ctrl+Shift+[`)
+- **Blockquote** (`Ctrl+Shift+.`) — toggles `> ` prefix on selected lines
+
+**Selection wrapping:** Select text and type a character to wrap it:
 
 | Character | Result                                                         |
 | --------- | -------------------------------------------------------------- |
@@ -78,31 +104,47 @@ Select text and type any of these characters to wrap the selection:
 | `\|`      | `\| selection \|` (table cell — smart: detects preceding pipe) |
 | `-`       | Fills with dashes inside table cells (header borders)          |
 
-### New File Templates
+### Links & Images
 
-Right-click a directory > **New > Markdown File** to create from a template:
+**Insert Link** (`Ctrl+K`) — opens a dialog with text, URL, and optional title fields. Pre-fills selected text as the link text. Inserts `[text](url)` or `[text](url "title")`.
 
-- **Blank** — empty file with a `# Title` heading
-- **README** — standard open-source README skeleton
-- **Document** — general document with author, date, sections
-- **Meeting Notes** — date, attendees, agenda, action items
-- **Changelog** — Keep a Changelog format
-- **API Documentation** — endpoint docs with request/response tables
+**Insert Image** (`Ctrl+Shift+K`) — opens a dialog with alt text, image path/URL, and optional title fields. Pre-fills selected text as alt text. Inserts `![alt](src)` or `![alt](src "title")`.
 
-### Generate Menu (Cmd+N / Alt+Insert)
+**Smart paste** — paste a URL while text is selected to automatically create a markdown link. Image URLs (`.png`, `.jpg`, `.gif`, `.svg`, etc.) become `![text](url)`.
 
-Press `Cmd+N` (macOS) or `Alt+Insert` (Windows/Linux) while editing a markdown file to access the **Markdown** generate submenu:
+**Preview link navigation** — clicking a relative link (e.g., `other-doc.md`) in the preview opens the target file in PHPStorm's editor with its own preview. External URLs open in the system browser. Anchor links (`#heading`) scroll within the preview.
 
-- **Table** — prompts for column count, inserts a GFM table skeleton
-- **Code Block** — prompts for language, inserts a fenced code block
-- **Image** — inserts `![alt](path)` (uses selected text as alt text)
-- **Footnote** — inserts `[^n]` reference at cursor and definition at end of file
-- **Link Reference** — inserts `[text][ref]` and appends `[ref]: url` definition
-- **Front Matter** — inserts YAML front matter at the top of the document
-- **Table of Contents** — generates TOC from existing headings
+**Auto-completion** — type `[text](` to get file path completion, `[text](#` for heading anchor completion, `[text][` for reference label completion.
 
-> **Note:** `Cmd+N` in the editor opens the **Generate** popup, not the **New File** dialog. This is standard PHPStorm behavior. To create a new file, use `Cmd+N` in the **Project panel** (click the project tree first), or right-click > New > Markdown File. If you prefer `Cmd+N` to always open the New File dialog, you can rebind it in **Settings > Keymap**: search for "Generate" and remove/change its shortcut, then assign `Cmd+N` to "New..." instead.
+### Smart List Editing
 
+- **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
+- **Empty list handling** — Enter on an empty list item outdents it (if indented) or removes the marker (if top-level)
+- **Indent/Outdent** — `Cmd+]` / `Cmd+[` to indent/outdent list items (supports multi-line selection)
+- **Tab/Shift+Tab** — context-aware: indents/outdents list items when on a list line, navigates table cells when in a table
+- **Toggle List** — cycle the current line through marker candidates (`-`, `*`, `+`, `1.`, `1)`) via toolbar or Tools menu
+- **Move line** — `Alt+Up/Down` moves the current line up or down, auto-renumbering ordered lists
+- **Copy line** — `Shift+Alt+Up/Down` duplicates the line, auto-renumbering ordered lists
+- **Ctrl+Enter** — exit list continuation (insert a plain newline without a marker)
+- **Shift+Enter** — soft break within a list item (trailing double-space + newline for `<br>`)
+- **Ordered list style** — configurable: "ordered" (1. 2. 3.) or "one" (always 1.)
+- **Auto-renumber** — ordered lists are renumbered after indent/outdent and move/copy operations
+- **Smart Backspace** — outdents indented markers, removes top-level markers, strips task checkboxes
+
+### Table Formatting & Operations
+
+**Format Table** (`Ctrl+Shift+Alt+T`) — auto-format the GFM table at the cursor with consistent padding and alignment. **Format All Tables** formats every table in the document. **Format on save** runs automatically when saving.
+
+**Tab navigation** — press `Tab` inside a table to jump to the next cell, `Shift+Tab` for the previous cell. Navigation wraps between rows and skips the separator row.
+
+**Alignment** — column alignment markers (`:---`, `:---:`, `---:`) are detected and preserved during formatting. Set or change alignment via the right-click context menu.
+
+**Table operations** (right-click context menu or Markdown > Table submenu):
+- **Insert Row** above/below cursor
+- **Insert Column** before/after cursor
+- **Delete** current row or column
+- **Move Row** up/down, **Move Column** left/right
+- **Set Alignment** — left, center, right, or none for the current column
 
 ### Table of Contents
 
@@ -110,7 +152,7 @@ Generate and maintain a Table of Contents from your document's headings.
 
 **Create TOC:** Use `Markdown > Create Table of Contents` from the Tools menu, or `Cmd+N` > Markdown > Table of Contents in the editor. The TOC is inserted at the cursor wrapped in `<!-- TOC -->` / `<!-- /TOC -->` markers.
 
-**Update TOC:** Use `Markdown > Update Table of Contents`, or simply save the file — the TOC auto-updates on save (configurable in Settings).
+**Update TOC:** Use `Markdown > Update Table of Contents`, or simply save the file — the TOC auto-updates on save.
 
 **Configuration** (Settings > Languages > Markdown All-in-One):
 
@@ -122,7 +164,7 @@ Generate and maintain a Table of Contents from your document's headings.
 | Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud, Zola |
 | Update on save | `true` | Auto-update TOC when saving |
 
-**Omit headings** from the TOC `using comment` markers:
+**Omit headings** from the TOC using comment markers:
 
 ```markdown
 ## Visible Heading
@@ -142,89 +184,20 @@ Generate and maintain a Table of Contents from your document's headings.
 <!-- omit from toc end -->
 ```
 
-**Multiple TOCs:** You can have multiple TOCs in one document, each with independent settings:
-
-```markdown
-<!-- TOC -->
-- [Markdown All-in-One for PHPStorm](#markdown-all-in-one-for-phpstorm)
-    - [Features](#features)
-        - [Keyboard Shortcuts](#keyboard-shortcuts)
-        - [Selection Wrapping](#selection-wrapping)
-        - [New File Templates](#new-file-templates)
-        - [Generate Menu (Cmd+N / Alt+Insert)](#generate-menu-cmdn--altinsert)
-        - [Table of Contents](#table-of-contents)
-        - [Table Formatting](#table-formatting)
-        - [Live Preview](#live-preview)
-        - [Math & LaTeX](#math--latex)
-        - [Toolbars & Context Menu](#toolbars--context-menu)
-        - [Syntax Highlighting](#syntax-highlighting)
-        - [Auto-Completion](#auto-completion)
-        - [Smart Paste](#smart-paste)
-        - [HTML Export](#html-export)
-        - [Smart List Editing](#smart-list-editing)
-        - [Settings](#settings)
-    - [Installation](#installation)
-        - [Auto-Update (Recommended)](#auto-update-recommended)
-        - [From GitHub Release](#from-github-release)
-        - [From Source](#from-source)
-    - [Development](#development)
-        - [Prerequisites](#prerequisites)
-        - [Quick Start](#quick-start)
-        - [All Commands](#all-commands)
-    - [Contributing](#contributing)
-    - [License](#license)
-<!-- /TOC -->
-
-<!-- TOC name="api" type="ordered" level="2..4" -->
-<!-- /TOC -->
-```
-
-Supported attributes: `name` (unique identifier), `type` (`bullet` or `ordered`), `level` (heading range).
-
-**TOC content ranges:** Scope a named TOC to specific sections of the document:
-
-```markdown
-<!-- toc range name="api" start -->
-## Endpoints
-### GET /users
-### POST /users
-<!-- toc range end -->
-```
-
-A named TOC only includes headings from its matching range. An unnamed `<!-- TOC -->` always includes all document headings.
-
-**Section numbering:** Use `Markdown > Add Section Numbers` / `Remove Section Numbers` to add or strip hierarchical numbering (e.g., `1.1.`, `1.2.`) from headings.
-
-### Table Formatting
-
-Auto-format GFM tables with consistent padding and alignment.
-
-**Format Table:** Use `Markdown > Format Table` (`Ctrl+Shift+Alt+T`) to format the table at the cursor. Use `Markdown > Format All Tables` to format every table in the document.
-
-**Format on save:** Tables are automatically formatted when saving (configurable in Settings > Languages > Markdown All-in-One > Table formatter enabled).
-
-**Tab navigation:** Press `Tab` inside a table to jump to the next cell. `Shift+Tab` jumps to the previous cell. Navigation wraps between rows and skips the separator row.
-
-**Alignment preservation:** Column alignment markers are detected and preserved during formatting:
-
-```markdown
-| Left | Center | Right |
-| :--- | :----: | ----: |
-| text |  text  |  text |
-```
+**Multiple TOCs** with independent settings, **named TOCs** scoped to content ranges, and **section numbering** (`Add/Remove Section Numbers`) are all supported. See the example in the [Table of Contents documentation](docs/003-feature-spec-toc.md).
 
 ### Live Preview
 
-JCEF-based live preview with split editor support — just like the built-in Markdown plugin, but with theming and customization.
+JCEF-based live preview with split editor support.
 
 **Split editor modes:** Click the editor/split/preview toggle in the top-right corner:
 - **Editor** — text editor only
-- **Split** — editor and preview side by side
+- **Split** — editor and preview side by side (default for new files)
 - **Preview** — preview only
 
-**Scroll sync:** In split mode, scrolling the editor automatically scrolls the preview to the matching position, and vice versa. Uses source-line mapping for accurate synchronization. Configurable via Settings > Preview > "Synchronize editor and preview scroll position".
+**Scroll sync:** Bidirectional scroll synchronization between editor and preview using source-line mapping with interpolation for accuracy.
 
-**CSS themes** (Settings > Languages > Markdown All-in-One > Preview):
+**CSS themes** (Settings > Preview):
 
 | Theme             | Description                                              |
 | ----------------- | -------------------------------------------------------- |
@@ -234,128 +207,86 @@ JCEF-based live preview with split editor support — just like the built-in Mar
 | GitLab            | GitLab's markdown style                                  |
 | VSCode            | VSCode's markdown preview style                          |
 
-**Custom CSS:** Set a path to a `.css` file in settings to apply additional style overrides on top of the selected theme.
+**Custom CSS:** Set a path to a `.css` file in settings to apply additional style overrides.
+
+**Preview zoom:** Zoom in/out/reset for comfortable reading.
+
+**Blockquotes with code blocks:** Fenced code blocks, headings, lists, and other block-level elements inside blockquotes render correctly in the preview.
+
+### Syntax Highlighting & Editor Decorations
+
+**Two-layer syntax highlighting:**
+- **Block-level** — headings, code blocks, inline code, blockquotes, list markers, horizontal rules
+- **Inline** — **bold**, *italic*, ~~strikethrough~~, [links](url), ![images](url), $math$
+- Theme-aware — adapts to your IDE color scheme
+
+**Editor decorations** (individually toggleable in Settings):
+- **Code span background** — subtle background tint on inline `` `code` `` (theme-aware)
+- **Strikethrough rendering** — actual line-through text effect on `~~text~~`
+- **Formatting marker dimming** — `**`, `~~`, `*`, `_` markers in muted color
+- **Trailing space indicator** — trailing whitespace highlighted with a soft background
+- **Hard line break indicator** — trailing double-space highlighted with a blue-tinted background
+- **File size limit** — decorations skipped on large files (configurable, default 500K chars)
+
+**Color customization:** All markdown colors are customizable in **Settings > Editor > Color Scheme > Markdown**.
+
+### Structure View, Folding & Navigation
+
+**Structure View** (`Cmd+7` / `Alt+7`) — hierarchical heading outline in the Structure tool window. Click a heading to navigate to it in the editor.
+
+**Go To Symbol** (`Ctrl+Shift+Alt+N`) — search headings across all markdown files in the project.
+
+**Code Folding** — collapsible regions for heading sections, fenced code blocks (with language in placeholder), YAML front matter, and multi-line blockquotes.
+
+**Breadcrumbs** — the editor breadcrumb bar shows the heading hierarchy path at the current cursor position.
+
+### Auto-Completion
+
+Context-aware completions while editing:
+
+| Trigger | Completion |
+| ------- | ---------- |
+| `[text](#` + `Ctrl+Space` | Heading anchor slugs |
+| `[text][` + `Ctrl+Space` | Reference link labels |
+| `[text](` + `Ctrl+Space` | File/image paths (relative to current file) |
+| `![alt](` + `Ctrl+Space` | File/image paths |
+| `\` inside `$...$` | LaTeX commands (170+ symbols, environments) |
 
 ### Math & LaTeX
 
-Write math expressions using standard LaTeX syntax. They render in the preview using the bundled KaTeX library.
+Write math expressions using standard LaTeX syntax, rendered in the preview using the bundled KaTeX library.
 
 - **Inline math:** `$E = mc^2$` renders inline
 - **Display math:** `$$\sum_{i=1}^n x_i$$` renders as a centered block
 - **Toggle shortcut:** `Ctrl+M` cycles: plain text → `$inline$` → `$$display$$` → plain text
-- **Auto-completion:** Type `\` inside a math environment to get LaTeX command completion (170+ commands including Greek letters, operators, relations, arrows, symbols, and environments)
-- **Syntax highlighting:** Math delimiters (`$`, `$$`) and content are highlighted with distinct colors in the editor
-- **Configurable:** Enable/disable via Settings > Math > "Enable math rendering in preview"
-
-> **Note:** KaTeX fonts are loaded from a CDN (jsDelivr) for the preview. Internet access is needed for math to render correctly in the preview panel.
-
-**Zoom:** The preview panel supports zoom in/out/reset for comfortable reading.
-
-### Toolbars & Context Menu
-
-**Floating toolbar:** Select text to see a popup toolbar with quick formatting buttons (Bold, Italic, Strikethrough, Code, Heading Up/Down, Insert Link, Insert Image).
-
-**Editor toolbar:** A persistent toolbar at the top of markdown editors provides one-click access to formatting (B, I, S, Code), links & images, headings, lists, blockquotes, and power tools (Table, TOC, Settings).
-
-**Right-click context menu:** Right-click in a markdown file to see the **Markdown** submenu with context-aware actions:
-- Formatting actions appear when text is selected
-- Table formatting appears when the cursor is inside a table
-- TOC update appears when a TOC block exists in the document
-
-### Syntax Highlighting
-- Headings, code blocks, inline code, blockquotes, list markers, horizontal rules
-- Inline formatting: **bold**, *italic*, ~~strikethrough~~
-- Links and images with distinct colors for text and URL
-- Theme-aware — adapts to your IDE color scheme
-
-### Auto-Completion
-
-Context-aware completions while editing markdown:
-
-- **Heading references** — type `[text](#` to see all document headings with their anchor slugs
-- **Reference link labels** — type `[text][` to see all `[label]: url` definitions in the document
-- **File/image paths** — type `[text](` or `![alt](` to browse files relative to the current document; supports directory navigation
-
-1. Type `[link text](` — after the `(`, start typing a path and press `Ctrl+Space` to trigger completion
-2. Type `![alt text](` — same for images
-
-The completion provider checks if the text before the cursor matches the pattern `[...](` or `![...](`, then lists files relative to the current document's directory.
-
-- `[text](#` + `Ctrl+Space` → heading slugs
-- `[text][` + `Ctrl+Space` → reference labels
-- `[text](` + `Ctrl+Space` → file paths
-- `![alt](` + `Ctrl+Space` → file paths (images)
-
-### Smart Paste
-
-Paste a URL while text is selected to automatically create a markdown link:
-
-- **Regular URL** — `[selected text](https://example.com)`
-- **Image URL** (`.png`, `.jpg`, `.gif`, `.svg`, etc.) — `![selected text](https://example.com/photo.png)`
-
-Configurable via Settings > Languages > Markdown All-in-One > Smart paste enabled.
+- **Auto-completion:** Type `\` inside a math environment for LaTeX command completion
+- **Syntax highlighting:** Math delimiters and content highlighted with distinct colors
 
 ### HTML Export
 
 Export markdown files to styled, standalone HTML documents.
 
-**Export current file:** Use `Markdown > Export to HTML` from the Tools menu or the toolbar's tools popup (`...`). A file save dialog lets you choose the output location.
-
-**Batch export:** Use `Markdown > Batch Export to HTML` to export all markdown files in a folder (with recursive subdirectory support) to a chosen output directory.
-
-**Features:**
+**Export current file:** `Markdown > Export to HTML` or the toolbar's tools popup. **Batch export:** `Markdown > Batch Export to HTML` for entire folders.
 
 | Feature | Description |
 | ------- | ----------- |
 | Styled output | Exported HTML includes the selected preview theme CSS |
-| Custom CSS | Any custom CSS overrides from settings are applied |
-| Image path resolution | Relative image paths are resolved to absolute `file://` paths |
-| Base64 image embed | Optionally embed local images as base64 for self-contained HTML |
-| Link validation | Warns about broken anchor links, missing file references, undefined labels |
-| Document title | HTML `<title>` from `<!-- title: ... -->` comment, first heading, or filename |
-| Auto-export on save | Automatically generate `.html` alongside `.md` when saving (configurable) |
-| `.md` → `.html` links | Internal markdown links rewritten to `.html` in exported output |
-| Pure HTML mode | Export without any CSS stylesheets — just the raw HTML body |
+| Custom CSS | Custom CSS overrides from settings are applied |
+| Image resolution | Relative image paths resolved to absolute `file://` paths |
+| Base64 embed | Optionally embed local images as base64 for self-contained HTML |
+| Link validation | Warns about broken anchors, file links, and undefined references |
+| Document title | From `<!-- title: ... -->` comment, first heading, or filename |
+| Auto-export | Automatically generate `.html` alongside `.md` on save |
+| Link conversion | Internal `.md` links rewritten to `.html` in exported output |
+| Pure HTML mode | Export without any CSS stylesheets |
 
-### Structure View & Code Folding
+### New File Templates & Generate Menu
 
-**Structure View:** Open the Structure tool window (`Cmd+7` / `Alt+7`) to see a hierarchical outline of all headings in the document. Headings are nested according to their levels, with icons distinguishing H1-H2, H3-H4, and H5-H6.
+**New > Markdown File** — right-click a directory to create from a template:
+- Blank, README, Document, Meeting Notes, Changelog, API Documentation
 
-**Go To Symbol:** Use `Ctrl+Shift+Alt+N` to search headings across all markdown files in the project.
-
-**Code Folding:** Collapsible regions for:
-- **Heading sections** — fold from after the heading line to the next heading of the same or higher level
-- **Fenced code blocks** — fold with the language name in the placeholder (e.g., ```` ```kotlin... ````)
-- **YAML front matter** — fold between `---` markers
-- **Blockquotes** — fold multi-line blockquote blocks
-
-**Breadcrumbs:** The editor breadcrumb bar shows the heading hierarchy path at the current cursor position.
-
-### Editor Decorations
-
-Visual enhancements in the editor (not just the preview) for a richer editing experience. All decorations are individually toggleable in Settings.
-
-- **Code span background** — inline `` `code` `` gets a subtle background tint (theme-aware: light gray in light themes, dark gray in dark themes)
-- **Strikethrough rendering** — `~~text~~` shows an actual line-through text effect in the editor
-- **Formatting marker dimming** — `**`, `~~`, `*`, `_` markers are rendered in a muted color so the content stands out
-- **Trailing space indicator** — trailing whitespace is highlighted with a soft background color
-- **Hard line break indicator** — trailing double-space (which renders as `<br>`) gets a distinct blue-tinted background
-- **File size limit** — decorations are automatically skipped on large files (configurable threshold, default 500K chars)
-
-**Color customization:** All markdown colors are customizable in **Settings > Editor > Color Scheme > Markdown**.
-
-### Smart List Editing
-- **Smart Enter** — auto-continue unordered lists (`-`, `+`, `*`), ordered lists (auto-increments number), task lists (resets to `[ ]`), and blockquotes (`> `)
-- **Empty list handling** — Enter on an empty list item outdents it (if indented) or removes the marker (if top-level)
-- **Indent/Outdent** — `Cmd+]` / `Cmd+[` to indent/outdent list items (supports multi-line selection)
-- **Tab/Shift+Tab** — context-aware: indents/outdents list items, navigates table cells
-- **Toggle List** — cycle the current line through marker candidates (`-`, `*`, `+`, `1.`, `1)`) via the Tools menu
-- **Move line** — `Alt+Up/Down` moves the current line up or down, auto-renumbering ordered lists
-- **Copy line** — `Shift+Alt+Up/Down` duplicates the line up or down, auto-renumbering ordered lists
-- **Ctrl+Enter** — exit list continuation (insert a plain newline without a marker)
-- **Shift+Enter** — soft break within a list item (inserts trailing spaces + newline for `<br>`)
-- **Ordered list style** — configurable: "ordered" (1. 2. 3.) or "one" (always 1.)
-- **Smart Backspace** — outdents indented markers, removes top-level markers, strips task checkboxes
+**Generate menu** (`Cmd+N` / `Alt+Insert` in editor):
+- Table, Code Block, Image, Footnote, Link Reference, Front Matter, Table of Contents
 
 ### Settings
 
@@ -372,13 +303,14 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Table of Contents | Heading levels                      | `1..6`            |
 | Table of Contents | Update on save                      | On                |
 | Table of Contents | Ordered list                        | Off               |
-| Table of Contents | Unordered list marker (`-`/`*`/`+`) | `-`               |
+| Table of Contents | Unordered list marker               | `-`               |
 | Table of Contents | Slug generation mode                | github            |
 | Table Formatting  | Enable auto-formatting              | On                |
 | Table Formatting  | Format on save                      | On                |
 | Preview           | Render theme                        | Auto (follow IDE) |
 | Preview           | Custom CSS path                     | (empty)           |
 | Preview           | Scroll sync                         | On                |
+| Preview           | Auto-show preview on open           | On                |
 | Toolbar           | Show editor toolbar                 | On                |
 | Completion        | Auto-popup completion               | On                |
 | Smart Paste       | Auto-create links from URLs         | On                |
@@ -389,7 +321,6 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Decorations       | Trailing space indicator            | On                |
 | Decorations       | Hard line break indicator           | On                |
 | Decorations       | File size limit (chars)             | 500000            |
-| Preview           | Auto-show preview on open           | On                |
 | Export            | Embed images as base64              | Off               |
 | Export            | Validate links on export            | On                |
 | Export            | Auto-export HTML on save            | Off               |
@@ -428,4 +359,3 @@ Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for dev
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
-
