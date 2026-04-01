@@ -130,7 +130,7 @@ class MarkdownSettingsConfigurable : Configurable {
                 row {
                     checkBox("Auto-show preview when opening markdown files")
                         .bindSelected(state::autoShowPreview)
-                        .comment("Automatically open split preview mode when a markdown file is opened")
+                        .comment("Default to split preview mode for files opened for the first time. PHPStorm remembers your per-file layout choice after that.")
                 }
             }
 
