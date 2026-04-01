@@ -287,6 +287,25 @@
 
             <separator/>
 
+            <!-- Link & Image insertion -->
+            <action id="com.tribus.markdown.actions.InsertLink"
+                    class="com.tribus.markdown.actions.InsertLinkAction"
+                    text="Insert Link"
+                    icon="/icons/toolbar-link.svg"
+                    description="Insert a markdown link with a dialog">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl K"/>
+            </action>
+
+            <action id="com.tribus.markdown.actions.InsertImage"
+                    class="com.tribus.markdown.actions.InsertImageAction"
+                    text="Insert Image"
+                    icon="/icons/toolbar-image.svg"
+                    description="Insert a markdown image with a dialog">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift K"/>
+            </action>
+
+            <separator/>
+
             <!-- Blockquote -->
             <action id="com.tribus.markdown.actions.ToggleBlockquote"
                     class="com.tribus.markdown.actions.ToggleBlockquoteAction"

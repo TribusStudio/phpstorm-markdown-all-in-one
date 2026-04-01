@@ -38,6 +38,11 @@ class MarkdownContextMenuGroup : ActionGroup("Markdown", true) {
             actions.add(Separator.getInstance())
         }
 
+        // Link & image insertion (always available)
+        actions.add(actionManager.getAction("com.tribus.markdown.actions.InsertLink"))
+        actions.add(actionManager.getAction("com.tribus.markdown.actions.InsertImage"))
+        actions.add(Separator.getInstance())
+
         // Heading actions (always available)
         actions.add(actionManager.getAction("com.tribus.markdown.actions.HeadingUp"))
         actions.add(actionManager.getAction("com.tribus.markdown.actions.HeadingDown"))

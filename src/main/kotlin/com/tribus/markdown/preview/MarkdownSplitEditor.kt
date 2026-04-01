@@ -211,7 +211,13 @@ class ToolbarTextEditor(
 
         leftGroup.addSeparator()
 
-        // Group 2: Structure (headings)
+        // Group 2: Links & images
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.InsertLink")
+        addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.InsertImage")
+
+        leftGroup.addSeparator()
+
+        // Group 3: Structure (headings)
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.HeadingUp")
         addRegisteredAction(leftGroup, actionManager, "com.tribus.markdown.actions.HeadingDown")
 

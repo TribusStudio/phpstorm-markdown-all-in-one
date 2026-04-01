@@ -62,6 +62,8 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 | `Cmd/Ctrl+[`              | Outdent list item                 |
 | `Alt+C`                   | Toggle task list checkbox         |
 | `Ctrl+M`                  | Toggle math (`$...$` / `$$...$$`) |
+| `Ctrl+K`                  | Insert link (dialog)              |
+| `Ctrl+Shift+K`            | Insert image (dialog)             |
 
 ### Selection Wrapping
 
@@ -251,9 +253,9 @@ Write math expressions using standard LaTeX syntax. They render in the preview u
 
 ### Toolbars & Context Menu
 
-**Floating toolbar:** Select text to see a Notion-style popup toolbar with quick formatting buttons (Bold, Italic, Strikethrough, Code, Heading Up/Down, Task Toggle).
+**Floating toolbar:** Select text to see a popup toolbar with quick formatting buttons (Bold, Italic, Strikethrough, Code, Heading Up/Down, Insert Link, Insert Image).
 
-**Editor toolbar:** A persistent toolbar at the top of markdown editors provides one-click access to formatting (B, I, S, Code, H+, H-), power tools (Table, TOC), and Settings.
+**Editor toolbar:** A persistent toolbar at the top of markdown editors provides one-click access to formatting (B, I, S, Code), links & images, headings, lists, blockquotes, and power tools (Table, TOC, Settings).
 
 **Right-click context menu:** Right-click in a markdown file to see the **Markdown** submenu with context-aware actions:
 - Formatting actions appear when text is selected

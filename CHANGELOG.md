@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.1] - 2026-04-01
+
+### Fixed
+- **Floating selection toolbar** — rewrote using platform `ActionToolbar` inside a `JBPopup` with a 200ms debounce timer. The previous custom `JButton` approach was not rendering reliably. Now shows consistently when text is selected with proper IDE styling
+
+### Added
+- **Insert Link action** (`Ctrl+K`) — opens a dialog with Text, URL, and optional Title fields. Pre-fills selected text as the link text. Inserts `[text](url)` or `[text](url "title")`
+- **Insert Image action** (`Ctrl+Shift+K`) — opens a dialog with Alt Text, Image Path/URL, and optional Title fields. Pre-fills selected text as alt text. Inserts `![alt](src)` or `![alt](src "title")`
+- **Link and image toolbar icons** — chain link icon and landscape/photo icon with dark theme variants
+- **Link and image buttons** — added to the editor toolbar, floating selection toolbar, and right-click context menu
+
 ## [0.21.0] - 2026-04-01
 
 ### Added

@@ -305,6 +305,15 @@ Final marketing assets and JetBrains Marketplace submission. Only after the plug
 - [ ] Final peer review and community feedback round
 - [ ] JetBrains Marketplace submission
 
+## Phase 23: Addendums & UX Polish ✅
+Fixes and additions identified during real-world usage.
+
+- [x] Fix floating selection toolbar — rewrote using platform `ActionToolbar` + `JBPopup` with debounce timer for reliable display
+- [x] Insert Link action (`Ctrl+K`) — dialog with text, URL, and optional title fields; pre-fills selected text
+- [x] Insert Image action (`Ctrl+Shift+K`) — dialog with alt text, image path/URL, and optional title fields
+- [x] Link and image toolbar icons (chain link + landscape) with dark variants
+- [x] Link and image buttons in editor toolbar, floating toolbar, and right-click context menu
+
 ## Future Considerations
 - Custom markdown-it extensions integration
 - Multi-language support (i18n beyond English)
