@@ -7,24 +7,25 @@ import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.SelectionEvent
 import com.intellij.openapi.editor.event.SelectionListener
+import com.intellij.util.ui.JBUI
+import java.awt.BorderLayout
+import java.awt.FlowLayout
 import java.awt.Point
 import javax.swing.JComponent
-import javax.swing.JLayeredPane
+import javax.swing.JPanel
 import javax.swing.SwingUtilities
 import javax.swing.Timer
 
 /**
  * A floating toolbar that appears above text selections in the markdown editor.
  *
- * Instead of using JBPopup (which conflicts with IntelliJ's intention/lightbulb
- * system), this adds the toolbar directly to the editor's parent JLayeredPane
- * as an overlay. This avoids popup conflicts and provides reliable positioning.
- *
- * Uses a debounce timer to avoid flicker from rapid selection changes.
+ * Adds the toolbar as a child of the editor's scroll pane, positioned
+ * absolutely over the editor content. This avoids conflicts with IntelliJ's
+ * popup/hint/intention systems which dismiss JBPopup instances.
  */
 class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretListener {
 
-    private var toolbarComponent: JComponent? = null
+    private var overlayPanel: JPanel? = null
     private var showTimer: Timer? = null
 
     override fun selectionChanged(e: SelectionEvent) {
@@ -58,7 +59,8 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
 
         if (!editor.selectionModel.hasSelection() || editor.isDisposed) return
 
-        val layeredPane = findLayeredPane() ?: return
+        val editorComponent = editor.contentComponent
+        val scrollPane = editor.scrollingModel.visibleArea
 
         val actionManager = ActionManager.getInstance()
         val group = DefaultActionGroup()
@@ -75,59 +77,55 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
         addAction(group, actionManager, "com.tribus.markdown.actions.InsertImage")
 
         val toolbar = actionManager.createActionToolbar("MarkdownFloatingToolbar", group, true)
-        toolbar.targetComponent = editor.contentComponent
-        val component = toolbar.component
+        toolbar.targetComponent = editorComponent
+        val toolbarComponent = toolbar.component
 
-        // Measure the toolbar's preferred size
-        val prefSize = component.preferredSize
+        // Wrap in a panel with a visible border and background
+        val wrapper = JPanel(FlowLayout(FlowLayout.CENTER, 0, 0))
+        wrapper.isOpaque = true
+        wrapper.border = JBUI.Borders.customLine(JBUI.CurrentTheme.Editor.BORDER_COLOR, 1)
+        wrapper.add(toolbarComponent)
 
-        // Position above the selection start, converted to layered pane coordinates
+        // Calculate position: above the selection start
         val selectionStart = editor.selectionModel.selectionStart
         val visualPos = editor.offsetToVisualPosition(selectionStart)
         val editorPoint = editor.visualPositionToXY(visualPos)
 
-        val editorComponent = editor.contentComponent
-        val pointInLayered = SwingUtilities.convertPoint(editorComponent, editorPoint, layeredPane)
+        val prefSize = wrapper.preferredSize
 
-        var x = pointInLayered.x
-        var y = pointInLayered.y - prefSize.height - 4
+        // Position in editor coordinate space (relative to content component)
+        var x = editorPoint.x
+        var y = editorPoint.y - prefSize.height - 6
 
-        // Keep within bounds
-        if (y < 0) {
-            y = pointInLayered.y + editor.lineHeight + 4
+        // If above would be out of the visible area, show below
+        if (y < scrollPane.y) {
+            y = editorPoint.y + editor.lineHeight + 6
         }
-        if (x + prefSize.width > layeredPane.width) {
-            x = layeredPane.width - prefSize.width
-        }
-        x = x.coerceAtLeast(0)
 
-        component.setBounds(x, y, prefSize.width, prefSize.height)
-        layeredPane.add(component, JLayeredPane.POPUP_LAYER)
-        layeredPane.revalidate()
-        layeredPane.repaint()
+        // Clamp to visible area
+        x = x.coerceIn(scrollPane.x, (scrollPane.x + scrollPane.width - prefSize.width).coerceAtLeast(scrollPane.x))
 
-        toolbarComponent = component
+        wrapper.setBounds(x, y, prefSize.width, prefSize.height)
+
+        // Add directly to the editor content component's parent (the JViewport/scroll pane)
+        // Using the content component itself as the container with null layout overlay
+        editorComponent.add(wrapper)
+        editorComponent.revalidate()
+        editorComponent.repaint()
+
+        overlayPanel = wrapper
     }
 
     fun hideToolbar() {
         showTimer?.stop()
-        val component = toolbarComponent ?: return
-        val parent = component.parent
+        val panel = overlayPanel ?: return
+        val parent = panel.parent
         if (parent != null) {
-            parent.remove(component)
+            parent.remove(panel)
             parent.revalidate()
             parent.repaint()
         }
-        toolbarComponent = null
-    }
-
-    private fun findLayeredPane(): JLayeredPane? {
-        var comp: java.awt.Component? = editor.contentComponent
-        while (comp != null) {
-            if (comp is JLayeredPane) return comp
-            comp = comp.parent
-        }
-        return null
+        overlayPanel = null
     }
 
     private fun addAction(group: DefaultActionGroup, actionManager: ActionManager, actionId: String) {
