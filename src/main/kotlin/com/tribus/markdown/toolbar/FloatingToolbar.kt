@@ -18,11 +18,10 @@ import javax.swing.Timer
 /**
  * A floating toolbar that appears above text selections in the markdown editor.
  *
- * Uses JBPopup with a longer debounce (500ms) to avoid conflicting with
- * IntelliJ's intention lightbulb system, which appears ~300ms after caret
- * movement. The popup uses setCancelOnClickOutside(false) so it doesn't
- * get dismissed by the lightbulb's appearance; instead, it's dismissed
- * explicitly when the selection clears.
+ * Uses JBPopup with a 200ms debounce — fast enough to feel responsive,
+ * slow enough to skip transient selection states. The popup uses
+ * setCancelOnClickOutside(false) so it coexists with IntelliJ's
+ * intention lightbulb; dismissed explicitly when the selection clears.
  */
 class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretListener {
 
@@ -37,8 +36,9 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
             return
         }
 
-        // 500ms debounce — longer than the intention lightbulb (~300ms)
-        showTimer = Timer(500) {
+        // 200ms debounce — fast enough to feel responsive, slow enough to
+        // skip transient states (mid-drag, shift+arrow expansion)
+        showTimer = Timer(200) {
             SwingUtilities.invokeLater {
                 if (editor.selectionModel.hasSelection() && !editor.isDisposed) {
                     showToolbar()
