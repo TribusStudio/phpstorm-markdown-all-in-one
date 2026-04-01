@@ -29,6 +29,10 @@ import javax.swing.KeyStroke
  */
 class MarkdownFileEditorListener : EditorFactoryListener {
 
+    init {
+        LOG.info("MarkdownFileEditorListener instantiated")
+    }
+
     override fun editorCreated(event: EditorFactoryEvent) {
         val editor = event.editor
         val document = editor.document

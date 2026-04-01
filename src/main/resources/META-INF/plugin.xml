@@ -32,16 +32,9 @@
 
     <depends>com.intellij.modules.platform</depends>
 
-    <!-- Register shortcuts on editor component for markdown files.
-         EditorFactoryListener fires at editor creation time for reliable timing.
-         Component-level shortcuts always override global keymap shortcuts,
-         guaranteeing our actions fire instead of IDE builtins like GotoDeclaration. -->
-    <applicationListeners>
-        <listener class="com.tribus.markdown.editor.MarkdownFileEditorListener"
-                  topic="com.intellij.openapi.editor.event.EditorFactoryListener"/>
-    </applicationListeners>
-
     <extensions defaultExtensionNs="com.intellij">
+        <!-- Register shortcuts and floating toolbar on editor creation -->
+        <editorFactoryListener implementation="com.tribus.markdown.editor.MarkdownFileEditorListener"/>
         <!-- File type and language support -->
         <fileType name="MarkdownAIO"
                   implementationClass="com.tribus.markdown.lang.MarkdownFileType"
