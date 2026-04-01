@@ -10,6 +10,8 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.event.CaretEvent
+import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.SelectionEvent
 import com.intellij.openapi.editor.event.SelectionListener
 import com.intellij.openapi.ui.popup.JBPopup
@@ -27,7 +29,7 @@ import javax.swing.Timer
  * Uses a debounce timer to avoid flicker from rapid selection changes
  * (e.g., double-click word select, shift+arrow expansion).
  */
-class FloatingToolbar(private val editor: Editor) : SelectionListener {
+class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretListener {
 
     private var popup: JBPopup? = null
     private var showTimer: Timer? = null
@@ -50,6 +52,13 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener {
         }.apply {
             isRepeats = false
             start()
+        }
+    }
+
+    override fun caretPositionChanged(e: CaretEvent) {
+        // Dismiss when caret moves without selection (user clicked elsewhere)
+        if (!editor.selectionModel.hasSelection()) {
+            hideToolbar()
         }
     }
 
@@ -84,7 +93,7 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener {
             .setResizable(false)
             .setMovable(false)
             .setShowBorder(true)
-            .setCancelOnClickOutside(true)
+            .setCancelOnClickOutside(false)  // We dismiss via selectionChanged when selection clears
             .setCancelOnOtherWindowOpen(true)
             .setCancelOnWindowDeactivation(true)
             .setCancelKeyEnabled(true)

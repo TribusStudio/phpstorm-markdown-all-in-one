@@ -57,6 +57,7 @@ class MarkdownFileEditorListener : EditorFactoryListener {
         // Register floating toolbar for text selections
         val floatingToolbar = FloatingToolbar(editor)
         editor.selectionModel.addSelectionListener(floatingToolbar)
+        editor.caretModel.addCaretListener(floatingToolbar)
     }
 
     companion object {
