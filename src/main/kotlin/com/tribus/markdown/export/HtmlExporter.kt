@@ -23,7 +23,9 @@ object HtmlExporter {
         val customCssPath: String = "",
         val resolveImages: Boolean = true,
         val embedImages: Boolean = false,
-        val validateLinks: Boolean = true
+        val validateLinks: Boolean = true,
+        val convertMdLinks: Boolean = true,
+        val pureCss: Boolean = false
     )
 
     /**
@@ -52,9 +54,14 @@ object HtmlExporter {
             warnings.addAll(validateLinks(bodyHtml, baseDir, markdown))
         }
 
+        // Convert .md links to .html in exported output
+        if (options.convertMdLinks) {
+            bodyHtml = convertMdLinksToHtml(bodyHtml)
+        }
+
         // Build styled document
-        val themeCss = loadThemeCss(options.theme)
-        val customCss = PreviewTheme.loadCustomCss(options.customCssPath)
+        val themeCss = if (options.pureCss) "" else loadThemeCss(options.theme)
+        val customCss = if (options.pureCss) "" else PreviewTheme.loadCustomCss(options.customCssPath)
         val title = extractTitle(markdown, markdownFile.nameWithoutExtension)
         val fullHtml = wrapInExportDocument(bodyHtml, themeCss, customCss, title)
 
@@ -178,11 +185,17 @@ object HtmlExporter {
      * Extract document title from first heading or filename.
      */
     fun extractTitle(markdown: String, fallback: String): String {
+        // Priority 1: <!-- title: Your Title --> comment
+        val titleComment = Regex("<!--\\s*title:\\s*(.+?)\\s*-->").find(markdown)
+        if (titleComment != null) {
+            return titleComment.groupValues[1].trim()
+        }
+        // Priority 2: First ATX heading
         val headingMatch = Regex("^#{1,6}\\s+(.+)$", RegexOption.MULTILINE).find(markdown)
         if (headingMatch != null) {
             return headingMatch.groupValues[1].replace(Regex("\\s+#+\\s*$"), "").trim()
         }
-        // Check for setext heading
+        // Priority 3: Setext heading
         val lines = markdown.lines()
         for (i in 0 until lines.size - 1) {
             if (lines[i].isNotBlank() && lines[i + 1].trim().matches(Regex("^[=]+$"))) {
@@ -212,10 +225,30 @@ object HtmlExporter {
                 theme = theme,
                 customCssPath = state.previewCustomCssPath,
                 embedImages = state.exportEmbedImages,
-                validateLinks = state.exportValidateLinks
+                validateLinks = state.exportValidateLinks,
+                convertMdLinks = state.exportConvertMdLinks,
+                pureCss = state.exportPureCss
             )
         } catch (_: Exception) {
             ExportOptions()
+        }
+    }
+
+    /**
+     * Rewrite internal .md links to .html in exported HTML output.
+     * Preserves anchor fragments: file.md#heading → file.html#heading
+     */
+    fun convertMdLinksToHtml(html: String): String {
+        return html.replace(Regex("""<a\s+href="([^"]+\.md)(#[^"]*)?"""")) { match ->
+            val path = match.groupValues[1]
+            // Skip external URLs
+            if (path.startsWith("http://") || path.startsWith("https://")) {
+                match.value
+            } else {
+                val htmlPath = path.replaceAfterLast('.', "html")
+                val anchor = match.groupValues[2]
+                """<a href="$htmlPath$anchor""""
+            }
         }
     }
 

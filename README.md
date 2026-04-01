@@ -116,7 +116,7 @@ Generate and maintain a Table of Contents from your document's headings.
 | Heading levels | `1..6` | Range of heading levels to include (e.g., `2..4`) |
 | Ordered list | `false` | Use numbered list instead of bullets |
 | List marker | `-` | Unordered list marker (`-`, `*`, `+`) |
-| Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud |
+| Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud, Zola |
 | Update on save | `true` | Auto-update TOC when saving |
 
 **Omit headings** from the TOC `using comment` markers:
@@ -309,7 +309,10 @@ Export markdown files to styled, standalone HTML documents.
 | Image path resolution | Relative image paths are resolved to absolute `file://` paths |
 | Base64 image embed | Optionally embed local images as base64 for self-contained HTML |
 | Link validation | Warns about broken anchor links, missing file references, undefined labels |
-| Document title | HTML `<title>` extracted from first heading, falls back to filename |
+| Document title | HTML `<title>` from `<!-- title: ... -->` comment, first heading, or filename |
+| Auto-export on save | Automatically generate `.html` alongside `.md` when saving (configurable) |
+| `.md` → `.html` links | Internal markdown links rewritten to `.html` in exported output |
+| Pure HTML mode | Export without any CSS stylesheets — just the raw HTML body |
 
 ### Structure View & Code Folding
 
@@ -383,8 +386,12 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 | Decorations       | Trailing space indicator            | On                |
 | Decorations       | Hard line break indicator           | On                |
 | Decorations       | File size limit (chars)             | 500000            |
+| Preview           | Auto-show preview on open           | On                |
 | Export            | Embed images as base64              | Off               |
 | Export            | Validate links on export            | On                |
+| Export            | Auto-export HTML on save            | Off               |
+| Export            | Convert .md links to .html          | On                |
+| Export            | Pure HTML export (no CSS)           | Off               |
 
 ## Installation
 

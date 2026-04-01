@@ -71,6 +71,12 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
         // Export
         var exportEmbedImages: Boolean = false,
         var exportValidateLinks: Boolean = true,
+        var exportOnSave: Boolean = false,
+        var exportPureCss: Boolean = false,
+        var exportConvertMdLinks: Boolean = true,
+
+        // Preview
+        var autoShowPreview: Boolean = true,
     )
 
     private var state = State()

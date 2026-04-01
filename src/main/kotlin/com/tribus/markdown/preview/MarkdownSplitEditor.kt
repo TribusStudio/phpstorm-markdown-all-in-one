@@ -45,7 +45,9 @@ class MarkdownSplitEditor(
     ToolbarTextEditor(editor, project),
     preview,
     "Markdown Editor",
-    Layout.SHOW_EDITOR_AND_PREVIEW
+    if (try { MarkdownSettings.getInstance().state.autoShowPreview } catch (_: Exception) { true })
+        Layout.SHOW_EDITOR_AND_PREVIEW
+    else Layout.SHOW_EDITOR
 ) {
 
     private val wrappedEditor = textEditor as ToolbarTextEditor

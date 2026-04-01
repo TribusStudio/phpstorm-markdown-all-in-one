@@ -487,6 +487,7 @@ object TocGenerator {
             "gitea" -> Slugify.Mode.GITEA
             "azure_devops", "azuredevops", "azure" -> Slugify.Mode.AZURE_DEVOPS
             "bitbucket", "bitbucket_cloud" -> Slugify.Mode.BITBUCKET_CLOUD
+            "zola" -> Slugify.Mode.ZOLA
             else -> Slugify.Mode.GITHUB
         }
     }

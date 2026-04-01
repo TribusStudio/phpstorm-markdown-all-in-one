@@ -83,7 +83,7 @@ class MarkdownSettingsConfigurable : Configurable {
                         )
                 }
                 row("Slug generation mode:") {
-                    comboBox(listOf("github", "gitlab", "azure-devops", "bitbucket", "gitea"))
+                    comboBox(listOf("github", "gitlab", "azure-devops", "bitbucket", "gitea", "zola"))
                         .bindItem(
                             { state.tocSlugifyMode },
                             { state.tocSlugifyMode = it ?: "github" }
@@ -126,6 +126,11 @@ class MarkdownSettingsConfigurable : Configurable {
                     checkBox("Synchronize editor and preview scroll position")
                         .bindSelected(state::scrollSyncEnabled)
                         .comment("Scrolling the editor or preview keeps both panels aligned")
+                }
+                row {
+                    checkBox("Auto-show preview when opening markdown files")
+                        .bindSelected(state::autoShowPreview)
+                        .comment("Automatically open split preview mode when a markdown file is opened")
                 }
             }
 
@@ -203,6 +208,21 @@ class MarkdownSettingsConfigurable : Configurable {
                     checkBox("Validate links on export")
                         .bindSelected(state::exportValidateLinks)
                         .comment("Warn about broken anchors, file links, and reference definitions")
+                }
+                row {
+                    checkBox("Auto-export HTML on save")
+                        .bindSelected(state::exportOnSave)
+                        .comment("Automatically generate an .html file alongside the .md file when saving")
+                }
+                row {
+                    checkBox("Convert .md links to .html in export")
+                        .bindSelected(state::exportConvertMdLinks)
+                        .comment("Rewrite internal [text](file.md) links to [text](file.html) in exported HTML")
+                }
+                row {
+                    checkBox("Pure HTML export (no CSS)")
+                        .bindSelected(state::exportPureCss)
+                        .comment("Export without any theme CSS stylesheets — just the raw HTML body")
                 }
             }
         }

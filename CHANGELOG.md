@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-04-01
+
+### Added
+- **Auto-export HTML on save** — new `exportOnSave` setting automatically generates an `.html` file alongside the `.md` file when saving. Disabled by default
+- **HTML title from comment** — `<!-- title: Your Title -->` sets the `<title>` in exported HTML, taking priority over heading extraction
+- **`.md` → `.html` link conversion in export** — internal markdown links (`[text](file.md)`) are rewritten to point to `.html` files in exported output, preserving anchor fragments
+- **Pure HTML export mode** — new `exportPureCss` setting exports without any theme CSS stylesheets — just the raw HTML body
+- **Auto-show preview on file open** — new `autoShowPreview` setting controls whether the split editor starts in split mode (default) or editor-only mode
+- **Zola slug mode** — new slugify mode for the Zola static site generator: alphanumeric + hyphens + underscores, collapsed hyphens, trimmed edges. Available in TOC settings
+
 ## [0.19.4] - 2026-03-31
 
 ### Fixed

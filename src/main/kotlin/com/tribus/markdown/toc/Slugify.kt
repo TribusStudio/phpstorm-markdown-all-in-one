@@ -11,7 +11,8 @@ object Slugify {
         GITLAB,
         GITEA,
         AZURE_DEVOPS,
-        BITBUCKET_CLOUD
+        BITBUCKET_CLOUD,
+        ZOLA
     }
 
     // GitHub: keeps letters, marks, decimal digits, letter numbers, connector punctuation, hyphens, spaces
@@ -26,6 +27,7 @@ object Slugify {
             Mode.GITEA -> slugifyGitea(plainText)
             Mode.AZURE_DEVOPS -> slugifyAzureDevOps(plainText)
             Mode.BITBUCKET_CLOUD -> slugifyBitbucketCloud(plainText)
+            Mode.ZOLA -> slugifyZola(plainText)
         }
     }
 
@@ -75,6 +77,25 @@ object Slugify {
             return sb.toString()
         }
         return slug
+    }
+
+    /**
+     * Zola static site generator slug rules:
+     * - Lowercase, trim whitespace
+     * - Replace whitespace with hyphens
+     * - Remove anything that isn't alphanumeric, hyphen, or underscore
+     * - Collapse multiple hyphens
+     * - Trim leading/trailing hyphens
+     */
+    private fun slugifyZola(text: String): String {
+        return text
+            .trim()
+            .lowercase()
+            .replace(Regex("\\s+"), "-")
+            .replace(Regex("[^a-z0-9\\-_]"), "")
+            .replace(Regex("-{2,}"), "-")
+            .trimStart('-')
+            .trimEnd('-')
     }
 
     private fun slugifyBitbucketCloud(text: String): String {

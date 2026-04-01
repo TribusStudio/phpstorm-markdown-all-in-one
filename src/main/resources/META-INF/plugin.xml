@@ -86,6 +86,10 @@
         <fileDocumentManagerListener
                 implementation="com.tribus.markdown.table.TableFormatOnSaveListener"/>
 
+        <!-- Auto-export HTML on save -->
+        <fileDocumentManagerListener
+                implementation="com.tribus.markdown.export.ExportOnSaveListener"/>
+
         <!-- Completion providers -->
         <completion.contributor language="MarkdownAIO"
                                 implementationClass="com.tribus.markdown.completion.MarkdownCompletionContributor"

@@ -191,18 +191,18 @@ Visual decorations in the editor (not just preview) for richer editing experienc
 - [x] Decoration file size limit setting — skip decorations on files larger than configurable threshold
 - [x] Tests for decoration colors, patterns, and TextAttributesKey definitions
 
-## Phase 13: Export & Preview Polish ← NEXT
+## Phase 13: Export & Preview Polish ✅
 Minor export improvements and preview conveniences.
 
-- [ ] Auto-export on save — `exportOnSave` setting to automatically generate HTML when saving `.md` files
-- [ ] HTML title from comment — `<!-- title: Your Title -->` sets `<title>` in exported HTML
-- [ ] `.md` → `.html` link conversion in export — internal markdown links rewritten for HTML output
-- [ ] Pure HTML export mode — export without any CSS stylesheets
-- [ ] Auto-show preview on file open — `autoShowPreview` setting to open split preview automatically
-- [ ] Zola slug mode — additional slugify mode for Zola static site generator
-- [ ] Tests for new export features and slug mode
+- [x] Auto-export on save — `exportOnSave` setting with `FileDocumentManagerListener` to generate HTML alongside `.md` on save
+- [x] HTML title from comment — `<!-- title: Your Title -->` sets `<title>` in exported HTML (highest priority, before heading extraction)
+- [x] `.md` → `.html` link conversion in export — `convertMdLinksToHtml()` rewrites internal markdown links, preserving anchor fragments
+- [x] Pure HTML export mode — `exportPureCss` setting skips all theme and custom CSS in the exported document
+- [x] Auto-show preview on file open — `autoShowPreview` setting controls whether split editor starts in split or editor-only mode
+- [x] Zola slug mode — `slugifyZola()` with alphanumeric + hyphen + underscore, collapsed hyphens, trimmed edges
+- [x] Tests for title extraction, link conversion, Zola slugs, and export options
 
-## Phase 14: Diagram Rendering (Mermaid & Beyond)
+## Phase 14: Diagram Rendering (Mermaid & Beyond) ← NEXT
 Render diagram code blocks as visual diagrams in the preview.
 
 - [ ] Mermaid diagram rendering — detect ```` ```mermaid ```` blocks, render via embedded Mermaid.js in JCEF
