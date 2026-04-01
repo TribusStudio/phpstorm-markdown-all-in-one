@@ -211,19 +211,19 @@ Render diagram code blocks as visual diagrams in the preview.
 - [ ] Diagram theme integration — diagrams respect the selected preview theme (light/dark)
 - [ ] Tests for diagram detection and rendering
 
-## Phase 15: Table Column & Row Operations
+## Phase 15: Table Column & Row Operations ✅
 Advanced table editing to match JetBrains bundled plugin parity.
 
-- [ ] Insert row above/below cursor
-- [ ] Insert column before/after cursor
-- [ ] Delete current row
-- [ ] Delete current column
-- [ ] Swap columns left/right
-- [ ] Swap rows up/down
-- [ ] Set column alignment (left/center/right/none) via action
-- [ ] Register table actions in Markdown menu and context menu
-- [ ] Keybindings for common operations (insert row, insert column)
-- [ ] Tests for all table modification operations
+- [x] Insert row above/below cursor
+- [x] Insert column before/after cursor
+- [x] Delete current row
+- [x] Delete current column
+- [x] Swap columns left/right
+- [x] Swap rows up/down
+- [x] Set column alignment (left/center/right/none) via action
+- [x] Register table actions in Markdown menu (Table submenu) and context menu
+- [x] Context-aware: actions only enabled when cursor is inside a table
+- [x] Tests for all table operations, column index detection, and alignment changes
 
 ## Phase 16: Structure View & Code Folding ✅
 IDE integration features for navigation and document management.

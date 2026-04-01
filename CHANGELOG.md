@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-04-01
+
+### Added
+- **Table row operations** — Insert Row Above, Insert Row Below, Delete Row, Move Row Up, Move Row Down
+- **Table column operations** — Insert Column Before, Insert Column After, Delete Column, Move Column Left, Move Column Right
+- **Column alignment actions** — Set Align Left, Center, Right, or None for the column at cursor
+- **Table submenu** — all operations registered in Markdown > Table submenu and right-click context menu (context-aware: only enabled when cursor is inside a table)
+- **TableOperations utility** — immutable table transformations returning new Table instances for all row/column/alignment operations
+
 ## [0.20.0] - 2026-04-01
 
 ### Added

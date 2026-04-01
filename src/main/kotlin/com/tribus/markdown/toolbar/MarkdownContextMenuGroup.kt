@@ -60,6 +60,14 @@ class MarkdownContextMenuGroup : ActionGroup("Markdown", true) {
         if (inTable) {
             actions.add(actionManager.getAction("com.tribus.markdown.actions.FormatTable"))
             actions.add(Separator.getInstance())
+            actions.add(actionManager.getAction("com.tribus.markdown.table.InsertRowAbove"))
+            actions.add(actionManager.getAction("com.tribus.markdown.table.InsertRowBelow"))
+            actions.add(actionManager.getAction("com.tribus.markdown.table.DeleteRow"))
+            actions.add(Separator.getInstance())
+            actions.add(actionManager.getAction("com.tribus.markdown.table.InsertColumnBefore"))
+            actions.add(actionManager.getAction("com.tribus.markdown.table.InsertColumnAfter"))
+            actions.add(actionManager.getAction("com.tribus.markdown.table.DeleteColumn"))
+            actions.add(Separator.getInstance())
         }
         actions.add(actionManager.getAction("com.tribus.markdown.actions.FormatAllTables"))
 

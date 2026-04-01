@@ -374,6 +374,62 @@
             <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
         </action>
 
+        <!-- Table operations -->
+        <group id="com.tribus.markdown.TableOpsGroup"
+               text="Table"
+               description="Table row and column operations"
+               popup="true">
+            <add-to-group group-id="com.tribus.markdown.MainMenu" anchor="before"
+                          relative-to-action="com.tribus.markdown.actions.ExportHtml"/>
+
+            <action id="com.tribus.markdown.table.InsertRowAbove"
+                    class="com.tribus.markdown.actions.table.InsertRowAboveAction"
+                    text="Insert Row Above"/>
+            <action id="com.tribus.markdown.table.InsertRowBelow"
+                    class="com.tribus.markdown.actions.table.InsertRowBelowAction"
+                    text="Insert Row Below"/>
+            <action id="com.tribus.markdown.table.DeleteRow"
+                    class="com.tribus.markdown.actions.table.DeleteRowAction"
+                    text="Delete Row"/>
+            <separator/>
+            <action id="com.tribus.markdown.table.SwapRowUp"
+                    class="com.tribus.markdown.actions.table.SwapRowUpAction"
+                    text="Move Row Up"/>
+            <action id="com.tribus.markdown.table.SwapRowDown"
+                    class="com.tribus.markdown.actions.table.SwapRowDownAction"
+                    text="Move Row Down"/>
+            <separator/>
+            <action id="com.tribus.markdown.table.InsertColumnBefore"
+                    class="com.tribus.markdown.actions.table.InsertColumnBeforeAction"
+                    text="Insert Column Before"/>
+            <action id="com.tribus.markdown.table.InsertColumnAfter"
+                    class="com.tribus.markdown.actions.table.InsertColumnAfterAction"
+                    text="Insert Column After"/>
+            <action id="com.tribus.markdown.table.DeleteColumn"
+                    class="com.tribus.markdown.actions.table.DeleteColumnAction"
+                    text="Delete Column"/>
+            <separator/>
+            <action id="com.tribus.markdown.table.SwapColumnLeft"
+                    class="com.tribus.markdown.actions.table.SwapColumnLeftAction"
+                    text="Move Column Left"/>
+            <action id="com.tribus.markdown.table.SwapColumnRight"
+                    class="com.tribus.markdown.actions.table.SwapColumnRightAction"
+                    text="Move Column Right"/>
+            <separator/>
+            <action id="com.tribus.markdown.table.AlignLeft"
+                    class="com.tribus.markdown.actions.table.SetAlignLeftAction"
+                    text="Align Left"/>
+            <action id="com.tribus.markdown.table.AlignCenter"
+                    class="com.tribus.markdown.actions.table.SetAlignCenterAction"
+                    text="Align Center"/>
+            <action id="com.tribus.markdown.table.AlignRight"
+                    class="com.tribus.markdown.actions.table.SetAlignRightAction"
+                    text="Align Right"/>
+            <action id="com.tribus.markdown.table.AlignNone"
+                    class="com.tribus.markdown.actions.table.SetAlignNoneAction"
+                    text="Remove Alignment"/>
+        </group>
+
         <!-- New > Markdown File (with template chooser) -->
         <action id="com.tribus.markdown.actions.CreateMarkdownFile"
                 class="com.tribus.markdown.actions.CreateMarkdownFileAction"

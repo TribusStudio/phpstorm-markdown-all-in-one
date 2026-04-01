@@ -101,6 +101,7 @@ Press `Cmd+N` (macOS) or `Alt+Insert` (Windows/Linux) while editing a markdown f
 
 > **Note:** `Cmd+N` in the editor opens the **Generate** popup, not the **New File** dialog. This is standard PHPStorm behavior. To create a new file, use `Cmd+N` in the **Project panel** (click the project tree first), or right-click > New > Markdown File. If you prefer `Cmd+N` to always open the New File dialog, you can rebind it in **Settings > Keymap**: search for "Generate" and remove/change its shortcut, then assign `Cmd+N` to "New..." instead.
 
+
 ### Table of Contents
 
 Generate and maintain a Table of Contents from your document's headings.
@@ -425,3 +426,4 @@ Contributions are welcome. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for dev
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
+
