@@ -32,9 +32,13 @@ class MarkdownFileEditorListener : EditorFactoryListener {
     override fun editorCreated(event: EditorFactoryEvent) {
         val editor = event.editor
         val document = editor.document
-        val file = FileDocumentManager.getInstance().getFile(document) ?: return
+        val file = FileDocumentManager.getInstance().getFile(document)
+        LOG.info("editorCreated: file=${file?.name ?: "null"}, extension=${file?.extension ?: "null"}")
 
-        if (!MarkdownFileUtil.isMarkdownFile(file)) return
+        if (file == null) return
+        val isMarkdown = MarkdownFileUtil.isMarkdownFile(file)
+        LOG.info("editorCreated: isMarkdownFile=$isMarkdown for ${file.name}")
+        if (!isMarkdown) return
 
         val actionManager = ActionManager.getInstance()
         val keymap = KeymapManager.getInstance()?.activeKeymap
