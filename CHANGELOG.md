@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.3] - 2026-04-01
+
+### Fixed
+- **Floating toolbar visibility** — reverted from `contentComponent.add()` (which doesn't paint in IntelliJ's custom editor pipeline) back to `JBPopup` with `setCancelOnClickOutside(false)` to coexist with the intention lightbulb. 200ms debounce for responsive feel
+
 ## [0.21.2] - 2026-04-01
 
 ### Fixed
