@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.1] - 2026-04-01
+
+### Changed
+- **Blockquote moved to default floating toolbar** — Toggle Blockquote is now part of the default toolbar alongside formatting actions instead of being a standalone context. Blockquote operates on lines (not inline content), so it coexists naturally with Bold, Italic, etc. Selecting text inside a blockquote now shows the full formatting toolbar, not just the blockquote toggle
+
 ## [0.22.0] - 2026-04-01
 
 ### Added

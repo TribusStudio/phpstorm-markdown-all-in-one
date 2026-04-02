@@ -17,8 +17,7 @@ object SelectionContext {
         TOC,
         TABLE,
         CODE_BLOCK,
-        MATH,
-        BLOCKQUOTE
+        MATH
     }
 
     /**
@@ -36,7 +35,6 @@ object SelectionContext {
         if (isInCodeBlock(text, selStart, selEnd)) return Context.CODE_BLOCK
         if (isInTable(editor)) return Context.TABLE
         if (isInMath(text, selStart)) return Context.MATH
-        if (isInBlockquote(editor)) return Context.BLOCKQUOTE
 
         return Context.DEFAULT
     }

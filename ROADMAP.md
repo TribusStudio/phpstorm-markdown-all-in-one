@@ -323,8 +323,8 @@ Show different toolbar actions based on the selection context instead of a gener
 - [x] **Table context** — selection inside table rows → Format Table, Insert/Delete Row/Column
 - [x] **Code block context** — selection inside fenced code block → Toggle Code Block (unwrap)
 - [x] **Math context** — selection inside `$...$` or `$$...$$` → Toggle Math, Toggle Math Reverse
-- [x] **Blockquote context** — selection inside `> ` lines → Toggle Blockquote (unwrap)
-- [x] Context priority rules: TOC > Code Block > Table > Math > Blockquote > Default
+- [x] **Blockquote** — moved to default toolbar (blockquote operates on lines, so it coexists with inline formatting)
+- [x] Context priority rules: TOC > Code Block > Table > Math > Default
 - [x] Settings toggle — `contextSensitiveToolbar` (default on), falls back to default toolbar when off
 - [x] Tests for TOC detection, code block detection, math detection, and priority rules
 

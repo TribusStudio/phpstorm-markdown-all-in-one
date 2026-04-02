@@ -74,12 +74,11 @@ Shortcuts automatically take priority over built-in IDE actions when editing mar
 **Editor toolbar:** A persistent toolbar at the top of the editor pane provides one-click access to formatting (Bold, Italic, Strikethrough, Code, Code Block), links and images, headings, blockquote, list toggle, indent/outdent, task toggle, math, table format, TOC update, plus a tools popup menu and settings gear.
 
 **Floating toolbar:** Select text to see a context-sensitive popup toolbar above the selection:
-- **Default** (plain text) — Bold, Italic, Strikethrough, Code, Heading Up/Down, Link, Image
+- **Default** (plain text) — Bold, Italic, Strikethrough, Code, Heading Up/Down, Blockquote, Link, Image
 - **TOC block** — Update TOC, Add/Remove Section Numbers
 - **Table** — Format Table, Insert/Delete Row/Column
 - **Code block** — Toggle Code Block (unwrap)
 - **Math** — Toggle Math modes
-- **Blockquote** — Toggle Blockquote (unwrap)
 
 **Right-click context menu:** Right-click in a markdown file to see the **Markdown** submenu with context-aware actions:
 - Link and image insertion (always available)

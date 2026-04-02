@@ -142,10 +142,6 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
                 add(group, am, "com.tribus.markdown.actions.ToggleMathReverse")
             }
 
-            SelectionContext.Context.BLOCKQUOTE -> {
-                add(group, am, "com.tribus.markdown.actions.ToggleBlockquote")
-            }
-
             SelectionContext.Context.DEFAULT -> {
                 add(group, am, "com.tribus.markdown.actions.ToggleBold")
                 add(group, am, "com.tribus.markdown.actions.ToggleItalic")
@@ -154,6 +150,7 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
                 group.addSeparator()
                 add(group, am, "com.tribus.markdown.actions.HeadingUp")
                 add(group, am, "com.tribus.markdown.actions.HeadingDown")
+                add(group, am, "com.tribus.markdown.actions.ToggleBlockquote")
                 group.addSeparator()
                 add(group, am, "com.tribus.markdown.actions.InsertLink")
                 add(group, am, "com.tribus.markdown.actions.InsertImage")
