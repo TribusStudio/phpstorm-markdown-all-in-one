@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.3] - 2026-09-18
+
+### Fixed
+- **Shortcut registration mutated application-wide action state** — on every markdown editor opened, the plugin called `registerCustomShortcutSet` on 21 actions fetched straight from `ActionManager`. Those are application-wide singletons, so each call rebound the shortcut globally rather than for that editor, and the platform logged a full stack trace per call. Shortcuts are now bound to a per-editor wrapper, leaving the shared instances untouched.
+
+  This is the bug behind the PhpStorm 2026.2 lockup reports: the calls happen inside `MarkdownSplitEditorProvider.createEditor`, on the editor-creation path the EDT blocks on in `blockingWaitForCompositeFileOpen`.
+
+### Note
+2026.2 support stays withdrawn (`untilBuild` remains `261.*`) until this fix has been confirmed on a real 2026.2 IDE. A green test suite and a clean Plugin Verifier run are not sufficient evidence — that assumption is what shipped the problem in the first place.
+
 ## [0.23.2] - 2026-09-18
 
 ### Fixed
