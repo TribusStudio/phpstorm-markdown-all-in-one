@@ -1,3 +1,4 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
@@ -98,8 +99,8 @@ intellijPlatform {
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
         ideaVersion {
-            sinceBuild = "251"
-            untilBuild = "261.*"
+            sinceBuild = providers.gradleProperty("pluginSinceBuild")
+            untilBuild = providers.gradleProperty("pluginUntilBuild")
         }
         changeNotes = provider { extractChangeNotes() }
     }
@@ -116,7 +117,11 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            // Verify against both ends of the declared compatibility range.
+            // The plugin is compiled against the oldest supported platform, so
+            // the newest IDE is where binary incompatibilities would show up.
+            ide(IntelliJPlatformType.PhpStorm, providers.gradleProperty("platformVersion").get())
+            ide(IntelliJPlatformType.PhpStorm, providers.gradleProperty("verifyAgainstVersion").get())
         }
     }
 }

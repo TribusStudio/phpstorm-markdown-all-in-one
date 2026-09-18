@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.editor.ScrollType
@@ -16,14 +17,13 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import com.intellij.util.Alarm
 import com.intellij.util.ui.JBUI
 import com.tribus.markdown.settings.MarkdownSettings
 import java.awt.BorderLayout
 import java.awt.Point
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.SwingUtilities
-import javax.swing.Timer
 
 /**
  * Split editor combining a text editor with a markdown preview.
@@ -53,10 +53,14 @@ class MarkdownSplitEditor(
     private val wrappedEditor = textEditor as ToolbarTextEditor
     private var settingsListener: MarkdownSettings.ChangeListener? = null
 
-    // Scroll sync state
+    // Scroll sync state. Both "settle" delays run on reusable alarms parented
+    // to this editor — the previous code allocated a fresh Swing Timer for every
+    // scroll event, which churned the shared TimerQueue during scrolling and
+    // kept this editor reachable from it after the tab closed.
     @Volatile private var scrollingFromEditor = false
     @Volatile private var scrollingFromPreview = false
-    private var scrollTimer: Timer? = null
+    private val editorScrollAlarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
+    private val previewScrollAlarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
 
     init {
         // Listen for settings changes to toggle toolbar visibility
@@ -76,8 +80,9 @@ class MarkdownSplitEditor(
     // ── Scroll Sync ──────────────────────────────────────────────────────
 
     private fun setupScrollSync(editor: Editor) {
-        // Editor → Preview: listen for visible area changes
-        editor.scrollingModel.addVisibleAreaListener { e ->
+        // Editor → Preview: listen for visible area changes.
+        // Parented to this editor so the listener goes away with the tab.
+        editor.scrollingModel.addVisibleAreaListener({ e ->
             if (scrollingFromPreview) return@addVisibleAreaListener
 
             val topLine = editor.xyToLogicalPosition(Point(0, e.newRectangle.y)).line
@@ -94,18 +99,16 @@ class MarkdownSplitEditor(
             preview.scrollToSourceLine(topLine)
 
             // Reset flag after the preview scroll settles
-            scrollTimer?.stop()
-            scrollTimer = Timer(200) { scrollingFromEditor = false }
-            scrollTimer?.isRepeats = false
-            scrollTimer?.start()
-        }
+            editorScrollAlarm.cancelAllRequests()
+            editorScrollAlarm.addRequest({ scrollingFromEditor = false }, SCROLL_SETTLE_MS)
+        }, this)
 
         // Preview → Editor: receive source line from JS callback
         preview.setOnScrollCallback { line ->
             if (scrollingFromEditor) return@setOnScrollCallback
 
             scrollingFromPreview = true
-            SwingUtilities.invokeLater {
+            ApplicationManager.getApplication().invokeLater {
                 if (!editor.isDisposed) {
                     editor.scrollingModel.scrollTo(
                         LogicalPosition(line, 0),
@@ -113,10 +116,8 @@ class MarkdownSplitEditor(
                     )
                 }
                 // Reset flag after the editor scroll settles
-                Timer(200) { scrollingFromPreview = false }.apply {
-                    isRepeats = false
-                    start()
-                }
+                previewScrollAlarm.cancelAllRequests()
+                previewScrollAlarm.addRequest({ scrollingFromPreview = false }, SCROLL_SETTLE_MS)
             }
         }
     }
@@ -129,8 +130,15 @@ class MarkdownSplitEditor(
                 MarkdownSettings.getInstance().removeChangeListener(listener)
             } catch (_: Exception) {}
         }
-        scrollTimer?.stop()
+        settingsListener = null
+        editorScrollAlarm.cancelAllRequests()
+        previewScrollAlarm.cancelAllRequests()
         super.dispose()
+    }
+
+    companion object {
+        /** How long to ignore echoed scroll events from the other pane. */
+        private const val SCROLL_SETTLE_MS = 200
     }
 }
 

@@ -328,6 +328,42 @@ Show different toolbar actions based on the selection context instead of a gener
 - [x] Settings toggle — `contextSensitiveToolbar` (default on), falls back to default toolbar when off
 - [x] Tests for TOC detection, code block detection, math detection, and priority rules
 
+## Phase 25: Platform Compatibility & Leak Fixes — COMPLETE
+**Goal:** Support the current PhpStorm release and fix the stability problems reported from real-world use on build 261.
+
+- [x] Extend the declared compatibility range to build 262.* (PhpStorm 2026.2), verified against both ends with the JetBrains Plugin Verifier
+- [x] Move `sinceBuild` / `untilBuild` / verifier target into `gradle.properties`
+- [x] Fix `Write access is allowed inside write-action only` crash on Tab / Shift+Tab in lists — wrap both handlers' document edits in a write command
+- [x] Guard both handlers against viewers, consoles and read-only documents
+- [x] Fix live-preview memory leak — the document listener was registered without a disposable, so every file ever opened kept re-rendering for the rest of the session
+- [x] Fix floating toolbar leak — created per editor but never disposed; scope all per-editor registrations to a disposable released with the editor
+- [x] Debounce preview rendering (300 ms) and skip it entirely while the preview pane is hidden
+- [x] Cache theme and custom CSS instead of re-reading on every render
+- [x] Replace per-event Swing `Timer` allocation in scroll sync with reusable alarms
+- [x] Namespace `TextAttributesKey` names as `MDAIO_MARKDOWN_*` to stop colliding with the bundled Markdown plugin
+- [x] Ship our own `colorSchemes/` definitions so highlighting no longer free-rides on the bundled plugin
+- [x] Regression tests for Tab / Shift+Tab (including undo) and CSS caching
+
+**Deliverable:** v0.23.0 — installs and verifies clean on PhpStorm 2025.1 through 2026.2, with the Tab crash, the preview leak and the color key collisions fixed.
+
+### Phase Notes
+
+| Area | Files |
+| --- | --- |
+| Write-action fix | `table/TableTabHandler.kt`, `table/TableShiftTabHandler.kt`, `util/EditorWriteUtil.kt` |
+| Preview leak & debounce | `preview/MarkdownPreviewFileEditor.kt`, `preview/MarkdownSplitEditor.kt`, `preview/PreviewTheme.kt` |
+| Editor-scoped disposal | `editor/MarkdownFileEditorListener.kt`, `toolbar/FloatingToolbar.kt` |
+| Color keys | `lang/highlighting/MarkdownHighlightingColors.kt`, `resources/colorSchemes/`, `plugin.xml` |
+| Build config | `build.gradle.kts`, `gradle.properties` |
+| Tests | `table/TableTabHandlerTest.kt`, `preview/PreviewThemeTest.kt` |
+
+Key decisions:
+- **Compile against the oldest supported platform (2025.1), not the newest.** Keeps the plugin binary-compatible across the whole 251–262 range by construction; the Plugin Verifier covers the newest IDE instead. Bumping the compile target would risk silently adopting APIs that don't exist in 2025.1.
+- **`untilBuild` stays explicit (262.*) rather than open-ended.** Open-ended avoids a release per IDE bump, but nothing would then catch an incompatible platform change before users hit it. Explicit + verified is the safer trade at this stage.
+- **`DaemonCodeAnalyzer.restart()` deprecation left as-is.** The replacement `restart(String)` overload doesn't exist in 2025.1, our compile target. Still supported (not removed) in 2026.2; revisit when `sinceBuild` moves past 251.
+- **Color keys renamed rather than migrated.** `TextAttributesKey` names are one flat namespace across all plugins, so `MARKDOWN_*` was never ours to use. The rename resets user color customizations once — acceptable at 0.x, and it also means highlighting no longer breaks if someone disables the bundled Markdown plugin.
+- **Per-editor disposable must be a fresh instance.** A non-capturing `Disposable { }` lambda is a single shared JVM instance, so disposing one editor's scope poisoned every editor opened afterwards. Uses `Disposer.newDisposable()`.
+
 ## Future Considerations
 - Custom markdown-it extensions integration
 - Multi-language support (i18n beyond English)

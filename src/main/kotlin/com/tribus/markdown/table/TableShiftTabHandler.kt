@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.TextRange
 import com.tribus.markdown.actions.ListOutdentAction
+import com.tribus.markdown.util.EditorWriteUtil
 
 /**
  * Handles Shift+Tab in markdown files:
@@ -20,7 +21,7 @@ class TableShiftTabHandler(private val originalHandler: EditorActionHandler) : E
         if (TableTabHandler.handleTableNavigation(editor, reverse = true)) return
 
         // List outdentation
-        if (handleListOutdent(editor)) return
+        if (handleListOutdent(editor, dataContext)) return
 
         originalHandler.execute(editor, caret, dataContext)
     }
@@ -32,10 +33,12 @@ class TableShiftTabHandler(private val originalHandler: EditorActionHandler) : E
     companion object {
         private val LIST_MARKER_PATTERN = Regex("""^\s*([-+*]|[0-9]+[.)]) +""")
 
-        fun handleListOutdent(editor: Editor): Boolean {
+        fun handleListOutdent(editor: Editor, dataContext: DataContext? = null): Boolean {
             if (!TableTabHandler.isInMarkdownFile(editor)) return false
+            if (!EditorWriteUtil.isWritable(editor)) return false
             val document = editor.document
             val caretLine = editor.caretModel.logicalPosition.line
+            if (caretLine >= document.lineCount) return false
             val lineStart = document.getLineStartOffset(caretLine)
             val lineEnd = document.getLineEndOffset(caretLine)
             val lineText = document.getText(TextRange(lineStart, lineEnd))
@@ -46,7 +49,10 @@ class TableShiftTabHandler(private val originalHandler: EditorActionHandler) : E
             if (leadingSpaces == 0) return false
 
             val outdentSize = ListOutdentAction.determineOutdentSize(lineText, leadingSpaces)
-            document.deleteString(lineStart, lineStart + outdentSize)
+            if (outdentSize <= 0) return false
+            EditorWriteUtil.runWriteCommand(editor, dataContext, "Outdent List Item") {
+                document.deleteString(lineStart, lineStart + outdentSize)
+            }
             return true
         }
     }

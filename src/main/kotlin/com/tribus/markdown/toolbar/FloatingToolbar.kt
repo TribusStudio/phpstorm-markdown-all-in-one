@@ -7,14 +7,14 @@ import com.intellij.openapi.editor.event.CaretEvent
 import com.intellij.openapi.editor.event.CaretListener
 import com.intellij.openapi.editor.event.SelectionEvent
 import com.intellij.openapi.editor.event.SelectionListener
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.awt.RelativePoint
+import com.intellij.util.Alarm
 import com.intellij.util.ui.JBUI
 import com.tribus.markdown.settings.MarkdownSettings
 import java.awt.Point
-import javax.swing.SwingUtilities
-import javax.swing.Timer
 
 /**
  * A floating toolbar that appears above text selections in the markdown editor.
@@ -22,33 +22,37 @@ import javax.swing.Timer
  *
  * Uses JBPopup with a 200ms debounce. Registered via the editorFactoryListener
  * extension point. Dismissed when the selection clears.
+ *
+ * Disposable and editor-scoped: [MarkdownFileEditorListener] disposes it when
+ * the editor is released, which cancels the pending show request and closes any
+ * popup still on screen.
  */
-class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretListener {
+class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretListener, Disposable {
 
     private var popup: JBPopup? = null
-    private var showTimer: Timer? = null
+    private val showAlarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
+
+    @Volatile
+    private var disposed = false
 
     override fun selectionChanged(e: SelectionEvent) {
-        showTimer?.stop()
+        if (disposed) return
+        showAlarm.cancelAllRequests()
 
         if (!editor.selectionModel.hasSelection() || editor.selectionModel.selectedText.isNullOrBlank()) {
             hideToolbar()
             return
         }
 
-        showTimer = Timer(200) {
-            SwingUtilities.invokeLater {
-                if (editor.selectionModel.hasSelection() && !editor.isDisposed) {
-                    showToolbar()
-                }
+        showAlarm.addRequest({
+            if (!disposed && !editor.isDisposed && editor.selectionModel.hasSelection()) {
+                showToolbar()
             }
-        }.apply {
-            isRepeats = false
-            start()
-        }
+        }, SHOW_DELAY_MS)
     }
 
     override fun caretPositionChanged(e: CaretEvent) {
+        if (disposed) return
         if (!editor.selectionModel.hasSelection()) {
             hideToolbar()
         }
@@ -57,7 +61,7 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
     private fun showToolbar() {
         hideToolbar()
 
-        if (!editor.selectionModel.hasSelection() || editor.isDisposed) return
+        if (disposed || !editor.selectionModel.hasSelection() || editor.isDisposed) return
         val contentComponent = editor.contentComponent
         if (!contentComponent.isShowing) return
 
@@ -105,7 +109,7 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
     }
 
     fun hideToolbar() {
-        showTimer?.stop()
+        if (!disposed) showAlarm.cancelAllRequests()
         popup?.cancel()
         popup = null
     }
@@ -164,7 +168,15 @@ class FloatingToolbar(private val editor: Editor) : SelectionListener, CaretList
         actionManager.getAction(actionId)?.let { group.add(it) }
     }
 
-    fun dispose() {
-        hideToolbar()
+    override fun dispose() {
+        disposed = true
+        showAlarm.cancelAllRequests()
+        popup?.cancel()
+        popup = null
+    }
+
+    companion object {
+        /** Debounce before the toolbar pops up, so dragging a selection doesn't flicker. */
+        private const val SHOW_DELAY_MS = 200
     }
 }

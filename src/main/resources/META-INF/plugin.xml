@@ -124,6 +124,13 @@
         <colorSettingsPage
                 implementation="com.tribus.markdown.lang.highlighting.MarkdownColorSettingsPage"/>
 
+        <!-- Our own scheme colors, so highlighting doesn't depend on the
+             bundled JetBrains Markdown plugin being installed or enabled. -->
+        <additionalTextAttributes scheme="Default"
+                                  file="colorSchemes/MarkdownAllInOneDefault.xml"/>
+        <additionalTextAttributes scheme="Darcula"
+                                  file="colorSchemes/MarkdownAllInOneDarcula.xml"/>
+
         <!-- File templates for New > Markdown File -->
         <internalFileTemplate name="Blank Markdown"/>
         <internalFileTemplate name="README"/>

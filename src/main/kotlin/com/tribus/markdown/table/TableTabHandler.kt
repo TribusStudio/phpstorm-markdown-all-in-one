@@ -6,7 +6,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.util.TextRange
 import com.tribus.markdown.actions.ListIndentAction
-import com.tribus.markdown.lang.MarkdownLanguage
+import com.tribus.markdown.util.EditorWriteUtil
 
 /**
  * Handles Tab key in markdown files:
@@ -21,7 +21,7 @@ class TableTabHandler(private val originalHandler: EditorActionHandler) : Editor
         if (handleTableNavigation(editor, false)) return
 
         // List indentation
-        if (handleListIndent(editor)) return
+        if (handleListIndent(editor, dataContext)) return
 
         originalHandler.execute(editor, caret, dataContext)
     }
@@ -44,10 +44,12 @@ class TableTabHandler(private val originalHandler: EditorActionHandler) : Editor
             return TableParser.findTableAt(editor.document.text, caretLine) != null
         }
 
-        fun handleListIndent(editor: Editor): Boolean {
+        fun handleListIndent(editor: Editor, dataContext: DataContext? = null): Boolean {
             if (!isInMarkdownFile(editor)) return false
+            if (!EditorWriteUtil.isWritable(editor)) return false
             val document = editor.document
             val caretLine = editor.caretModel.logicalPosition.line
+            if (caretLine >= document.lineCount) return false
             val lineStart = document.getLineStartOffset(caretLine)
             val lineEnd = document.getLineEndOffset(caretLine)
             val lineText = document.getText(TextRange(lineStart, lineEnd))
@@ -56,7 +58,9 @@ class TableTabHandler(private val originalHandler: EditorActionHandler) : Editor
 
             val indentSize = ListIndentAction.determineIndentSize(lineText)
             val indent = " ".repeat(indentSize)
-            document.insertString(lineStart, indent)
+            EditorWriteUtil.runWriteCommand(editor, dataContext, "Indent List Item") {
+                document.insertString(lineStart, indent)
+            }
             return true
         }
 
