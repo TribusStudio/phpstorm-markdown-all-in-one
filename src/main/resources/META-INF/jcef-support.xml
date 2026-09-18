@@ -1,0 +1,6 @@
+<!-- Loaded only when com.intellij.modules.jcef is present (PhpStorm 2026.2+).
+     It carries no extensions of its own: declaring the dependency is the whole
+     point, so that the JCEF module joins this plugin's classloader parents and
+     com.intellij.ui.jcef.JBCefBrowser resolves. -->
+<idea-plugin>
+</idea-plugin>

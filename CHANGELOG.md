@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-09-18
+
+### Added
+- **PhpStorm 2026.2 support restored** — confirmed by opening a markdown file in a real 2026.2 IDE, not by a Plugin Verifier run alone. Supported range is once again PhpStorm 2025.1 – 2026.2 (builds 251–262).
+- **Supported IDE range is now published with every release** — it appears in the GitHub release notes, in the plugin's "What's New" tab inside the IDE, and in the auto-update repository metadata. All three are generated from `pluginSinceBuild`/`pluginUntilBuild` in `gradle.properties`, so they cannot drift from what the plugin descriptor actually declares.
+
+### Fixed
+- **`updatePlugins.xml` advertised no upper bound** — the auto-update repository declared only `since-build`, so it would offer the plugin to IDEs newer than the supported ceiling, which would then refuse to load it. It now carries the real `until-build`.
+
+### Upgrade note
+If you are on PhpStorm 2026.2, update to this version. 0.23.0–0.23.1 can hang the IDE when opening a markdown file; 0.23.2–0.23.4 deliberately do not load on 2026.2.
+
+## [0.23.4] - 2026-09-18
+
+### Fixed
+- **IDE lockup when opening a markdown file on PhpStorm 2026.2 — root cause.** JCEF, which backs the live preview, lived in the platform core (`lib/app-client.jar`) through 2026.1 and was always on the classpath. In 2026.2 JetBrains extracted it into a separate bundled plugin (`plugins/jcef-plugin/`), so a plugin must now declare a dependency on `com.intellij.modules.jcef` to get it on its classloader. Without that declaration `JBCefBrowser` failed to resolve, and the resulting `NoClassDefFoundError` propagated out of `getComponent()`, killed the `EditorComposite model flow` coroutine, and left the EDT blocked forever in `blockingWaitForCompositeFileOpen`. The dependency is now declared, `optional` so that 2025.1 and 2026.1 — where the id does not exist and JCEF is in core — keep loading normally.
+- **A missing preview backend can no longer hang the IDE.** The fallback that shows "Preview not available (JCEF not supported)" caught `Exception`, but `NoClassDefFoundError` extends `Error`, so the very failure the fallback existed for sailed straight past it. All four JCEF guards now catch `Throwable`.
+
+### Note
+2026.2 support remains withdrawn (`untilBuild` stays `261.*`) until this is confirmed on a real 2026.2 IDE.
+
+## [0.23.3] - 2026-09-18
+
+### Fixed
+- **Shortcut registration mutated application-wide action state** — on every markdown editor opened, the plugin called `registerCustomShortcutSet` on 21 actions fetched straight from `ActionManager`. Those are application-wide singletons, so each call rebound the shortcut globally rather than for that editor, and the platform logged a full stack trace per call. Shortcuts are now bound to a per-editor wrapper, leaving the shared instances untouched.
+
+  This is the bug behind the PhpStorm 2026.2 lockup reports: the calls happen inside `MarkdownSplitEditorProvider.createEditor`, on the editor-creation path the EDT blocks on in `blockingWaitForCompositeFileOpen`.
+
+### Note
+2026.2 support stays withdrawn (`untilBuild` remains `261.*`) until this fix has been confirmed on a real 2026.2 IDE. A green test suite and a clean Plugin Verifier run are not sufficient evidence — that assumption is what shipped the problem in the first place.
+
+## [0.23.2] - 2026-09-18
+
+### Fixed
+- **IDE lockup on PhpStorm 2026.2** — opening a markdown file could hang the IDE. The EDT blocks in `blockingWaitForCompositeFileOpen` waiting for the editor composite to finish building, and never returns. Until the root cause is found, the declared compatibility ceiling is rolled back from `262.*` to `261.*`, so PhpStorm 2026.2 no longer loads the plugin.
+
+### Changed
+- **Supported IDE range is now PhpStorm 2025.1 – 2026.1** (builds 251–261). 2026.2 support is withdrawn pending a fix.
+
+### Note
+Raising the ceiling to 262 in 0.23.0 was validated only with the JetBrains Plugin Verifier. That tool is a static binary-compatibility check — it never launches the plugin, so it could not catch a threading or lifecycle problem. Compatibility with a new platform will not be declared again without launching a real IDE of that version and opening a markdown file in it.
+
+The Tab/Shift+Tab crash fix, the preview memory-leak fix and the colour-key namespacing from 0.23.0 are all unaffected and remain in place for 2025.1–2026.1.
+
 ## [0.23.1] - 2026-09-18
 
 ### Changed

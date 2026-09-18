@@ -1,6 +1,9 @@
 package com.tribus.markdown.editor
 
 import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CustomShortcutSet
 import com.intellij.openapi.actionSystem.KeyboardShortcut
 import com.intellij.openapi.Disposable
@@ -10,6 +13,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
+import com.tribus.markdown.actions.MarkdownAction
 import com.tribus.markdown.toolbar.FloatingToolbar
 import com.tribus.markdown.util.MarkdownFileUtil
 import java.awt.Toolkit
@@ -66,7 +70,16 @@ class MarkdownFileEditorListener : EditorFactoryListener {
                 defaultShortcut
             }
 
-            action.registerCustomShortcutSet(shortcutSet, component, editorScope)
+            // Register the shortcut on a per-editor wrapper, never on the
+            // action instance ActionManager handed us.
+            //
+            // registerCustomShortcutSet mutates the shortcut set of whatever
+            // instance it is called on, and ActionManager returns
+            // application-wide singletons. Calling it directly rebound the
+            // shortcut globally and made the platform log a stack trace per
+            // call — 21 actions on every markdown editor opened, so 21 global
+            // mutations and 21 logged traces each time a .md file was opened.
+            EditorScopedAction(action).registerCustomShortcutSet(shortcutSet, component, editorScope)
         }
 
         // Register floating toolbar for text selections
@@ -81,6 +94,21 @@ class MarkdownFileEditorListener : EditorFactoryListener {
         val scope = editor.getUserData(EDITOR_SCOPE_KEY) ?: return
         editor.putUserData(EDITOR_SCOPE_KEY, null)
         Disposer.dispose(scope)
+    }
+
+    /**
+     * A per-editor delegating copy of a plugin action, so binding a shortcut to
+     * it leaves the shared [ActionManager] instance untouched.
+     *
+     * Implements [MarkdownAction] so [com.tribus.markdown.actions.MarkdownActionPromoter]
+     * still recognises it when resolving shortcut conflicts against IDE builtins —
+     * without the marker, Cmd+B and friends would silently lose to GotoDeclaration.
+     */
+    private class EditorScopedAction(private val delegate: AnAction) : AnAction(), MarkdownAction {
+        override fun getActionUpdateThread(): ActionUpdateThread = delegate.actionUpdateThread
+        override fun update(e: AnActionEvent) = delegate.update(e)
+        override fun actionPerformed(e: AnActionEvent) = delegate.actionPerformed(e)
+        override fun isDumbAware(): Boolean = delegate.isDumbAware
     }
 
     companion object {
