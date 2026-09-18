@@ -1,5 +1,7 @@
 # Markdown All-in-One for PHPStorm
 
+![Fullscreen Snapshot of the PHPStorm IDE](assets/fullscreen-ide.png)
+
 I really love what JetBrains has built for Markdown within PHPStorm. For the most part, its a really thorough implementation with a lot of room for others to hook into it. But something was bothering me with it. Various UX details that kept me from being satisfyed with it. I would routinely use VSCode instead for Markdown work because of those oddities.
 
 Recently, with the advent of Claude Code and LLM development, I got an idea:
@@ -161,13 +163,13 @@ Generate and maintain a Table of Contents from your document's headings.
 
 **Configuration** (Settings > Languages > Markdown All-in-One):
 
-| Setting | Default | Description |
-| ------- | ------- | ----------- |
-| Heading levels | `1..6` | Range of heading levels to include (e.g., `2..4`) |
-| Ordered list | `false` | Use numbered list instead of bullets |
-| List marker | `-` | Unordered list marker (`-`, `*`, `+`) |
-| Slug mode | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud, Zola |
-| Update on save | `true` | Auto-update TOC when saving |
+| Setting        | Default  | Description                                                                   |
+| -------------- | -------- | ----------------------------------------------------------------------------- |
+| Heading levels | `1..6`   | Range of heading levels to include (e.g., `2..4`)                             |
+| Ordered list   | `false`  | Use numbered list instead of bullets                                          |
+| List marker    | `-`      | Unordered list marker (`-`, `*`, `+`)                                         |
+| Slug mode      | `github` | Anchor generation: GitHub, GitLab, Gitea, Azure DevOps, Bitbucket Cloud, Zola |
+| Update on save | `true`   | Auto-update TOC when saving                                                   |
 
 **Omit headings** from the TOC using comment markers:
 
@@ -273,17 +275,17 @@ Export markdown files to styled, standalone HTML documents.
 
 **Export current file:** `Markdown > Export to HTML` or the toolbar's tools popup. **Batch export:** `Markdown > Batch Export to HTML` for entire folders.
 
-| Feature | Description |
-| ------- | ----------- |
-| Styled output | Exported HTML includes the selected preview theme CSS |
-| Custom CSS | Custom CSS overrides from settings are applied |
-| Image resolution | Relative image paths resolved to absolute `file://` paths |
-| Base64 embed | Optionally embed local images as base64 for self-contained HTML |
-| Link validation | Warns about broken anchors, file links, and undefined references |
-| Document title | From `<!-- title: ... -->` comment, first heading, or filename |
-| Auto-export | Automatically generate `.html` alongside `.md` on save |
-| Link conversion | Internal `.md` links rewritten to `.html` in exported output |
-| Pure HTML mode | Export without any CSS stylesheets |
+| Feature          | Description                                                      |
+| ---------------- | ---------------------------------------------------------------- |
+| Styled output    | Exported HTML includes the selected preview theme CSS            |
+| Custom CSS       | Custom CSS overrides from settings are applied                   |
+| Image resolution | Relative image paths resolved to absolute `file://` paths        |
+| Base64 embed     | Optionally embed local images as base64 for self-contained HTML  |
+| Link validation  | Warns about broken anchors, file links, and undefined references |
+| Document title   | From `<!-- title: ... -->` comment, first heading, or filename   |
+| Auto-export      | Automatically generate `.html` alongside `.md` on save           |
+| Link conversion  | Internal `.md` links rewritten to `.html` in exported output     |
+| Pure HTML mode   | Export without any CSS stylesheets                               |
 
 ### New File Templates & Generate Menu
 
