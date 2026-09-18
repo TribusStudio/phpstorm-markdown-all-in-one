@@ -4,7 +4,9 @@ Written for v0.23.0. Covers why the plugin broke on recent PhpStorm builds, why 
 
 ## 1. Compatibility strategy
 
-The plugin is **compiled against the oldest supported platform** (currently PhpStorm 2025.1 / build 251) and **verified against the newest** (2026.2 / build 262). This is deliberate:
+> **Correction (v0.23.2).** The process described below was not sufficient, and 2026.2 support has been withdrawn. See §5.
+
+The plugin is **compiled against the oldest supported platform** (currently PhpStorm 2025.1 / build 251) and **verified against the newest**. This is deliberate:
 
 - Compiling against the oldest target makes binary compatibility across the range a property of the build rather than something to remember. It is impossible to accidentally call an API that 2025.1 lacks, because the compiler would reject it.
 - Compiling against the newest target and hoping would give the opposite guarantee: the code would build fine and fail at runtime for anyone on an older IDE.
@@ -19,7 +21,7 @@ The knobs live in `gradle.properties`:
 | `pluginUntilBuild` | Declared maximum IDE build. |
 | `verifyAgainstVersion` | The newest IDE the Plugin Verifier checks. Should track `pluginUntilBuild`. |
 
-To support a newly released IDE, raise `pluginUntilBuild` and `verifyAgainstVersion` together, then run `./dev verify`. Leave `platformVersion` alone unless you are intentionally dropping support for old IDEs.
+To support a newly released IDE, raise `pluginUntilBuild` and `verifyAgainstVersion` together, run `./dev verify`, **and then actually launch that IDE** (`./dev gradle runIde`) and open a markdown file. The verifier alone is not enough — see §5. Leave `platformVersion` alone unless you are intentionally dropping support for old IDEs.
 
 `untilBuild` is kept explicit rather than open-ended. Open-ended would spare a release per IDE bump, but nothing would catch an incompatible platform change before users did.
 
@@ -98,3 +100,17 @@ Both are fixed by namespacing the keys `MDAIO_MARKDOWN_*` and shipping our own `
 ```
 
 Both must be clean. `./dev verify` output should contain no `was already registered with the other fallback` lines.
+
+## 5. What the Plugin Verifier does not check
+
+v0.23.0 raised `untilBuild` to `262.*` on the strength of a clean Plugin Verifier run against PhpStorm 2026.2. Users on 2026.2 then hit an IDE hang when opening a markdown file: the EDT blocks in `FileEditorManagerImpl.blockingWaitForCompositeFileOpen` waiting for the editor composite to finish building, and never returns. 2026.2 support was withdrawn in v0.23.2.
+
+**The Plugin Verifier is a static binary-compatibility check.** It resolves the plugin's bytecode against an IDE's classes and reports missing or changed API. It never launches the IDE and never runs a line of plugin code. It therefore cannot detect:
+
+- threading-model violations (work on the wrong thread, missing read/write actions)
+- deadlocks and lifecycle problems, such as blocking during editor creation
+- anything that depends on runtime ordering or platform behaviour rather than API shape
+
+A "Compatible" verdict means *the plugin will link against this IDE*. It does not mean *the plugin works on this IDE*. Those are different claims, and only the first one is being tested.
+
+**Rule:** a new platform version is not supported until someone has launched that exact IDE with the plugin installed and exercised the editor. `./dev gradle runIde` with `platformVersion` temporarily pointed at the new build is the minimum bar. A green verifier run is necessary, never sufficient.
