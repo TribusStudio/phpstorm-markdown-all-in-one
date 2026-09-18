@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.4] - 2026-09-18
+
+### Fixed
+- **IDE lockup when opening a markdown file on PhpStorm 2026.2 — root cause.** JCEF, which backs the live preview, lived in the platform core (`lib/app-client.jar`) through 2026.1 and was always on the classpath. In 2026.2 JetBrains extracted it into a separate bundled plugin (`plugins/jcef-plugin/`), so a plugin must now declare a dependency on `com.intellij.modules.jcef` to get it on its classloader. Without that declaration `JBCefBrowser` failed to resolve, and the resulting `NoClassDefFoundError` propagated out of `getComponent()`, killed the `EditorComposite model flow` coroutine, and left the EDT blocked forever in `blockingWaitForCompositeFileOpen`. The dependency is now declared, `optional` so that 2025.1 and 2026.1 — where the id does not exist and JCEF is in core — keep loading normally.
+- **A missing preview backend can no longer hang the IDE.** The fallback that shows "Preview not available (JCEF not supported)" caught `Exception`, but `NoClassDefFoundError` extends `Error`, so the very failure the fallback existed for sailed straight past it. All four JCEF guards now catch `Throwable`.
+
+### Note
+2026.2 support remains withdrawn (`untilBuild` stays `261.*`) until this is confirmed on a real 2026.2 IDE.
+
 ## [0.23.3] - 2026-09-18
 
 ### Fixed

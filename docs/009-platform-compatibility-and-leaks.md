@@ -130,3 +130,25 @@ ActionUtil.wrap(). Action: Move Line Up [Plugin: com.tribus.markdown-all-in-one]
 **Rule:** bind shortcuts to a per-editor wrapper, never to the instance `ActionManager` hands you. `EditorScopedAction` in `MarkdownFileEditorListener` is that wrapper. It must keep implementing `MarkdownAction`: `MarkdownActionPromoter` identifies our actions by that marker when resolving conflicts against IDE builtins, so a wrapper without it would let Cmd+B fall through to Go To Declaration.
 
 `MarkdownFileEditorListenerTest` pins this — it asserts the shared instances' shortcut sets are unchanged after opening markdown files, and fails if the registration goes back to the singleton.
+
+## 7. JCEF moved out of the platform core in 2026.2
+
+Through 2026.1, `com.intellij.ui.jcef.JBCefBrowser` shipped in `lib/app-client.jar` — platform core, always on every plugin's classpath. In 2026.2 it moved to `plugins/jcef-plugin/lib/modules/intellij.platform.ui.jcef.jar`, a separate bundled plugin with id `com.intellij.modules.jcef`. Its version string is architecture-suffixed (`262.10968.76-linux-arm64`), which is the likely reason for the split: the native Chromium bundle is large and per-OS/per-arch, so shipping it as its own module lets it be updated independently of the platform.
+
+The consequence for us: a plugin that does not declare the dependency does not get the module on its classloader, and `JBCefBrowser` fails to resolve at runtime. That is what caused the 2026.2 lockup — `NoClassDefFoundError` out of `getComponent()`, a cancelled `EditorComposite model flow` coroutine, and an EDT stuck forever in `blockingWaitForCompositeFileOpen`.
+
+The declaration is **optional**, not required:
+
+```xml
+<depends optional="true" config-file="jcef-support.xml">com.intellij.modules.jcef</depends>
+```
+
+`com.intellij.modules.jcef` does not exist before 2026.2. A required dependency would therefore stop the plugin loading on 2025.1 and 2026.1, where JCEF is in core and needs no declaration at all. Optional resolves where it exists and is skipped where it does not, which is the only form that spans 251–262.
+
+### Catch Throwable around optional platform backends
+
+The fallback for "JCEF isn't available" already existed and still didn't fire, because it caught `Exception`. A class that cannot be resolved raises `NoClassDefFoundError`, which extends `Error`. Anything guarding against a *missing* platform class must catch `Throwable`, or the guard is decorative.
+
+This matters far more than it sounds: the exception escaped into `EditorComposite`, so instead of a missing preview the user got an IDE that could not open markdown files at all. **A failure in an optional feature must never be able to take out editor creation.**
+
+**Rule:** any platform class that might not be present — anything outside `com.intellij.modules.platform` — gets both a declared (optional) dependency *and* a `Throwable` guard at the point of first use.

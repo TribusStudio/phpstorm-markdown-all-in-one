@@ -32,6 +32,21 @@
 
     <depends>com.intellij.modules.platform</depends>
 
+    <!-- JCEF backs the live preview.
+         Through 2026.1 it lived in the platform core (lib/app-client.jar) and was
+         always on the classpath. In 2026.2 JetBrains extracted it into a separate
+         bundled plugin (plugins/jcef-plugin/), presumably so the per-OS/per-arch
+         native Chromium bundle can be shipped and updated independently — its
+         version string is arch-suffixed, e.g. "262.10968.76-linux-arm64".
+
+         A plugin that does not declare this dependency does not get the module on
+         its classloader on 2026.2, and `JBCefBrowser` fails to resolve.
+
+         The dependency is OPTIONAL because the id `com.intellij.modules.jcef` does
+         not exist before 2026.2 — declaring it as required would stop the plugin
+         loading on 2025.1/2026.1, where JCEF is in core and needs no declaration. -->
+    <depends optional="true" config-file="jcef-support.xml">com.intellij.modules.jcef</depends>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Register shortcuts and floating toolbar on editor creation -->
         <editorFactoryListener implementation="com.tribus.markdown.editor.MarkdownFileEditorListener"/>
