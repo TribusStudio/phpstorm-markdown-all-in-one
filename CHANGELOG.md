@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.2] - 2026-09-18
+
+### Fixed
+- **IDE lockup on PhpStorm 2026.2** — opening a markdown file could hang the IDE. The EDT blocks in `blockingWaitForCompositeFileOpen` waiting for the editor composite to finish building, and never returns. Until the root cause is found, the declared compatibility ceiling is rolled back from `262.*` to `261.*`, so PhpStorm 2026.2 no longer loads the plugin.
+
+### Changed
+- **Supported IDE range is now PhpStorm 2025.1 – 2026.1** (builds 251–261). 2026.2 support is withdrawn pending a fix.
+
+### Note
+Raising the ceiling to 262 in 0.23.0 was validated only with the JetBrains Plugin Verifier. That tool is a static binary-compatibility check — it never launches the plugin, so it could not catch a threading or lifecycle problem. Compatibility with a new platform will not be declared again without launching a real IDE of that version and opening a markdown file in it.
+
+The Tab/Shift+Tab crash fix, the preview memory-leak fix and the colour-key namespacing from 0.23.0 are all unaffected and remain in place for 2025.1–2026.1.
+
 ## [0.23.1] - 2026-09-18
 
 ### Changed

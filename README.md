@@ -335,7 +335,9 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 
 ## Installation
 
-**Requires PhpStorm 2025.1 or newer.** Supported through PhpStorm 2026.2 (builds 251–262), verified against both ends of that range with the JetBrains Plugin Verifier.
+**Requires PhpStorm 2025.1 – 2026.1** (builds 251–261).
+
+> **PhpStorm 2026.2 is not currently supported.** Opening a markdown file could hang the IDE, so 2026.2 support was withdrawn in v0.23.2 while the cause is investigated. See [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 
 ### Auto-Update (Recommended)
 1. Open PHPStorm > Settings > Plugins > gear icon > **Manage Plugin Repositories**
