@@ -120,8 +120,11 @@ intellijPlatform {
             // Verify against both ends of the declared compatibility range.
             // The plugin is compiled against the oldest supported platform, so
             // the newest IDE is where binary incompatibilities would show up.
-            ide(IntelliJPlatformType.PhpStorm, providers.gradleProperty("platformVersion").get())
-            ide(IntelliJPlatformType.PhpStorm, providers.gradleProperty("verifyAgainstVersion").get())
+            // create(type, version) supersedes the deprecated ide(type, version).
+            // The Provider overload also keeps the version lazy instead of
+            // resolving it eagerly at configuration time.
+            create(IntelliJPlatformType.PhpStorm, providers.gradleProperty("platformVersion"))
+            create(IntelliJPlatformType.PhpStorm, providers.gradleProperty("verifyAgainstVersion"))
         }
     }
 }
