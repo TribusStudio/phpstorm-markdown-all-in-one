@@ -93,8 +93,8 @@ class MarkdownPreviewFileEditor(
                     null
                 }
                 jsQuery = query
-            } catch (_: Exception) {
-                // JBCefJSQuery not available
+            } catch (_: Throwable) {
+                // JBCefJSQuery not available — see the Throwable note below.
             }
 
             // Set up link click interception bridge
@@ -105,8 +105,8 @@ class MarkdownPreviewFileEditor(
                     null
                 }
                 linkClickQuery = linkQuery
-            } catch (_: Exception) {
-                // JBCefJSQuery not available
+            } catch (_: Throwable) {
+                // JBCefJSQuery not available — see the Throwable note below.
             }
 
             // Intercept navigation requests — block external URLs, open in system browser
@@ -134,8 +134,8 @@ class MarkdownPreviewFileEditor(
                         return false
                     }
                 }, b.cefBrowser)
-            } catch (_: Exception) {
-                // CefRequestHandler not available
+            } catch (_: Throwable) {
+                // CefRequestHandler not available — see the Throwable note below.
             }
 
             updatePreview()
@@ -176,8 +176,16 @@ class MarkdownPreviewFileEditor(
             wrapper.add(nav, BorderLayout.NORTH)
             wrapper.add(b.component, BorderLayout.CENTER)
             wrapper
-        } catch (_: Exception) {
-            // JCEF not available (headless, older IDE, etc.)
+        } catch (_: Throwable) {
+            // Throwable, not Exception, on purpose.
+            //
+            // When the JCEF module is missing from this plugin's classloader the
+            // JVM raises NoClassDefFoundError, which extends Error — so a
+            // `catch (Exception)` here let it escape. It then propagated out of
+            // getComponent() into EditorComposite, killed the "EditorComposite
+            // model flow" coroutine, and the composite never completed, leaving
+            // the EDT blocked forever in blockingWaitForCompositeFileOpen. A
+            // missing preview backend must degrade to this label, never hang the IDE.
             val label = JLabel("Preview not available (JCEF not supported)", SwingConstants.CENTER)
             fallbackComponent = label
             label
