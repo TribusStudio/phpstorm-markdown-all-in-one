@@ -11,6 +11,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.ui.jcef.JBCefBrowserBase
 import com.intellij.ui.jcef.JBCefJSQuery
+import com.intellij.openapi.util.Disposer
+import com.intellij.util.Alarm
 import com.intellij.util.ui.JBUI
 import com.tribus.markdown.export.HtmlExporter
 import com.tribus.markdown.settings.MarkdownSettings
@@ -21,6 +23,7 @@ import org.cef.network.CefRequest
 import java.awt.BorderLayout
 import java.awt.Desktop
 import java.awt.FlowLayout
+import java.awt.event.HierarchyEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
@@ -61,6 +64,20 @@ class MarkdownPreviewFileEditor(
     private var navBar: JPanel? = null
     @Volatile
     private var isShowingPreview = true
+
+    // Rendering is debounced so a burst of keystrokes produces one re-render
+    // instead of one full markdown->HTML->loadHTML cycle per character.
+    private val updateAlarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
+    private val scrollRestoreAlarm = Alarm(Alarm.ThreadToUse.SWING_THREAD, this)
+
+    @Volatile
+    private var disposed = false
+
+    /** True once the first render has happened — before that we always render eagerly. */
+    private var hasRendered = false
+
+    /** Set when an update was skipped because the preview pane was hidden. */
+    private var needsRefresh = false
 
     private val mainComponent: JComponent by lazy {
         try {
@@ -123,15 +140,29 @@ class MarkdownPreviewFileEditor(
 
             updatePreview()
 
-            // Listen for document changes to live-refresh
+            // Listen for document changes to live-refresh.
+            // Parented to this editor: without the disposable the listener (and
+            // through it the whole JCEF browser) stays attached to the Document
+            // forever, so every file ever opened kept re-rendering in the
+            // background for the rest of the IDE session.
             document.addDocumentListener(object : DocumentListener {
                 override fun documentChanged(event: DocumentEvent) {
-                    updatePreview()
+                    scheduleUpdate()
                 }
-            })
+            }, this)
+
+            // Re-render when the preview pane becomes visible again after an
+            // update was skipped while it was hidden.
+            b.component.addHierarchyListener { e ->
+                if (e.changeFlags and HierarchyEvent.SHOWING_CHANGED.toLong() != 0L &&
+                    needsRefresh && b.component.isShowing
+                ) {
+                    scheduleUpdate()
+                }
+            }
 
             // Listen for settings changes to hot-swap CSS theme
-            settingsListener = MarkdownSettings.ChangeListener { updatePreview() }
+            settingsListener = MarkdownSettings.ChangeListener { scheduleUpdate() }
             try {
                 MarkdownSettings.getInstance().addChangeListener(settingsListener!!)
             } catch (_: Exception) {
@@ -173,6 +204,7 @@ class MarkdownPreviewFileEditor(
         returnBtn.addActionListener {
             isShowingPreview = true
             bar.isVisible = false
+            needsRefresh = true
             updatePreview()
         }
 
@@ -253,7 +285,28 @@ class MarkdownPreviewFileEditor(
     @Volatile
     var lastVisibleSourceLine: Int = -1
 
+    /**
+     * Coalesce rapid change notifications into a single re-render.
+     */
+    fun scheduleUpdate() {
+        if (disposed) return
+        updateAlarm.cancelAllRequests()
+        updateAlarm.addRequest({ updatePreview() }, UPDATE_DEBOUNCE_MS)
+    }
+
     fun updatePreview() {
+        if (disposed) return
+        val activeBrowser = browser ?: return
+
+        // Skip work entirely while the preview pane is hidden (editor-only
+        // layout, background tab). The hierarchy listener re-renders on show.
+        if (hasRendered && !activeBrowser.component.isShowing) {
+            needsRefresh = true
+            return
+        }
+        needsRefresh = false
+        hasRendered = true
+
         val settings = try { MarkdownSettings.getInstance() } catch (_: Exception) { null }
         val themeName = settings?.state?.previewTheme ?: "auto"
         currentTheme = PreviewTheme.Theme.fromName(themeName)
@@ -284,17 +337,15 @@ class MarkdownPreviewFileEditor(
         val linkJs = buildLinkInterceptJs()
         val combinedJs = listOf(scrollJs, linkJs).filter { it.isNotEmpty() }.joinToString("\n")
         val fullHtml = MarkdownHtmlConverter.wrapInDocument(bodyHtml, css, customCss, isDark, combinedJs, mathEnabled)
-        browser?.loadHTML(fullHtml)
+        activeBrowser.loadHTML(fullHtml)
 
         // After loadHTML, the page reloads asynchronously. Schedule a scroll restore
         // once the DOM is ready. We use a short delay to allow the JCEF page to load.
+        // A single reusable alarm — the previous code allocated a fresh Swing Timer
+        // per render, which piled up on the shared TimerQueue while typing.
         if (restoreLine >= 0) {
-            javax.swing.Timer(150) {
-                scrollToSourceLine(restoreLine)
-            }.apply {
-                isRepeats = false
-                start()
-            }
+            scrollRestoreAlarm.cancelAllRequests()
+            scrollRestoreAlarm.addRequest({ scrollToSourceLine(restoreLine) }, SCROLL_RESTORE_DELAY_MS)
         }
     }
 
@@ -302,6 +353,7 @@ class MarkdownPreviewFileEditor(
      * Execute JavaScript to scroll the preview to the element matching [line].
      */
     fun scrollToSourceLine(line: Int) {
+        if (disposed) return
         browser?.cefBrowser?.executeJavaScript(
             "if(window.__scrollToSourceLine)window.__scrollToSourceLine($line);",
             "", 0
@@ -329,6 +381,7 @@ class MarkdownPreviewFileEditor(
 
     fun setTheme(theme: PreviewTheme.Theme) {
         currentTheme = theme
+        needsRefresh = true
         updatePreview()
     }
 
@@ -343,6 +396,11 @@ class MarkdownPreviewFileEditor(
     override fun getFile(): VirtualFile = file
 
     override fun dispose() {
+        disposed = true
+        updateAlarm.cancelAllRequests()
+        scrollRestoreAlarm.cancelAllRequests()
+        onScrollCallback = null
+
         // Unsubscribe from settings changes
         settingsListener?.let { listener ->
             try {
@@ -351,10 +409,22 @@ class MarkdownPreviewFileEditor(
                 // No application context
             }
         }
+        settingsListener = null
+
+        jsQuery?.let { Disposer.dispose(it) }
+        linkClickQuery?.let { Disposer.dispose(it) }
         jsQuery = null
         linkClickQuery = null
         browser?.dispose()
         browser = null
+    }
+
+    companion object {
+        /** Debounce window for document-driven re-renders, in milliseconds. */
+        private const val UPDATE_DEBOUNCE_MS = 300
+
+        /** Delay before restoring scroll position after a full page reload. */
+        private const val SCROLL_RESTORE_DELAY_MS = 150
     }
 
     /**

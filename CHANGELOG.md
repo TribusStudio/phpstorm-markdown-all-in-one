@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-09-18
+
+### Added
+- **PhpStorm 2026.2 support** — the declared compatibility range now runs from build 251 (2025.1) through 262.* (2026.2), verified with the JetBrains Plugin Verifier against both ends of the range
+- Bundled color scheme definitions (`colorSchemes/`) so Markdown syntax colors no longer depend on JetBrains' bundled Markdown plugin being installed or enabled
+
+### Fixed
+- **Crash on Tab / Shift+Tab in lists** — indenting or outdenting a list item threw `Write access is allowed inside write-action only`. The Tab and Shift+Tab editor action handlers mutated the document without a write action, which the platform stopped permitting implicitly in the 2024.2+ threading model. Both handlers now wrap their edits in a write command, so the operations are also properly undoable
+- **Memory leak in the live preview** — the preview's document listener was registered without a disposable, so it (and the JCEF browser behind it) stayed attached to the document for the rest of the IDE session. Every markdown file ever opened kept re-rendering in the background on each keystroke, which is why the IDE got progressively slower and preview scrolling grew erratic the longer it stayed open
+- **Floating toolbar leaked per editor** — it was created for every markdown editor but never disposed, leaving its popup and debounce timer alive after the editor closed. All per-editor registrations (shortcuts and toolbar) are now scoped to a disposable released with the editor
+- **Preview re-rendered on every keystroke** — each change ran a full markdown→HTML conversion, image path resolution (with filesystem checks), a CSS re-read and a complete JCEF page reload. Rendering is now debounced at 300 ms, skipped entirely while the preview pane is hidden, and theme CSS is cached
+- **Timer churn during scroll sync** — the editor↔preview scroll handlers allocated a fresh Swing `Timer` per scroll event and per preview update. Replaced with reusable alarms scoped to the editor
+- **Color scheme key collisions** — the plugin registered its `TextAttributesKey`s under bare `MARKDOWN_*` names, which clash with JetBrains' bundled Markdown plugin in the same flat namespace. Whichever plugin loaded first won and the other's fallback was silently discarded, with a `SEVERE` logged per collision at every IDE start. Keys are now namespaced `MDAIO_MARKDOWN_*`
+
+### Changed
+- Preview→editor scroll sync now dispatches through `ApplicationManager.invokeLater` rather than `SwingUtilities.invokeLater`, so it holds the write-intent read action the scrolling model requires under the current threading model
+- Compatibility range and verifier target moved into `gradle.properties` (`pluginSinceBuild`, `pluginUntilBuild`, `verifyAgainstVersion`)
+
+### Upgrade note
+Syntax highlighting colors you customized under **Settings > Editor > Color Scheme > Markdown** reset to defaults in this release, because the underlying color keys were renamed to stop colliding with the bundled Markdown plugin. Re-applying them is a one-time step.
+
 ## [0.22.1] - 2026-04-01
 
 ### Changed

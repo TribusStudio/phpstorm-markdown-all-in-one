@@ -2,6 +2,7 @@ package com.tribus.markdown.preview
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Manages CSS themes for the markdown preview.
@@ -44,25 +45,51 @@ object PreviewTheme {
     /**
      * Load user CSS overrides from a file path.
      * Returns empty string if the path is blank or the file doesn't exist.
+     *
+     * Cached on (path, lastModified) so live preview re-renders don't hit the
+     * filesystem on every keystroke, while still picking up edits to the file.
      */
     fun loadCustomCss(path: String): String {
         if (path.isBlank()) return ""
         val file = File(path)
-        return if (file.exists() && file.isFile) {
-            try {
-                file.readText()
-            } catch (_: Exception) {
-                ""
-            }
-        } else ""
+        if (!file.exists() || !file.isFile) {
+            customCssCache.remove(path)
+            return ""
+        }
+
+        val stamp = file.lastModified()
+        customCssCache[path]?.let { (cachedStamp, cachedCss) ->
+            if (cachedStamp == stamp) return cachedCss
+        }
+
+        val css = try {
+            file.readText()
+        } catch (_: Exception) {
+            ""
+        }
+        customCssCache[path] = stamp to css
+        return css
     }
+
+    /** Drop cached CSS — used by tests and when bundled themes need re-reading. */
+    fun clearCache() {
+        resourceCache.clear()
+        customCssCache.clear()
+    }
+
+    // Bundled theme CSS never changes at runtime, and there are only a handful
+    // of resource paths, so an unbounded map is fine here.
+    private val resourceCache = ConcurrentHashMap<String, String>()
+    private val customCssCache = ConcurrentHashMap<String, Pair<Long, String>>()
 
     private fun loadResource(path: String): String {
         if (path.isEmpty()) return ""
-        return PreviewTheme::class.java.getResourceAsStream(path)
-            ?.bufferedReader()
-            ?.readText()
-            ?: ""
+        return resourceCache.getOrPut(path) {
+            PreviewTheme::class.java.getResourceAsStream(path)
+                ?.bufferedReader()
+                ?.readText()
+                ?: ""
+        }
     }
 
     fun isIdeDarkTheme(): Boolean {

@@ -3,10 +3,13 @@ package com.tribus.markdown.editor
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.CustomShortcutSet
 import com.intellij.openapi.actionSystem.KeyboardShortcut
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.keymap.KeymapManager
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.tribus.markdown.toolbar.FloatingToolbar
 import com.tribus.markdown.util.MarkdownFileUtil
 import java.awt.Toolkit
@@ -25,6 +28,11 @@ import javax.swing.KeyStroke
  * If the user has customized shortcuts in Settings > Keymap, those are used.
  * Otherwise, falls back to platform-aware defaults (Cmd on macOS, Ctrl on
  * Windows/Linux).
+ *
+ * Everything registered here hangs off a per-editor [Disposable] stashed in the
+ * editor's user data, and is torn down in [editorReleased]. Without that, the
+ * floating toolbar (and its popup and debounce alarm) outlived every editor the
+ * user ever opened.
  */
 class MarkdownFileEditorListener : EditorFactoryListener {
 
@@ -39,6 +47,13 @@ class MarkdownFileEditorListener : EditorFactoryListener {
         val keymap = KeymapManager.getInstance()?.activeKeymap
         val component = editor.contentComponent
 
+        // Everything below is scoped to this editor's lifetime.
+        // Must be a fresh instance per editor — a non-capturing `Disposable { }`
+        // lambda is a single shared JVM instance, so the first editor released
+        // would poison the scope for every editor opened afterwards.
+        val editorScope = Disposer.newDisposable("MarkdownEditorScope")
+        editor.putUserData(EDITOR_SCOPE_KEY, editorScope)
+
         for ((actionId, defaultShortcut) in DEFAULT_SHORTCUTS) {
             val action = actionManager.getAction(actionId) ?: continue
 
@@ -51,16 +66,27 @@ class MarkdownFileEditorListener : EditorFactoryListener {
                 defaultShortcut
             }
 
-            action.registerCustomShortcutSet(shortcutSet, component)
+            action.registerCustomShortcutSet(shortcutSet, component, editorScope)
         }
 
         // Register floating toolbar for text selections
         val floatingToolbar = FloatingToolbar(editor)
-        editor.selectionModel.addSelectionListener(floatingToolbar)
-        editor.caretModel.addCaretListener(floatingToolbar)
+        Disposer.register(editorScope, floatingToolbar)
+        editor.selectionModel.addSelectionListener(floatingToolbar, floatingToolbar)
+        editor.caretModel.addCaretListener(floatingToolbar, floatingToolbar)
+    }
+
+    override fun editorReleased(event: EditorFactoryEvent) {
+        val editor = event.editor
+        val scope = editor.getUserData(EDITOR_SCOPE_KEY) ?: return
+        editor.putUserData(EDITOR_SCOPE_KEY, null)
+        Disposer.dispose(scope)
     }
 
     companion object {
+        private val EDITOR_SCOPE_KEY =
+            Key.create<Disposable>("com.tribus.markdown.editorScope")
+
         // Cmd on macOS, Ctrl on Windows/Linux — lazy to avoid HeadlessException in tests
         private val MENU_MOD by lazy {
             try {

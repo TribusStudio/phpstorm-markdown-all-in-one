@@ -108,6 +108,11 @@ class MarkdownSettings : PersistentStateComponent<MarkdownSettings.State> {
     private fun restartHighlighting() {
         for (project in ProjectManager.getInstance().openProjects) {
             if (!project.isDisposed) {
+                // restart() is deprecated in favour of restart(String reason),
+                // but that overload doesn't exist in 2025.1 — our compile
+                // target. Still supported (not removed) in 2026.2; revisit when
+                // sinceBuild moves past 251.
+                @Suppress("DEPRECATION")
                 DaemonCodeAnalyzer.getInstance(project).restart()
             }
         }

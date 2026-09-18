@@ -335,6 +335,8 @@ All options are in **Settings > Languages > Markdown All-in-One**:
 
 ## Installation
 
+**Requires PhpStorm 2025.1 or newer.** Supported through PhpStorm 2026.2 (builds 251–262), verified against both ends of that range with the JetBrains Plugin Verifier.
+
 ### Auto-Update (Recommended)
 1. Open PHPStorm > Settings > Plugins > gear icon > **Manage Plugin Repositories**
 2. Add: `https://TribusStudio.github.io/phpstorm-markdown-all-in-one/updatePlugins.xml`
