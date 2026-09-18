@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-09-18
+
+### Added
+- **PhpStorm 2026.2 support restored** — confirmed by opening a markdown file in a real 2026.2 IDE, not by a Plugin Verifier run alone. Supported range is once again PhpStorm 2025.1 – 2026.2 (builds 251–262).
+- **Supported IDE range is now published with every release** — it appears in the GitHub release notes, in the plugin's "What's New" tab inside the IDE, and in the auto-update repository metadata. All three are generated from `pluginSinceBuild`/`pluginUntilBuild` in `gradle.properties`, so they cannot drift from what the plugin descriptor actually declares.
+
+### Fixed
+- **`updatePlugins.xml` advertised no upper bound** — the auto-update repository declared only `since-build`, so it would offer the plugin to IDEs newer than the supported ceiling, which would then refuse to load it. It now carries the real `until-build`.
+
+### Upgrade note
+If you are on PhpStorm 2026.2, update to this version. 0.23.0–0.23.1 can hang the IDE when opening a markdown file; 0.23.2–0.23.4 deliberately do not load on 2026.2.
+
 ## [0.23.4] - 2026-09-18
 
 ### Fixed

@@ -43,7 +43,20 @@ dependencies {
 fun extractChangeNotes(): String {
     val changelog = file("CHANGELOG.md")
     val repoUrl = "https://github.com/TribusStudio/phpstorm-markdown-all-in-one"
-    val footer = """<p><a href="$repoUrl">Full documentation on GitHub</a></p>"""
+
+    // Build number -> marketing version: "251" -> "2025.1", "262.*" -> "2026.2"
+    fun releaseName(build: String): String {
+        val b = build.substringBefore('.')
+        return "20${b.take(2)}.${b.drop(2).take(1)}"
+    }
+
+    val since = providers.gradleProperty("pluginSinceBuild").get()
+    val until = providers.gradleProperty("pluginUntilBuild").get()
+    val compatibility =
+        "<p><b>Compatible with PhpStorm ${releaseName(since)} \u2013 ${releaseName(until)}</b> " +
+            "(builds <code>$since</code> \u2013 <code>$until</code>)</p>"
+
+    val footer = compatibility + """<p><a href="$repoUrl">Full documentation on GitHub</a></p>"""
 
     if (!changelog.exists()) return "<p>See <a href=\"$repoUrl\">GitHub</a> for details.</p>"
 

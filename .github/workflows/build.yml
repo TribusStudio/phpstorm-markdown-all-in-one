@@ -17,6 +17,10 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       artifact_name: ${{ steps.version.outputs.artifact_name }}
+      since_build: ${{ steps.version.outputs.since_build }}
+      until_build: ${{ steps.version.outputs.until_build }}
+      since_release: ${{ steps.version.outputs.since_release }}
+      until_release: ${{ steps.version.outputs.until_release }}
     steps:
       - uses: actions/checkout@v4
 
@@ -24,9 +28,21 @@ jobs:
         id: version
         run: |
           VERSION=$(grep '^pluginVersion' gradle.properties | cut -d'=' -f2 | tr -d ' ')
+          SINCE=$(grep '^pluginSinceBuild' gradle.properties | cut -d'=' -f2 | tr -d ' ')
+          UNTIL=$(grep '^pluginUntilBuild' gradle.properties | cut -d'=' -f2 | tr -d ' ')
+
+          # Build number -> marketing version: 251 -> 2025.1, 262.* -> 2026.2
+          to_release() { b="${1%%.*}"; echo "20${b:0:2}.${b:2:1}"; }
+          SINCE_RELEASE=$(to_release "$SINCE")
+          UNTIL_RELEASE=$(to_release "$UNTIL")
+
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "artifact_name=markdown-all-in-one-${VERSION}.zip" >> "$GITHUB_OUTPUT"
-          echo "Plugin version: $VERSION"
+          echo "since_build=$SINCE" >> "$GITHUB_OUTPUT"
+          echo "until_build=$UNTIL" >> "$GITHUB_OUTPUT"
+          echo "since_release=$SINCE_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "until_release=$UNTIL_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "Plugin version: $VERSION (PhpStorm $SINCE_RELEASE-$UNTIL_RELEASE, builds $SINCE-$UNTIL)"
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -79,6 +95,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ needs.build.outputs.version }}
           ARTIFACT: ${{ needs.build.outputs.artifact_name }}
+          SINCE_RELEASE: ${{ needs.build.outputs.since_release }}
+          UNTIL_RELEASE: ${{ needs.build.outputs.until_release }}
+          SINCE_BUILD: ${{ needs.build.outputs.since_build }}
+          UNTIL_BUILD: ${{ needs.build.outputs.until_build }}
           PAGES_URL: https://${{ github.repository_owner }}.github.io/phpstorm-markdown-all-in-one/updatePlugins.xml
         run: |
           TAG="v${VERSION}"
@@ -101,6 +121,14 @@ jobs:
             echo "Creating release $TAG..."
             NOTES="$(cat <<NOTESEOF
           ## Markdown All-in-One v${VERSION}
+
+          ### Compatibility
+
+          **PhpStorm ${SINCE_RELEASE} – ${UNTIL_RELEASE}** (builds \`${SINCE_BUILD}\` – \`${UNTIL_BUILD}\`)
+
+          PhpStorm refuses to load a plugin outside its declared range, so if this
+          version does not appear in your Plugins list, check your IDE version
+          against the range above.
 
           ### Changes
 
@@ -138,6 +166,8 @@ jobs:
         env:
           VERSION: ${{ needs.build.outputs.version }}
           ARTIFACT: ${{ needs.build.outputs.artifact_name }}
+          SINCE_BUILD: ${{ needs.build.outputs.since_build }}
+          UNTIL_BUILD: ${{ needs.build.outputs.until_build }}
           REPO: ${{ github.repository }}
         run: |
           mkdir -p _site
@@ -146,7 +176,7 @@ jobs:
           <?xml version="1.0" encoding="UTF-8"?>
           <plugins>
             <plugin id="com.tribus.markdown-all-in-one" url="${DOWNLOAD_URL}" version="${VERSION}">
-              <idea-version since-build="251"/>
+              <idea-version since-build="${SINCE_BUILD}" until-build="${UNTIL_BUILD}"/>
               <name>Markdown All-in-One</name>
               <vendor>Tribus</vendor>
               <description>Comprehensive Markdown editing for PHPStorm</description>
