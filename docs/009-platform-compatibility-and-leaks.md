@@ -114,3 +114,19 @@ v0.23.0 raised `untilBuild` to `262.*` on the strength of a clean Plugin Verifie
 A "Compatible" verdict means *the plugin will link against this IDE*. It does not mean *the plugin works on this IDE*. Those are different claims, and only the first one is being tested.
 
 **Rule:** a new platform version is not supported until someone has launched that exact IDE with the plugin installed and exercised the editor. `./dev gradle runIde` with `platformVersion` temporarily pointed at the new build is the minimum bar. A green verifier run is necessary, never sufficient.
+
+## 6. Never bind shortcuts to actions from ActionManager
+
+`AnAction.registerCustomShortcutSet` mutates the shortcut set of **the instance you call it on**. `ActionManager.getAction(id)` returns an application-wide singleton. Calling one on the other therefore rebinds the shortcut for the entire IDE, not for your component — and the platform notices, logging a stack trace per call:
+
+```
+This is likely not what you wanted to do. Consider setting shortcut in keymap
+defaults, inheriting from other action using `use-shortcut-of` or wrapping with
+ActionUtil.wrap(). Action: Move Line Up [Plugin: com.tribus.markdown-all-in-one]
+```
+
+`MarkdownFileEditorListener` did exactly this for 21 actions on every markdown editor created — 21 global mutations and 21 logged stack traces per `.md` file opened, all inside `MarkdownSplitEditorProvider.createEditor`.
+
+**Rule:** bind shortcuts to a per-editor wrapper, never to the instance `ActionManager` hands you. `EditorScopedAction` in `MarkdownFileEditorListener` is that wrapper. It must keep implementing `MarkdownAction`: `MarkdownActionPromoter` identifies our actions by that marker when resolving conflicts against IDE builtins, so a wrapper without it would let Cmd+B fall through to Go To Declaration.
+
+`MarkdownFileEditorListenerTest` pins this — it asserts the shared instances' shortcut sets are unchanged after opening markdown files, and fails if the registration goes back to the singleton.
