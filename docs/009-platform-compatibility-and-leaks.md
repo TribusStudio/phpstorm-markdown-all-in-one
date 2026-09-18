@@ -4,7 +4,7 @@ Written for v0.23.0. Covers why the plugin broke on recent PhpStorm builds, why 
 
 ## 1. Compatibility strategy
 
-> **Correction (v0.23.2).** The process described below was not sufficient, and 2026.2 support has been withdrawn. See §5.
+> **History.** 2026.2 support was withdrawn in v0.23.2 after IDE lockups and restored in v0.24.0. The process described below was not sufficient on its own — see §5 for what was missing, and §7 for the bug it failed to catch.
 
 The plugin is **compiled against the oldest supported platform** (currently PhpStorm 2025.1 / build 251) and **verified against the newest**. This is deliberate:
 
@@ -103,7 +103,9 @@ Both must be clean. `./dev verify` output should contain no `was already registe
 
 ## 5. What the Plugin Verifier does not check
 
-v0.23.0 raised `untilBuild` to `262.*` on the strength of a clean Plugin Verifier run against PhpStorm 2026.2. Users on 2026.2 then hit an IDE hang when opening a markdown file: the EDT blocks in `FileEditorManagerImpl.blockingWaitForCompositeFileOpen` waiting for the editor composite to finish building, and never returns. 2026.2 support was withdrawn in v0.23.2.
+v0.23.0 raised `untilBuild` to `262.*` on the strength of a clean Plugin Verifier run against PhpStorm 2026.2. Users on 2026.2 then hit an IDE hang when opening a markdown file: the EDT blocked in `FileEditorManagerImpl.blockingWaitForCompositeFileOpen` waiting for the editor composite to finish building, and never returned. 2026.2 support was withdrawn in v0.23.2 and restored in v0.24.0 once the cause (§7) was fixed and confirmed in a real 2026.2 IDE.
+
+The verifier was green the entire time, before and after the fix. It never had anything to say about this bug.
 
 **The Plugin Verifier is a static binary-compatibility check.** It resolves the plugin's bytecode against an IDE's classes and reports missing or changed API. It never launches the IDE and never runs a line of plugin code. It therefore cannot detect:
 

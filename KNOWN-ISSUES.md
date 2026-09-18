@@ -14,13 +14,13 @@ Mermaid diagrams, PlantUML, and other graphing/charting extensions embedded in m
 
 Syntax highlighting colors customized under **Settings > Editor > Color Scheme > Markdown** reset to defaults when upgrading to v0.23.0. The underlying color keys were renamed from `MARKDOWN_*` to `MDAIO_MARKDOWN_*` to stop them colliding with PhpStorm's bundled Markdown plugin, which was silently discarding our color definitions and logging errors at every IDE start. Re-applying customizations is a one-time step. See [docs/009-platform-compatibility-and-leaks.md](docs/009-platform-compatibility-and-leaks.md).
 
-## PhpStorm 2026.2 Not Supported
+## PhpStorm 2026.2 — Resolved in v0.24.0
 
-Opening a `.md` file on PhpStorm 2026.2 (build 262) can hang the IDE. The EDT blocks in `blockingWaitForCompositeFileOpen` waiting for the editor composite to finish building, and never returns.
+~~Opening a `.md` file on PhpStorm 2026.2 could hang the IDE.~~ **Fixed in v0.24.0.**
 
-v0.23.0 and v0.23.1 declared compatibility with 2026.2; **v0.23.2 withdraws it**, so the plugin no longer loads on that version. If you are on 2026.2 and the IDE is hanging, start PhpStorm in Safe Mode (or disable the plugin from another instance) and update to v0.23.2 or later.
+In 2026.2 JetBrains moved JCEF — which backs the live preview — out of the platform core into a separate bundled plugin. Without a declared dependency on it, `JBCefBrowser` failed to resolve, and the resulting error killed the editor composite and left the IDE waiting on it forever. v0.24.0 declares the dependency and makes a missing preview backend degrade to a "Preview not available" panel instead of taking out editor creation.
 
-Support for 2026.2 will return once the cause is found and verified against a real 2026.2 IDE.
+If you are on 2026.2: **update to v0.24.0 or later.** Versions 0.23.0–0.23.1 can hang; 0.23.2–0.23.4 deliberately refuse to load there. If an IDE is currently hanging, start PhpStorm in Safe Mode (or disable the plugin from another instance) and then update.
 
 ## Found Something Else?
 
