@@ -1,5 +1,6 @@
 # Markdown All-in-One for PHPStorm
 
+<!-- Plugin description -->
 ![Fullscreen Snapshot of the PHPStorm IDE](assets/fullscreen-ide.png)
 
 I really love what JetBrains has built for Markdown within PHPStorm. For the most part, its a really thorough implementation with a lot of room for others to hook into it. But something was bothering me with it. Various UX details that kept me from being satisfyed with it. I would routinely use VSCode instead for Markdown work because of those oddities.
@@ -15,6 +16,7 @@ And so was born an alternative, comprehensive Markdown editing plugin for JetBra
 I built this to help resolve issues I felt I needed fixed to continue working with Markdown in PHPStorm the way I did it in VSCode and the way it felt intuitively right, for me. I am now sharing this with others to see how they feel about it and whether it scratches the itch others might have had with the default plugin.
 
 Again, its something for me and it makes me happy. I hope it does the same for you!
+<!-- Plugin description end -->
 
 ## Features
 

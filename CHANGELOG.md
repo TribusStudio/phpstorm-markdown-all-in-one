@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-09-18
+
+### Added
+- **Plugin description is generated from README.md** — the listing in Settings > Plugins now shows the README's intro and screenshot instead of a separately maintained copy, so the two cannot drift. The feature list is derived from the `###` headings under `## Features`, so adding a feature section to the README adds it to the plugin listing automatically.
+- **The README screenshot now appears in the plugin listing.** Relative image paths are rewritten to absolute `raw.githubusercontent.com` URLs at build time, which is what the IDE's plugin details panel needs in order to render them.
+
+### Fixed
+- `pluginRepositoryUrl` in `gradle.properties` pointed at the wrong GitHub organisation (`tribus` rather than `TribusStudio`). It was unused — the correct URL was hardcoded in `build.gradle.kts` — but it is now correct and is the single source for both.
+
 ## [0.24.0] - 2026-09-18
 
 ### Added
