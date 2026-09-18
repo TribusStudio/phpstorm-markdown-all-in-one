@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.1] - 2026-09-18
+
+### Changed
+- **Build:** replaced the deprecated `ide(type, version)` Plugin Verifier API with `create(type, version)`, which also takes the version as a lazy `Provider` instead of resolving it eagerly at configuration time. Removes the last warning from a clean build; no change to the shipped plugin.
+
 ## [0.23.0] - 2026-09-18
 
 ### Added
