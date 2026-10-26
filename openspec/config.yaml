@@ -1,0 +1,50 @@
+schema: spec-driven
+
+context: |
+  Markdown All-in-One for PhpStorm — a free, open-source, standalone Markdown editing plugin for the
+  IntelliJ Platform. It deliberately has NO dependency on JetBrains' bundled Markdown plugin.
+
+  Tech stack: Kotlin 2.x, Gradle 9.2.1+ with IntelliJ Platform Gradle Plugin 2.11.0, JDK 21,
+  JUnit 5 with IntelliJ Platform test fixtures, GitHub Actions CI.
+  Target IDE: PhpStorm 2025.1+ (build 251.*) through 2026.2.
+  Plugin ID: com.tribus.markdown-all-in-one. Packages: com.tribus.markdown.*
+  Live preview is JCEF-backed (JBCefBrowser); on 2026.2+ JCEF lives in a separate bundled plugin.
+
+  Source layout: src/main/kotlin/com/tribus/markdown/{actions,editor,highlighting,completion,
+  inspection,preview,settings,toc,util}, descriptor at src/main/resources/META-INF/plugin.xml,
+  tests in src/test/kotlin with fixtures in src/test/testData (before.md / after.md pairs).
+
+  Conventions:
+  - Kotlin coding conventions, no wildcard imports, Kotlin UI DSL v2 for settings UI.
+  - Prefer IntelliJ Platform APIs over hand-rolled equivalents.
+  - Extension points declared dynamic="true" wherever the platform allows it.
+  - Color scheme keys are prefixed MDAIO_ to avoid colliding with the bundled Markdown plugin.
+
+  Build/test runs inside a Docker devcontainer, driven from the host with the ./dev CLI:
+  ./dev build, ./dev test, ./dev package, ./dev verify, ./dev gradle <task>.
+
+  Workflow:
+  - Conventional Commits (type(scope): description); feature branches, PR per change.
+  - SemVer enforced; bump pluginVersion in gradle.properties via ./scripts/bump-version.sh
+    and add a CHANGELOG.md section before any distributable build. Every code change ships a bump.
+  - Docs live in the repo under docs/ with numeric prefixes (001-, 002-, ...); root README.md,
+    CHANGELOG.md, CONTRIBUTING.md, ROADMAP.md, KNOWN-ISSUES.md are unnumbered.
+  - Markdown prose is never hard-wrapped: one continuous line per paragraph.
+
+rules:
+  proposal:
+    - State the user-visible symptom first, then the root cause, then the fix.
+    - Name the affected IntelliJ Platform APIs and the PhpStorm versions in scope.
+    - Include a Non-goals section.
+  tasks:
+    - Every behavior change carries a unit or BasePlatformTestCase test.
+    - Include a task for the version bump and the CHANGELOG.md entry.
+    - Include a task to update README / KNOWN-ISSUES / docs when user-facing behavior changes.
+
+operations:
+  apply:
+    guidance:
+      - Build and test through the ./dev CLI, never a bare ./gradlew on the host.
+  archive:
+    guidance:
+      - Confirm ROADMAP.md and CHANGELOG.md reflect the shipped change before archiving.
