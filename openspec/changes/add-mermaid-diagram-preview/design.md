@@ -8,23 +8,24 @@ See `proposal.md` — Why. The constraints that shape the approach:
 - `wrapInDocument` already demonstrates the conditional-asset pattern: highlight.js is inlined only when `bodyHtml.contains("<code class=\"language-")`, KaTeX only when `mathEnabled` (`MarkdownHtmlConverter.kt:450-473`).
 - `MarkdownHtmlConverter` is a hand-rolled, single-pass, line-based converter. Fenced blocks are handled by one open/close branch at `:48-64` plus an EOF fallback at `:209-211`.
 - The preview must work with no network access and no external executable.
-- **Mermaid's self-contained bundle is large.** Measured against the npm registry at the time of writing: `mermaid@12.2.0` ships `dist/mermaid.min.js` at **5.24 MB**. The 30 KB `mermaid.esm.min.mjs` is not an alternative — it is an ESM entry point that lazy-loads diagram-type chunks over the network, which an inlined single-file document cannot do.
-
-That size is the central design problem: at 5.24 MB, inlining unconditionally would add megabytes to **every** preview reload in the IDE, including documents with no diagrams.
+- **Mermaid's self-contained bundle is large.** Measured against the npm registry at the time of writing: `mermaid@12.2.0` ships `dist/mermaid.min.js` at **5.24 MB**. The 30 KB `mermaid.esm.min.mjs` is not an alternative — it is an ESM entry point that lazy-loads diagram-type chunks over the network. JetBrains' bundled Mermaid plugin independently ships `mermaid.js` at **5,120,388 bytes**, which confirms there is no small build to find.
+- **That size is no longer the central design problem.** It was, while inlining into the `loadHTML` string was the only delivery mechanism. `serve-preview-assets-over-http` adds a second: bundled assets served over the IDE's built-in web server and fetched once per session. This change depends on its Stage 1 and treats the runtime as one more served asset — which is exactly what JetBrains does with the same file.
 
 ## Goals / Non-Goals
 
 **Goals**
 
 - Keep documents without diagrams byte-for-byte and millisecond-for-millisecond unchanged.
-- Keep diagram rendering inside the existing single-string `loadHTML` architecture — no new browser plumbing, no change to the update/debounce/scroll-restore cycle.
+- Add no browser plumbing of this change's own: the runtime is one more entry in the asset server's served set, and the update/debounce/scroll-restore cycle is untouched.
+- Keep the converter's output independent of how assets are delivered, so this change survives either delivery path.
 - Per-diagram failure isolation: one bad diagram must not take out the others or the page.
 - One conversion path shared by the live preview and HTML export.
 
 **Non-Goals (design level, beyond the proposal's)**
 
-- Incremental preview updates. Switching from `loadHTML` to DOM patching would make the runtime cost a one-time load instead of per-update, and is the right long-term fix, but it is a far larger change to `MarkdownPreviewFileEditor` and is out of scope here.
-- A custom JCEF scheme handler for asset delivery (see Decision 3).
+- Incremental preview updates. Full reloads stay; `serve-preview-assets-over-http` is what makes them cheap.
+- Asset delivery itself. It belongs to `serve-preview-assets-over-http`; this change consumes it and adds one asset.
+- A custom JCEF scheme handler for asset delivery (rejected under Decision 2).
 - Shrinking the Mermaid bundle by building a custom subset of diagram types.
 
 ## Decisions
@@ -43,21 +44,17 @@ instead of `<pre><code class="language-mermaid">`. Rendering itself happens in t
 
 *Alternative rejected:* rendering diagrams to SVG on the JVM side and inlining the SVG. There is no pure-JVM Mermaid implementation; it would mean an embedded JS engine or a headless browser per diagram.
 
-### 2. Inline the runtime, gated on the document actually containing a diagram
+### 2. Serve the runtime; reference it only when the document needs it
 
-`wrapInDocument` gains a `diagramsEnabled: Boolean = false` parameter (appended, consistent with `mathEnabled`). The runtime is inlined when **both** the setting is on and `bodyHtml.contains("<pre class=\"mermaid\"")` — the same shape as the existing `hasCodeBlocks` test. The 5.24 MB resource is read from the jar once and memoised in a lazily-initialised field rather than re-read per update, since `loadResource` currently reads the stream on every call.
+The runtime joins the served set in `serve-preview-assets-over-http` and is referenced by `<script src>` rather than inlined. `wrapInDocument` gains a `diagramsEnabled: Boolean = false` parameter (appended, consistent with `mathEnabled`), and emits the reference when **both** the setting is on and `bodyHtml.contains("<pre class=\"mermaid\"")` — the same shape as the existing `hasCodeBlocks` test.
 
-*Cost accepted:* a document that does contain diagrams pays ~5.24 MB of string assembly plus Chromium parse/compile on every 300 ms-debounced reload. This is the known trade-off and is bounded to diagram documents only.
+Conditional referencing still matters even though the cost per refresh is now near zero: a document with no diagrams should not fetch 5 MB on its first preview either.
+
+Under the fallback path of that change — built-in server unavailable, assets inlined — a diagram document would inline 5 MB per refresh. Rather than accept that, the fallback **does not render diagrams**: Mermaid blocks degrade to highlighted code blocks, as they do when the setting is off. Diagram rendering is the one asset whose size makes inlining the wrong answer, so it opts out of the fallback instead of being slow.
 
 *Alternative rejected:* inlining unconditionally alongside KaTeX. It would tax every preview in the IDE for a feature most documents do not use.
 
-### 3. No custom JCEF scheme handler — for now, with a stated trigger
-
-The architecturally cleaner delivery mechanism is to register a custom scheme (e.g. `mdaio://assets/mermaid.min.js`) via `com.intellij.ui.jcef.JBCefApp`'s custom-scheme-handler registration, so the page references the runtime by URL and Chromium caches it across reloads.
-
-We are not doing that in this change: the registration must happen before CEF initialisation, it has to be verified across the whole 2025.1–2026.2 range — where 2026.2 moved JCEF out of the platform core into the separately bundled plugin that `META-INF/jcef-support.xml` already handles — and it introduces a second asset-delivery path alongside the inlining used by every other preview asset.
-
-**Trigger for revisiting:** if the measurement task shows added preview-update latency on a diagram document above ~400 ms (beyond the existing 300 ms debounce, i.e. visible lag while typing in a document with diagrams), the scheme handler becomes a follow-up change rather than a rewrite of this one — the converter-side contract is identical either way, which is precisely why it is safe to defer.
+*Alternative rejected:* a custom JCEF scheme handler (`mdaio://assets/…`) via `JBCefApp`. It would also give cached, by-URL delivery, but it must be registered before CEF initialisation, needs verifying across a range where 2026.2 moved JCEF into a separate bundled plugin, and would add a *third* delivery path. The built-in server is already proven in the platform for this exact asset.
 
 ### 4. Render per diagram with explicit error capture, not `startOnLoad`
 
@@ -77,8 +74,10 @@ One `var diagramsEnabled: Boolean = true` in `MarkdownSettings.State`, one `.bin
 
 ## Risks / Trade-offs
 
-- **5.24 MB re-shipped per reload on diagram documents** → Gated to diagram documents; the runtime resource string is memoised; the existing 300 ms debounce still coalesces typing. Decision 3 records the measured trigger and the escape hatch.
-- **Plugin distribution grows by ~5.24 MB** → Accepted; it is the price of offline rendering and is in line with other Markdown plugins that bundle Mermaid. Worth a note in the release CHANGELOG entry.
+- **Depends on `serve-preview-assets-over-http` Stage 1** → That is the sequencing cost of not inlining 5 MB per refresh. If that change is dropped, this one has no acceptable delivery mechanism and should be reconsidered rather than fall back to inlining.
+- **5 MB fetched on first preview of a diagram document** → Once per session, cached by Chromium, and only for documents that actually contain a diagram. The spec's "fetched at most once per session" scenario is the guard.
+- **Plugin distribution grows by ~5.24 MB** → Accepted; it is the price of offline rendering, and JetBrains' own bundled plugin carries the same weight. Worth a note in the release CHANGELOG entry.
+- **Diagrams silently absent under the inlining fallback** → Stated in Decision 2 and surfaced the same way an unparseable diagram is: the block renders as a code block rather than vanishing, so the user sees their source rather than an empty gap.
 - **Mermaid's own render time on large diagrams can block the page** → Rendering is asynchronous and per-diagram, so the document's Markdown is visible before diagrams resolve; a slow diagram delays only itself.
 - **Mermaid major-version churn** → Pin the exact bundled version, record it in `docs/`, and check it in the test fixture so an upgrade that breaks the container contract fails a test rather than a user's preview.
 - **Mermaid can be configured to fetch icon packs over the network** → Not configured, and `securityLevel: 'strict'`; the spec's "no outbound requests" scenario is the regression guard.
@@ -87,7 +86,7 @@ One `var diagramsEnabled: Boolean = true` in `MarkdownSettings.State`, one `.bin
 
 ## Migration Plan
 
-No data or settings migration. The change is additive and default-on, so the rollout is a normal SemVer **minor** bump with a CHANGELOG entry. Rollback is the new setting: turning **Render Mermaid diagrams** off restores the previous rendering exactly, which also makes it the user-side mitigation if the latency trade-off bites a particular document.
+No data or settings migration. The change is additive and default-on, so the rollout is a normal SemVer **minor** bump with a CHANGELOG entry. It ships after `serve-preview-assets-over-http` Stage 1. Rollback is the new setting: turning **Render Mermaid diagrams** off restores the previous rendering exactly.
 
 ## Open Questions
 

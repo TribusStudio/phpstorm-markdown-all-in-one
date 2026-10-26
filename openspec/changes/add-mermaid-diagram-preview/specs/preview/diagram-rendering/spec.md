@@ -90,7 +90,7 @@ The plugin SHALL expose a persisted setting controlling whether Mermaid blocks r
 
 - **WHEN** diagram rendering is turned off in settings and a document contains a Mermaid block
 - **THEN** the block renders as a syntax-highlighted code block showing the diagram source
-- **AND** no diagram runtime is loaded into the preview document
+- **AND** the diagram runtime is not loaded
 
 #### Scenario: Setting re-enabled
 
@@ -104,17 +104,22 @@ The plugin SHALL expose a persisted setting controlling whether Mermaid blocks r
 
 ### Requirement: Diagram support does not degrade documents without diagrams
 
-A document containing no Mermaid block SHALL NOT pay any cost for diagram support: the preview document generated for it SHALL NOT include the diagram runtime, and its render time SHALL be unchanged.
+A document containing no Mermaid block SHALL NOT pay any cost for diagram support: the preview generated for it SHALL NOT load the diagram runtime, and its render time SHALL be unchanged.
 
 #### Scenario: Document with no diagrams
 
 - **WHEN** a document containing headings, paragraphs, and non-diagram code blocks is previewed
-- **THEN** the generated preview document contains no diagram runtime
+- **THEN** the preview neither references nor requests the diagram runtime
 
 #### Scenario: First diagram added to a document
 
 - **WHEN** the user adds the first Mermaid block to such a document
-- **THEN** the following preview update includes the runtime and renders the diagram
+- **THEN** the following preview update loads the runtime and renders the diagram
+
+#### Scenario: Runtime is loaded once per session
+
+- **WHEN** the user types continuously in a document containing a diagram, causing many preview refreshes
+- **THEN** the diagram runtime is fetched at most once for the session
 
 ### Requirement: Diagrams preserve scroll synchronisation
 
